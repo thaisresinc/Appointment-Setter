@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Common Mistakes | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.06),0 4px 12px rgba(10,53,66,.08);
+  --shadow-lg:0 4px 16px rgba(10,53,66,.1),0 12px 32px rgba(10,53,66,.1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* HERO */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:250px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(181,37,27,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:980px;margin:0 auto;padding:48px 28px 34px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,42px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:540px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);}
+
+/* LAYOUT */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:980px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:18px;}
+
+/* PROGRESS */
+.mistakes-progress{
+  display:flex;align-items:center;gap:12px;
+  background:#122430;border-radius:10px;padding:12px 18px;
+  border:1px solid rgba(255,255,255,.06);margin-bottom:24px;
+}
+.mp-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);}
+.mp-dots{display:flex;gap:5px;flex:1;}
+.mp-dot{width:24px;height:5px;border-radius:3px;background:rgba(255,255,255,.08);transition:background .3s;}
+.mp-dot.seen{background:var(--sky);}
+.mp-count{font-size:11px;font-weight:700;color:var(--sky);white-space:nowrap;}
+
+/* MISTAKE CARDS */
+.mistakes-list{display:flex;flex-direction:column;gap:8px;}
+.mistake-card{
+  border-radius:14px;overflow:hidden;
+  border:1.5px solid rgba(255,255,255,.07);
+  background:#0F1E28;
+  transition:border-color .2s;
+  cursor:pointer;
+}
+.mistake-card:hover{border-color:rgba(0,174,239,.2);}
+.mistake-card.open{border-color:rgba(0,174,239,.3);}
+.mistake-card.seen{border-color:rgba(11,122,78,.2);}
+
+.mc-header{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;
+}
+.mc-num{
+  width:36px;height:36px;border-radius:9px;
+  background:rgba(255,255,255,.06);
+  font-size:13px;font-weight:700;color:rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;
+}
+.mistake-card.seen .mc-num{background:rgba(11,122,78,.2);color:#4DD9A0;}
+.mistake-card.open .mc-num{background:rgba(181,37,27,.15);color:#FF8080;}
+.mc-text{flex:1;}
+.mc-title{font-size:13.5px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:2px;}
+.mc-preview{font-size:11.5px;color:rgba(255,255,255,.3);line-height:1.4;}
+.mistake-card.open .mc-preview{display:none;}
+.mc-arrow{color:rgba(255,255,255,.2);font-size:14px;transition:transform .3s;flex-shrink:0;}
+.mistake-card.open .mc-arrow{transform:rotate(90deg);color:var(--sky);}
+
+/* EXPANDED DETAIL */
+.mc-detail{
+  display:none;
+  padding:0 20px 20px;
+  animation:fadeUp .25s ease;
+}
+.mistake-card.open .mc-detail{display:block;}
+
+.mc-detail-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;
+}
+@media(max-width:580px){.mc-detail-grid{grid-template-columns:1fr;}}
+
+.mc-box{border-radius:10px;padding:14px 16px;}
+.mc-box.why{background:rgba(181,37,27,.08);border:1px solid rgba(181,37,27,.15);}
+.mc-box.fix{background:rgba(11,122,78,.08);border:1px solid rgba(11,122,78,.18);}
+.mc-box-label{font-size:8.5px;font-weight:700;letter-spacing:.18em;margin-bottom:7px;}
+.mc-box.why .mc-box-label{color:#FF8080;}
+.mc-box.fix .mc-box-label{color:#4DD9A0;}
+.mc-box-text{font-size:12.5px;line-height:1.65;}
+.mc-box.why .mc-box-text{color:rgba(255,200,200,.7);}
+.mc-box.fix .mc-box-text{color:rgba(180,255,220,.7);}
+.mc-box-text strong{color:#fff;}
+
+/* EXAMPLE DIALOGUE */
+.mc-example{
+  background:#0A1820;border-radius:10px;padding:14px 16px;
+  border:1px solid rgba(255,255,255,.05);
+}
+.mc-example-label{font-size:8.5px;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,.25);margin-bottom:10px;}
+.dialogue{display:flex;flex-direction:column;gap:7px;}
+.dline{display:flex;gap:8px;align-items:flex-start;}
+.dline-who{
+  font-size:9px;font-weight:700;letter-spacing:.1em;
+  padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:2px;
+  white-space:nowrap;
+}
+.dline-who.customer{background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);}
+.dline-who.bad{background:rgba(181,37,27,.2);color:#FF8080;}
+.dline-who.good{background:rgba(11,122,78,.2);color:#4DD9A0;}
+.dline-text{font-size:12px;color:rgba(255,255,255,.65);line-height:1.55;font-style:italic;}
+.dline-result{font-size:11px;font-weight:700;margin-top:4px;}
+.dline-result.bad{color:#FF8080;}
+.dline-result.good{color:#4DD9A0;}
+.vs-divider{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.vs-line{flex:1;height:1px;background:rgba(255,255,255,.06);}
+.vs-text{font-size:9px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.1em;}
+
+/* GREAT SETTERS */
+.great-grid{display:flex;flex-direction:column;gap:8px;}
+.great-row{
+  display:flex;align-items:flex-start;gap:14px;
+  background:#0F1E28;border-radius:10px;padding:14px 18px;
+  border:1.5px solid rgba(255,255,255,.06);
+}
+.gr-num{
+  font-size:14px;font-weight:700;color:var(--sky);
+  flex-shrink:0;width:28px;padding-top:1px;
+}
+.gr-content{}
+.gr-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.gr-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.6;}
+
+/* NARRATION */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.nar-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.nar-text{font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.75;font-style:italic;}
+.nar-text strong{color:#fff;font-style:normal;}
+
+/* NEXT */
+.next-teaser{background:var(--navy);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;}
+.nt-label{font-size:8px;color:rgba(0,174,239,.6);letter-spacing:.2em;font-weight:700;margin-bottom:3px;}
+.nt-text{font-size:13px;color:#fff;font-weight:500;}
+.nt-arrow{color:var(--sky);font-size:18px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DAY 2</div>
+    <h1 class="hero-title">Common Mistakes —<br><em>And How to Avoid Them</em></h1>
+    <p class="hero-sub">10 things that trip up new setters. You're seeing them now — before you make them. Click each one to understand why it happens and how to fix it.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">⚠️ 10 mistakes</div>
+      <div class="hero-pill">🖱️ Click each to expand</div>
+      <div class="hero-pill">✅ Fix included for every one</div>
+    </div>
+  </div>
+</section>
+
+<!-- MISTAKES -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">LEARN THEM BEFORE YOU MAKE THEM</div>
+    <div class="s-title">The 10 Common Mistakes</div>
+    <div class="s-bar"></div>
+
+    <div class="mistakes-progress">
+      <div class="mp-label">REVIEWED</div>
+      <div class="mp-dots" id="mp-dots"></div>
+      <div class="mp-count" id="mp-count">0 of 10</div>
+    </div>
+
+    <div class="mistakes-list" id="mistakes-list"></div>
+  </div>
+</div>
+
+<!-- GREAT SETTERS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE OTHER SIDE</div>
+    <div class="s-title">What Great Setters Do Differently</div>
+    <div class="s-bar"></div>
+    <div class="great-grid">
+      <div class="great-row">
+        <div class="gr-num">01</div>
+        <div class="gr-content">
+          <div class="gr-title">Stay calm and professional</div>
+          <div class="gr-desc">Never take objections personally. Composed, respectful, confident — always.</div>
+        </div>
+      </div>
+      <div class="great-row">
+        <div class="gr-num">02</div>
+        <div class="gr-content">
+          <div class="gr-title">Listen actively and fully</div>
+          <div class="gr-desc">Let the prospect speak without interruption. Understand before responding.</div>
+        </div>
+      </div>
+      <div class="great-row">
+        <div class="gr-num">03</div>
+        <div class="gr-content">
+          <div class="gr-title">Clarify before responding</div>
+          <div class="gr-desc">Ask follow-up questions to find the real objection — not the surface one.</div>
+        </div>
+      </div>
+      <div class="great-row">
+        <div class="gr-num">04</div>
+        <div class="gr-content">
+          <div class="gr-title">Keep responses simple and relevant</div>
+          <div class="gr-desc">Address the concern clearly and concisely. No information dump.</div>
+        </div>
+      </div>
+      <div class="great-row">
+        <div class="gr-num">05</div>
+        <div class="gr-content">
+          <div class="gr-title">Transition back to the appointment smoothly</div>
+          <div class="gr-desc">After handling the objection, guide the conversation back to booking. Don't let it drift.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="nar-q">"</div>
+      <div class="nar-text">The setters who improve fastest aren't the ones who never make these mistakes — <strong>they're the ones who recognise them quickly and adjust.</strong> Review your calls. Ask for feedback. Apply it on the next dial.</div>
+    </div>
+  </div>
+</div>
+
+<div class="next-teaser">
+  <div>
+    <div class="nt-label">NEXT UP</div>
+    <div class="nt-text">Objection Handling</div>
+  </div>
+  <div class="nt-arrow">→</div>
+</div>
+
+<script>
+const MISTAKES = [
+  {
+    title:"Not qualifying leads properly",
+    preview:"Booking renters, non-decision-makers, or customers outside the service area.",
+    why:"Unqualified appointments waste the specialist's time, hurt your KPIs, and damage your reputation internally. One bad booking can affect the leads you get allocated next.",
+    fix:"Qualify early. Confirm ownership, address, and bill <strong>before</strong> going deep into the pitch. If something doesn't stack up — disqualify and move on.",
+    example:{
+      customer:"\"Yeah sure, I rent the place but I'm keen to chat about solar.\"",
+      bad:"\"No worries, I'll put you down for a consultation anyway!\"",
+      badResult:"Specialist arrives. Renter can't authorise installation. Wasted 90 minutes.",
+      good:"\"Appreciate your interest — unfortunately we can only work with homeowners since they need to authorise the installation. I hope the timing works out in the future!\"",
+      goodResult:"Clean disqualification. Specialist's time protected. Your quality metrics intact."
+    }
+  },
+  {
+    title:"Overpromising results",
+    preview:"Guaranteeing savings figures, rebate amounts, or install timelines you can't deliver.",
+    why:"Customers who were promised specific numbers become difficult consultations. It damages trust in RESINC and creates pressure on specialists to deliver promises they didn't make.",
+    fix:"Set realistic expectations. Use phrases like <strong>\"the specialist will calculate the exact figures based on your home\"</strong> — it's accurate and still creates anticipation.",
+    example:{
+      customer:"\"So how much will I actually save?\"",
+      bad:"\"Most of our customers save around $2,000 a year — you'll probably see similar.\"",
+      badResult:"Specialist arrives with different numbers. Customer feels misled. Trust broken before the pitch starts.",
+      good:"\"That's exactly what the assessment is for — the specialist will review your actual bills and usage and show you the exact figures for your home.\"",
+      goodResult:"Expectation set correctly. Specialist can deliver a genuine, credible assessment."
+    }
+  },
+  {
+    title:"Trying to sell instead of set",
+    preview:"Over-explaining solar, answering technical questions in detail, or trying to close on the call.",
+    why:"Your job is to get the right person into a consultation — not to close the deal yourself. Over-pitching creates resistance and often kills appointments that would have booked with a simpler approach.",
+    fix:"Qualify, build curiosity, and book. <strong>If they want to know more — that's the appointment.</strong> \"That's a great question — the specialist will cover that in detail at the assessment.\"",
+    example:{
+      customer:"\"How does the inverter actually work?\"",
+      bad:"\"Great question — so the DC electricity generated by the panels gets converted by the inverter into AC current which your home can then use...\"",
+      badResult:"Customer glazes over. You've spent 3 minutes on a technical question when a 10-second answer would have moved you forward.",
+      good:"\"Good question — honestly that's exactly what the specialist covers in the assessment. They explain it in a way that actually makes sense. Are you free Tuesday or Wednesday?\"",
+      goodResult:"Curiosity preserved. Appointment booked."
+    }
+  },
+  {
+    title:"Weak objection handling",
+    preview:"Getting defensive, backing off too quickly, or accepting 'no' without exploring it.",
+    why:"Most objections are not hard no's — they're hesitations. Backing off at the first pushback means leaving bookings on the table that were 30 seconds away.",
+    fix:"Use the <strong>DTRC framework</strong>: Disarm → Transition → Respond → Check-in. Never argue. Always acknowledge before you redirect.",
+    example:{
+      customer:"\"I'm just not interested right now.\"",
+      bad:"\"Oh okay, no worries — I'll take you off our list.\"",
+      badResult:"Lead gone. Could have been a booking 40 seconds later.",
+      good:"\"Totally understand — I'm not here to push anything. Can I ask, is it more that the timing isn't right, or is solar something you've already looked into and ruled out?\"",
+      goodResult:"Conversation reopened. Real objection surfaced. Next step possible."
+    }
+  },
+  {
+    title:"Talking more than listening",
+    preview:"Dominating the call and missing key details the customer shares.",
+    why:"Everything a customer tells you — their bill, their living situation, their concerns — is information you can use. If you're talking, you're not collecting it.",
+    fix:"Ask questions. <strong>Let them talk.</strong> You should be speaking about 30–40% of the time on a good qualification call. Take notes.",
+    example:{
+      customer:"\"We've actually got a pool and my wife works from home so...\"",
+      bad:"\"That's great — so as I was saying, the rebate takes $3,000–$6,000 off the upfront cost...\"",
+      badResult:"You just missed two massive usage signals that would have built enormous bill pain.",
+      good:"\"Oh interesting — so between the pool and working from home, what does your electricity bill look like per quarter?\"",
+      goodResult:"Usage profile building. Bill pain about to be established. This call is on track."
+    }
+  },
+  {
+    title:"Not confirming appointments properly",
+    preview:"Booking the appointment but not sending a confirmation or follow-up.",
+    why:"A booking without a confirmation is a booking that might not sit. The customer forgets. Their partner doesn't know. The confirmation team needs your notes to do their job.",
+    fix:"After every booking: <strong>update the CRM immediately</strong> with full notes. The confirmation team uses your notes — clean notes mean better confirmation rates.",
+    example:{
+      customer:"\"Yeah Tuesday at 3pm works for me.\"",
+      bad:"[Books in calendar, moves to next call, no notes added]",
+      badResult:"Confirmation team calls the day before. No notes. No partner's name. Customer barely remembers. Appointment no-shows.",
+      good:"[Books in calendar. Adds: customer name, partner name, bill amount, pain point mentioned, what was promised] \"Perfect — you'll receive a text and email confirmation shortly.\"",
+      goodResult:"Confirmation team has everything they need. Customer reminded. Appointment sits."
+    }
+  },
+  {
+    title:"Inaccurate or incomplete CRM data",
+    preview:"Wrong contact details, missing notes, or skipping the CRM update after a call.",
+    why:"Every person who touches this lead after you — the confirmation team, your TL, potentially another setter — relies on your notes. Sloppy data breaks the chain.",
+    fix:"<strong>CRM is your scoreboard.</strong> If it's not logged, it didn't happen. Update immediately after every call — don't leave it for later.",
+    example:{
+      customer:"[Lead comes back to the team 3 days later]",
+      bad:"[CRM shows: 'Called. No answer.' — no date, no context, no callback task]",
+      badResult:"Next setter has zero context. Calls the customer cold. Loses the warmth from the previous contact.",
+      good:"[CRM shows: 'Called 12/06. Spoke briefly — interested but partner wasn't home. Callback requested Thursday AM. CB task set.']",
+      goodResult:"Next contact is warm, informed, and timely. Lead converted."
+    }
+  },
+  {
+    title:"Inconsistent outreach",
+    preview:"Calling once or twice and writing off a lead that was never properly worked.",
+    why:"Most bookings don't happen on the first call. Customers are busy, forget, or need a second conversation to feel ready. Giving up early means leaving real leads unworked.",
+    fix:"Work the <strong>5-day callback cycle</strong>. One attempt per day for five days before leaving as overdue. Most bookings happen on attempt 2 or 3.",
+    example:{
+      customer:"[No answer on attempt 1]",
+      bad:"[Marks complete. Moves on.]",
+      badResult:"Warm lead sits idle. Eventually gets allocated to someone else or expires.",
+      good:"[Creates CRM task for next day. Calls again. Tries different times — morning, lunch, evening.]",
+      goodResult:"On attempt 3, customer picks up. Remembers the door knocker. Books."
+    }
+  },
+  {
+    title:"Unprofessional communication",
+    preview:"Sounding rushed, robotic, or disengaged — especially after a string of no-answers.",
+    why:"The customer who picks up on your 40th dial of the day doesn't know about the 39 before them. They experience you fresh. Your energy in that moment is RESINC's first impression.",
+    fix:"<strong>Reset between every call.</strong> Take a breath. Smile before you dial — it comes through in your voice. Treat every pickup like it's your first call of the day.",
+    example:{
+      customer:"\"Hello?\"",
+      bad:"\"Yeah hi this is [name] from RESINC calling about solar can I speak to the homeowner?\"",
+      badResult:"Customer hears rushed, monotone, scripted energy. Immediate guard goes up. Hard to recover.",
+      good:"\"Hey [name]! How's your day going? — This is [you] from RESINC, I'll keep it quick...\"",
+      goodResult:"Human, warm, professional. Guard is down. Conversation is possible."
+    }
+  },
+  {
+    title:"Limited product knowledge",
+    preview:"Unable to answer basic solar questions, which undermines credibility early.",
+    why:"You don't need to be a solar engineer — but you do need to be credible. If a customer asks a basic question and you can't answer it, they lose confidence in the brand.",
+    fix:"Review the solar modules until the basics are <strong>second nature</strong>: how panels work, what an inverter does, what the STC rebate is, and why the battery rebate has urgency.",
+    example:{
+      customer:"\"So does solar actually work on cloudy days?\"",
+      bad:"\"Umm... I think so? That's probably a question for the specialist.\"",
+      badResult:"Credibility gone. Customer now doubts whether they should trust the rest of what you've said.",
+      good:"\"Great question — yes, it still generates power on cloudy days, just at reduced output. Queensland winters actually still produce around 80–90% of summer output. The specialist can show you the exact projections for your area.\"",
+      goodResult:"Credible, concise, redirects to the appointment. Customer confidence maintained."
+    }
+  }
+];
+
+const seen = new Set();
+let activeCard = null;
+
+function buildDots() {
+  const wrap = document.getElementById('mp-dots');
+  for (let i = 0; i < 10; i++) {
+    const d = document.createElement('div');
+    d.className = 'mp-dot';
+    d.id = 'dot-' + i;
+    wrap.appendChild(d);
+  }
+}
+
+function updateProgress() {
+  const n = seen.size;
+  document.getElementById('mp-count').textContent = n + ' of 10';
+  for (let i = 0; i < 10; i++) {
+    document.getElementById('dot-' + i).classList.toggle('seen', i < n);
+  }
+}
+
+function toggleCard(idx) {
+  const card = document.getElementById('mc-' + idx);
+  const isOpen = card.classList.contains('open');
+
+  // Close all
+  document.querySelectorAll('.mistake-card').forEach(c => c.classList.remove('open'));
+
+  if (!isOpen) {
+    card.classList.add('open');
+    seen.add(idx);
+    card.classList.add('seen');
+    activeCard = idx;
+    updateProgress();
+    setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
+  } else {
+    activeCard = null;
+  }
+}
+
+function buildMistakes() {
+  const list = document.getElementById('mistakes-list');
+  MISTAKES.forEach((m, i) => {
+    const card = document.createElement('div');
+    card.className = 'mistake-card';
+    card.id = 'mc-' + i;
+    card.onclick = () => toggleCard(i);
+
+    const ex = m.example;
+
+    card.innerHTML = `
+      <div class="mc-header">
+        <div class="mc-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="mc-text">
+          <div class="mc-title">${m.title}</div>
+          <div class="mc-preview">${m.preview}</div>
+        </div>
+        <div class="mc-arrow">›</div>
+      </div>
+      <div class="mc-detail">
+        <div class="mc-detail-grid">
+          <div class="mc-box why">
+            <div class="mc-box-label">WHY IT HAPPENS</div>
+            <div class="mc-box-text">${m.why}</div>
+          </div>
+          <div class="mc-box fix">
+            <div class="mc-box-label">THE FIX</div>
+            <div class="mc-box-text">${m.fix}</div>
+          </div>
+        </div>
+        <div class="mc-example">
+          <div class="mc-example-label">ON A REAL CALL</div>
+          <div class="dialogue">
+            <div class="dline">
+              <div class="dline-who customer">CUSTOMER</div>
+              <div class="dline-text">${ex.customer}</div>
+            </div>
+            <div class="dline">
+              <div class="dline-who bad">SETTER ✗</div>
+              <div class="dline-text">${ex.bad}</div>
+            </div>
+            <div class="dline" style="margin-left:60px;">
+              <div class="dline-result bad">→ ${ex.badResult}</div>
+            </div>
+            <div class="vs-divider"><div class="vs-line"></div><div class="vs-text">VS</div><div class="vs-line"></div></div>
+            <div class="dline">
+              <div class="dline-who good">SETTER ✓</div>
+              <div class="dline-text">${ex.good}</div>
+            </div>
+            <div class="dline" style="margin-left:60px;">
+              <div class="dline-result good">→ ${ex.goodResult}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+buildDots();
+buildMistakes();
+
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('prog-fill').style.width = Math.min(p, 100) + '%';
+});
+</script>
+</body>
+</html>
