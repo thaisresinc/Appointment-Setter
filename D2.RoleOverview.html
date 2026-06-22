@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Role Overview | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.06),0 4px 12px rgba(10,53,66,.08);
+  --shadow-lg:0 4px 16px rgba(10,53,66,.1),0 12px 32px rgba(10,53,66,.1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+
+/* PROGRESS BAR */
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* HERO */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:980px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:560px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);}
+
+/* LAYOUT */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:980px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:18px;}
+
+/* ROLE STATEMENT */
+.role-statement{background:var(--navy);border-radius:14px;padding:24px 28px;border-left:4px solid var(--sky);margin-bottom:20px;}
+.rs-label{font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--sky);margin-bottom:10px;}
+.rs-text{font-size:15px;color:#fff;line-height:1.75;}
+
+/* DUTIES GRID */
+.duties-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(max-width:600px){.duties-grid{grid-template-columns:1fr;}}
+.duty-card{background:#122430;border-radius:12px;padding:16px 18px;border:1.5px solid rgba(255,255,255,.07);transition:all .2s;position:relative;overflow:hidden;}
+.duty-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--sky);opacity:.4;}
+.duty-card:hover{border-color:rgba(0,174,239,.3);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.duty-icon{font-size:20px;margin-bottom:8px;}
+.duty-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.3;}
+.duty-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.6;}
+
+/* IMPORTANCE BLOCKS */
+.importance-wrap{display:flex;flex-direction:column;gap:12px;}
+.imp-card{background:#122430;border-radius:12px;padding:18px 20px;border:1.5px solid rgba(255,255,255,.07);display:flex;gap:16px;align-items:flex-start;}
+.imp-num{font-family:var(--serif);font-size:32px;color:var(--sky);line-height:1;flex-shrink:0;width:36px;}
+.imp-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:5px;}
+.imp-desc{font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.65;}
+
+/* STAGE 1 BANNER */
+.stage-banner{background:linear-gradient(135deg,rgba(0,174,239,.12),rgba(0,174,239,.06));border:1.5px solid rgba(0,174,239,.25);border-radius:14px;padding:22px 24px;display:flex;gap:20px;align-items:center;}
+@media(max-width:560px){.stage-banner{flex-direction:column;text-align:center;}}
+.sb-badge{background:var(--sky);color:#fff;font-family:var(--serif);font-size:28px;font-weight:700;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
+.sb-desc{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.6;}
+
+/* QUOTE */
+.quote-block{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.qb-mark{font-size:32px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.qb-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.qb-text strong{color:#fff;font-style:normal;}
+
+/* NEXT TEASER */
+.next-teaser{background:var(--navy);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;}
+.nt-label{font-size:8px;color:rgba(0,174,239,.6);letter-spacing:.2em;font-weight:700;margin-bottom:3px;}
+.nt-text{font-size:13px;color:#fff;font-weight:500;}
+.nt-arrow{color:var(--sky);font-size:18px;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DAY 2</div>
+    <h1 class="hero-title">Role Overview —<br><em>What You Do & Why It Matters</em></h1>
+    <p class="hero-sub">You are Stage 1 of RESINC's customer journey. Before any specialist sits with a customer, before any system gets installed, before any household starts saving — you make the call.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">📞 Your role in plain English</div>
+      <div class="hero-pill">📋 Day-to-day duties</div>
+      <div class="hero-pill">⚡ Why this role drives everything</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU DO -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE ROLE</div>
+    <div class="s-title">What an Appointment Setter Actually Does</div>
+    <div class="s-bar"></div>
+
+    <div class="role-statement">
+      <div class="rs-label">IN ONE SENTENCE</div>
+      <div class="rs-text">An Appointment Setter contacts potential residential customers to introduce solar and battery solutions, qualifies their suitability, and books them in for a consultation with a RESINC specialist — over the phone.</div>
+    </div>
+
+    <div class="s-sub">Your role is a mix of inbound and outbound calling. You're educating prospects, qualifying leads, handling objections, and representing RESINC's brand on every single call.</div>
+
+    <div class="duties-grid">
+      <div class="duty-card">
+        <div class="duty-icon">📞</div>
+        <div class="duty-title">Conduct outbound calls</div>
+        <div class="duty-desc">Contact potential customers from your lead list — D2D reschedules, internet enquiries, and referrals.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">☀️</div>
+        <div class="duty-title">Introduce solar clearly</div>
+        <div class="duty-desc">Explain the basics of solar and battery in a way that's simple, engaging, and builds genuine curiosity.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">✅</div>
+        <div class="duty-title">Qualify every prospect</div>
+        <div class="duty-desc">Check interest, property suitability, and eligibility before booking. Quality appointments only.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">🛡️</div>
+        <div class="duty-title">Handle objections confidently</div>
+        <div class="duty-desc">Professionally and calmly address concerns — without being pushy or defensive.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">📅</div>
+        <div class="duty-title">Book quality appointments</div>
+        <div class="duty-desc">Schedule in-home or Zoom consultations for RESINC specialists. The appointment has to be real and qualified.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">📝</div>
+        <div class="duty-title">Keep the CRM accurate</div>
+        <div class="duty-desc">Record customer details, call outcomes, and notes correctly every time. If it's not logged, it didn't happen.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">🎯</div>
+        <div class="duty-title">Hit your KPIs</div>
+        <div class="duty-desc">Meet or exceed daily, weekly, and monthly appointment targets. Consistency beats motivation every time.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">🤝</div>
+        <div class="duty-title">Represent the brand</div>
+        <div class="duty-desc">Every call is a customer's first impression of RESINC. Your tone, your professionalism — that's the brand.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">🔍</div>
+        <div class="duty-title">Identify how they found us</div>
+        <div class="duty-desc">Ask how they heard about RESINC — and make the connection if it's through a partner or ambassador.</div>
+      </div>
+      <div class="duty-card">
+        <div class="duty-icon">📈</div>
+        <div class="duty-title">Keep learning</div>
+        <div class="duty-desc">Participate in every training session. The best setters are the most coachable ones — not the most experienced.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORTANCE -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">WHY THIS ROLE MATTERS</div>
+    <div class="s-title">The Most Critical Step in the Sales Process</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">This is the customer's first personal interaction with RESINC. Whether they found us through a door knock, an ad, a referral, or a partner — this call is their first real experience of who we are.</div>
+
+    <div class="importance-wrap">
+      <div class="imp-card">
+        <div class="imp-num">1</div>
+        <div>
+          <div class="imp-title">You create qualified opportunities</div>
+          <div class="imp-desc">You filter and qualify leads so RESINC's specialists spend their time with people who are genuinely interested and eligible. An unqualified appointment wastes everyone's time — including the customer's.</div>
+        </div>
+      </div>
+      <div class="imp-card">
+        <div class="imp-num">2</div>
+        <div>
+          <div class="imp-title">You increase sales efficiency</div>
+          <div class="imp-desc">By handling the initial outreach and objections, you allow the sales team to focus entirely on closing — not prospecting. Your work directly determines how productive every specialist's day is.</div>
+        </div>
+      </div>
+      <div class="imp-card">
+        <div class="imp-num">3</div>
+        <div>
+          <div class="imp-title">You build trust before anyone else does</div>
+          <div class="imp-desc">You introduce solar clearly and professionally, shaping the customer's first impression of RESINC. Without strong appointment setters, the sales team would struggle with low-quality leads, wasted time, and inconsistent results.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE 1 -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">WHERE YOU FIT</div>
+    <div class="s-title">You Are Stage 1</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">RESINC's customer journey has 8 stages — from first contact through to 25 years of ongoing care. You own Stage 1. But knowing what comes after makes you better at Stage 1.</div>
+
+    <div class="stage-banner">
+      <div class="sb-badge">1</div>
+      <div>
+        <div class="sb-title">Appointment Booking — This Is You</div>
+        <div class="sb-desc">You contact prospects, qualify them, and book the consultation. The specialist, the installation, the 25-year support — none of it happens without a qualified appointment. Every booking you make is the start of a customer's journey with RESINC.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEAD SOURCES -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">YOUR LEADS</div>
+    <div class="s-title">Three Lead Sources — Know the Difference</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Unlike some teams who work one lead type, your team handles three. Each one comes in with a different context — and needs a slightly different approach.</div>
+
+    <div class="duties-grid">
+      <div class="duty-card" style="border-color:rgba(0,174,239,.25);--dc-accent:var(--sky);">
+        <div class="duty-icon">🚪</div>
+        <div class="duty-title">RESINC D2D Reschedules</div>
+        <div class="duty-desc">A door knocker visited this customer and they booked — then rescheduled or cancelled. They're warm. They already said yes once. Your job is to re-engage and get them back in the calendar.</div>
+      </div>
+      <div class="duty-card" style="border-color:rgba(212,148,10,.25);">
+        <div class="duty-icon">🌐</div>
+        <div class="duty-title">Internet Leads</div>
+        <div class="duty-desc">The customer expressed interest online — through an ad, a form, or a website enquiry. They've raised their hand but haven't had a real conversation yet. Speed to contact matters here.</div>
+      </div>
+      <div class="duty-card" style="border-color:rgba(11,122,78,.25);grid-column:1/-1;">
+        <div class="duty-icon">👥</div>
+        <div class="duty-title">Referrals</div>
+        <div class="duty-desc">An existing RESINC customer or partner has recommended someone. These leads come in with the highest trust — someone they know has already vouched for RESINC. Handle with care and appreciation.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="section">
+  <div class="inner">
+    <div class="quote-block">
+      <div class="qb-mark">"</div>
+      <div class="qb-text">The appointment setter role is important because it is the <strong>first and most critical step</strong> in the solar sales process. This is the customer's first interaction with RESINC. First impressions are everything — whether they found us through a video, an ad, a partner, or a friend, this is their first personal experience with us.</div>
+    </div>
+  </div>
+</div>
+
+<!-- NEXT -->
+<div class="next-teaser">
+  <div>
+    <div class="nt-label">NEXT UP</div>
+    <div class="nt-text">What the Appointment Is For</div>
+  </div>
+  <div class="nt-arrow">→</div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+</script>
+</body>
+</html>
