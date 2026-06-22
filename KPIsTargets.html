@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KPIs & Targets | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --purple:#6B4FBB;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.06),0 4px 12px rgba(10,53,66,.08);
+  --shadow-lg:0 4px 16px rgba(10,53,66,.1),0 12px 32px rgba(10,53,66,.1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* HERO */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:250px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:980px;margin:0 auto;padding:48px 28px 34px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,42px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:540px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);}
+
+/* LAYOUT */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:980px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:18px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:20px;}
+
+/* WHY KPIs MATTER */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:0;}
+@media(max-width:700px){.why-grid{grid-template-columns:1fr;}}
+.why-card{background:#122430;border-radius:12px;padding:16px 18px;border:1.5px solid rgba(255,255,255,.06);}
+.wc-num{font-family:var(--serif);font-size:26px;color:var(--sky);margin-bottom:6px;}
+.wc-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:5px;}
+.wc-desc{font-size:11.5px;color:rgba(255,255,255,.45);line-height:1.6;}
+
+/* KPI CARDS */
+.kpi-grid{display:flex;flex-direction:column;gap:12px;}
+.kpi-card{
+  background:#0F1E28;border-radius:14px;
+  border:1.5px solid rgba(255,255,255,.07);
+  overflow:hidden;cursor:pointer;transition:all .2s;
+}
+.kpi-card:hover{border-color:rgba(0,174,239,.25);}
+.kpi-card.active{border-color:rgba(0,174,239,.35);}
+.kpi-header{display:flex;align-items:center;gap:16px;padding:18px 20px;}
+.kpi-icon{
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.kpi-meta{flex:1;}
+.kpi-name{font-size:13.5px;font-weight:700;color:#fff;margin-bottom:3px;}
+.kpi-target-line{font-size:11px;color:rgba(255,255,255,.35);}
+.kpi-target-line strong{color:var(--sky);}
+.kpi-number{text-align:right;flex-shrink:0;}
+.kn-value{font-family:var(--serif);font-size:32px;font-weight:700;line-height:1;}
+.kn-unit{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;}
+.kpi-arrow{color:rgba(255,255,255,.2);font-size:14px;flex-shrink:0;margin-left:8px;transition:transform .3s;}
+.kpi-card.active .kpi-arrow{transform:rotate(90deg);}
+
+/* KPI DETAIL */
+.kpi-detail{display:none;padding:0 20px 20px;animation:fadeUp .25s ease;}
+.kpi-card.active .kpi-detail{display:block;}
+.kd-divider{height:1px;background:rgba(255,255,255,.06);margin-bottom:16px;}
+.kd-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+@media(max-width:540px){.kd-grid{grid-template-columns:1fr;}}
+.kd-box{background:#122430;border-radius:10px;padding:14px 16px;}
+.kd-label{font-size:8.5px;font-weight:700;letter-spacing:.16em;color:var(--sky);margin-bottom:6px;opacity:.8;}
+.kd-text{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.6;}
+.kd-text strong{color:#fff;}
+.kpi-tip{
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(0,174,239,.07);border-left:3px solid var(--sky);
+  border-radius:0 8px 8px 0;padding:11px 14px;
+  font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;
+}
+.kpi-tip strong{color:#fff;}
+
+/* CALCULATOR */
+.calc-wrap{background:#122430;border-radius:14px;padding:24px;border:1.5px solid rgba(255,255,255,.08);}
+.calc-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
+.calc-sub{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:20px;}
+.calc-sliders{display:flex;flex-direction:column;gap:18px;margin-bottom:24px;}
+.slider-row{display:grid;grid-template-columns:1fr 3fr 60px;gap:12px;align-items:center;}
+@media(max-width:560px){.slider-row{grid-template-columns:1fr;gap:6px;}}
+.sl-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.6);line-height:1.3;}
+.sl-track{position:relative;}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:5px;border-radius:3px;
+  background:rgba(255,255,255,.1);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--sky);cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,174,239,.4);
+  transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15);}
+.sl-value{font-size:13px;font-weight:700;color:var(--sky);text-align:right;}
+
+/* RESULTS */
+.calc-results{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:560px){.calc-results{grid-template-columns:1fr;}}
+.cr-box{background:#0A1820;border-radius:10px;padding:14px 16px;text-align:center;border:1.5px solid rgba(255,255,255,.06);}
+.cr-label{font-size:9px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.3);margin-bottom:6px;}
+.cr-value{font-family:var(--serif);font-size:28px;font-weight:700;}
+.cr-box.good .cr-value{color:var(--green);}
+.cr-box.sky .cr-value{color:var(--sky);}
+.cr-box.gold .cr-value{color:var(--gold);}
+.cr-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;}
+
+/* ACCOUNTABILITY */
+.connect-chain{display:flex;flex-direction:column;gap:0;}
+.cc-row{display:flex;align-items:flex-start;gap:14px;position:relative;}
+.cc-dot{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--sky);flex-shrink:0;margin-top:4px;
+  box-shadow:0 0 0 3px rgba(0,174,239,.2);
+}
+.cc-line{position:absolute;left:5px;top:16px;width:2px;height:calc(100% + 8px);background:rgba(0,174,239,.15);}
+.cc-content{padding-bottom:20px;flex:1;}
+.cc-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.cc-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.5;}
+
+/* NARRATION */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.nar-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.nar-text{font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.75;font-style:italic;}
+.nar-text strong{color:#fff;font-style:normal;}
+
+/* NEXT */
+.next-teaser{background:var(--navy);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;}
+.nt-label{font-size:8px;color:rgba(0,174,239,.6);letter-spacing:.2em;font-weight:700;margin-bottom:3px;}
+.nt-text{font-size:13px;color:#fff;font-weight:500;}
+.nt-arrow{color:var(--sky);font-size:18px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DAY 2</div>
+    <h1 class="hero-title">KPIs & Targets —<br><em>Know Your Numbers</em></h1>
+    <p class="hero-sub">Your performance is measured against 5 Key Performance Indicators. These aren't arbitrary targets — each one is directly connected to your results and your income.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">📊 5 KPIs explained</div>
+      <div class="hero-pill">🧮 Interactive calculator</div>
+      <div class="hero-pill">⚡ Click each KPI to learn it</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY KPIs -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">BEFORE THE NUMBERS</div>
+    <div class="s-title">Why KPIs Matter</div>
+    <div class="s-bar"></div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="wc-num">01</div>
+        <div class="wc-title">They create clarity</div>
+        <div class="wc-desc">You know exactly what's expected — no guessing, no surprises. The number is the number.</div>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">02</div>
+        <div class="wc-title">They drive performance</div>
+        <div class="wc-desc">What gets measured gets improved. Tracking daily puts you in control of your results.</div>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">03</div>
+        <div class="wc-title">They connect effort to income</div>
+        <div class="wc-desc">Every KPI links directly to your commission. More dials, better bookings, more money.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI CARDS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">YOUR 5 KPIs</div>
+    <div class="s-title">Click Each KPI to Learn It</div>
+    <div class="s-bar"></div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">INTERACTIVE</div>
+    <div class="s-title">What Do Your Numbers Look Like This Week?</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Drag the sliders to your current level and see what a typical week looks like.</div>
+
+    <div class="calc-wrap">
+      <div class="calc-title">📊 Weekly Performance Calculator</div>
+      <div class="calc-sub">Adjust sliders to match your performance — results update instantly.</div>
+
+      <div class="calc-sliders">
+        <div class="slider-row">
+          <div class="sl-label">Daily dials</div>
+          <div class="sl-track"><input type="range" id="sl-dials" min="60" max="300" value="180" step="10" oninput="updateCalc()"></div>
+          <div class="sl-value" id="v-dials">180</div>
+        </div>
+        <div class="slider-row">
+          <div class="sl-label">Contact rate (%)</div>
+          <div class="sl-track"><input type="range" id="sl-contact" min="5" max="25" value="10" step="1" oninput="updateCalc()"></div>
+          <div class="sl-value" id="v-contact">10%</div>
+        </div>
+        <div class="slider-row">
+          <div class="sl-label">Booking rate (%)</div>
+          <div class="sl-track"><input type="range" id="sl-book" min="10" max="60" value="28" step="1" oninput="updateCalc()"></div>
+          <div class="sl-value" id="v-book">28%</div>
+        </div>
+        <div class="slider-row">
+          <div class="sl-label">Confirmation rate (%)</div>
+          <div class="sl-track"><input type="range" id="sl-confirm" min="30" max="90" value="70" step="1" oninput="updateCalc()"></div>
+          <div class="sl-value" id="v-confirm">70%</div>
+        </div>
+      </div>
+
+      <div class="calc-results">
+        <div class="cr-box sky">
+          <div class="cr-label">DIALS / WEEK</div>
+          <div class="cr-value" id="r-dials">900</div>
+          <div class="cr-sub">Target: 180/day</div>
+        </div>
+        <div class="cr-box good">
+          <div class="cr-label">BOOKINGS / WEEK</div>
+          <div class="cr-value" id="r-bookings">25</div>
+          <div class="cr-sub">Min: 5/day</div>
+        </div>
+        <div class="cr-box gold">
+          <div class="cr-label">CONFIRMED SITS</div>
+          <div class="cr-value" id="r-sits">18</div>
+          <div class="cr-sub">Target: 70% rate</div>
+        </div>
+      </div>
+
+      <div id="calc-message" style="margin-top:14px;padding:12px 16px;border-radius:10px;font-size:12.5px;line-height:1.6;display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- THE CONNECTION -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">HOW IT ALL CONNECTS</div>
+    <div class="s-title">Activity → Results → Income</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Your KPIs aren't isolated numbers. They form a chain — each one feeds the next.</div>
+
+    <div class="connect-chain">
+      <div class="cc-row">
+        <div style="position:relative;">
+          <div class="cc-dot"></div>
+          <div class="cc-line"></div>
+        </div>
+        <div class="cc-content">
+          <div class="cc-title">180 dials per day</div>
+          <div class="cc-desc">Volume is non-negotiable. You can't control who picks up — but you control how many times you dial. More dials = more conversations.</div>
+        </div>
+      </div>
+      <div class="cc-row">
+        <div style="position:relative;">
+          <div class="cc-dot"></div>
+          <div class="cc-line"></div>
+        </div>
+        <div class="cc-content">
+          <div class="cc-title">~10% contact rate → conversations</div>
+          <div class="cc-desc">Roughly 1 in 10 dials connects. At 180 dials, that's ~18 real conversations per day to work with.</div>
+        </div>
+      </div>
+      <div class="cc-row">
+        <div style="position:relative;">
+          <div class="cc-dot"></div>
+          <div class="cc-line"></div>
+        </div>
+        <div class="cc-content">
+          <div class="cc-title">Conversations → 5+ bookings per day</div>
+          <div class="cc-desc">Not every conversation converts — but consistent conviction and qualification get you there. Quality matters as much as volume here.</div>
+        </div>
+      </div>
+      <div class="cc-row">
+        <div style="position:relative;">
+          <div class="cc-dot"></div>
+          <div class="cc-line"></div>
+        </div>
+        <div class="cc-content">
+          <div class="cc-title">Bookings → 70% confirmation rate</div>
+          <div class="cc-desc">Good booking notes, correct qualification, and timely confirmation calls keep your sit rate strong. Unqualified bookings kill this number.</div>
+        </div>
+      </div>
+      <div class="cc-row">
+        <div style="position:relative;">
+          <div class="cc-dot" style="background:var(--green);box-shadow:0 0 0 3px rgba(11,122,78,.25);"></div>
+        </div>
+        <div class="cc-content">
+          <div class="cc-title">Confirmed sits → 3 sales/week → commission unlocked</div>
+          <div class="cc-desc">Every confirmed sit is an opportunity for a specialist to close. 3 sales per week unlocks your commission threshold. That starts with your dials today.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="nar-q">"</div>
+      <div class="nar-text">KPIs aren't something that happens to you — <strong>they're something you control.</strong> Every dial you don't make, every booking you don't follow up on, every confirmation you miss — that's a choice. The numbers are just the scoreboard.</div>
+    </div>
+  </div>
+</div>
+
+<div class="next-teaser">
+  <div>
+    <div class="nt-label">NEXT UP</div>
+    <div class="nt-text">Mindset & Work Ethic</div>
+  </div>
+  <div class="nt-arrow">→</div>
+</div>
+
+<script>
+const KPIS = [
+  {
+    id:'bookings',
+    icon:'📅',
+    iconBg:'rgba(0,174,239,.15)',
+    name:'Appointments Booked',
+    target:'Minimum 5 per day',
+    color:'00AEEF',
+    number:'5',
+    unit:'per day min',
+    why:'This is your primary output. Everything else — confirmation rate, sit rate, sales — depends on having enough qualified appointments in the calendar. Five per day is the floor, not the ceiling.',
+    how:'Qualify every lead before booking. A booked appointment that doesn\'t sit counts against you — quality matters as much as volume.',
+    tip:'On a slow day, review your opener and qualification questions before assuming leads are bad. The script usually has more to do with it than the lead quality.'
+  },
+  {
+    id:'sales',
+    icon:'💰',
+    iconBg:'rgba(11,122,78,.15)',
+    name:'Sales Target',
+    target:'3 closed deals per week to unlock commission',
+    color:'0B7A4E',
+    number:'3',
+    unit:'sales/week for commission',
+    why:'You don\'t close deals — your specialist does. But the quality of your bookings directly determines whether a specialist can close. 3 sales per week is the threshold where your commission kicks in.',
+    how:'Book qualified appointments with both decision-makers present, clear bill pain established, and accurate CRM notes. That\'s what gives specialists the best chance to close.',
+    tip:'Ask yourself after every booking: would I be confident sending a specialist to this appointment? If the answer is anything less than yes — keep qualifying.'
+  },
+  {
+    id:'dials',
+    icon:'📞',
+    iconBg:'rgba(107,79,187,.15)',
+    name:'Daily Dials',
+    target:'Minimum 180 per day',
+    color:'6B4FBB',
+    number:'180',
+    unit:'dials per day min',
+    why:'Volume drives everything. At a ~10% contact rate, 180 dials gives you roughly 18 real conversations per day. Drop below 180 and your pipeline starts drying up — often a week later when you notice your bookings drop.',
+    how:'Work your lead list in order: D2D reschedules first (freshest, warmest), callbacks second, aged leads last. Protect your dialling time — no admin during call blocks.',
+    tip:'If you\'re hitting 180 but not booking 5, look at your conversion on contacts. If you\'re not hitting 180, that\'s the problem — volume first, everything else second.'
+  },
+  {
+    id:'confirmation',
+    icon:'✅',
+    iconBg:'rgba(212,148,10,.15)',
+    name:'Appointment Confirmation Rate',
+    target:'70% of booked appointments confirmed',
+    color:'D4940A',
+    number:'70%',
+    unit:'confirmation target',
+    why:'A booking that doesn\'t confirm is a specialist who drives to an empty house. Your confirmation rate is the clearest signal of booking quality — unqualified appointments drop off. Qualified ones stick.',
+    how:'Clear CRM notes after every booking. Include the customer\'s name, partner\'s name, what pain point they mentioned, and what time they said worked. The confirmation team uses your notes.',
+    tip:'If your confirmation rate is below 70%, review your last 10 bookings. Were both decision-makers confirmed? Was the bill pain real? Were they genuinely interested or just polite?'
+  },
+  {
+    id:'decisionmakers',
+    icon:'👥',
+    iconBg:'rgba(181,37,27,.12)',
+    name:'Both Decision-Makers Present',
+    target:'70% of appointments with all decision-makers',
+    color:'B5251B',
+    number:'70%',
+    unit:'of appointments',
+    why:'A specialist sitting with one decision-maker who needs to "talk to my partner" before committing is a lost appointment. Getting both people there upfront is what turns a sit into a sale.',
+    how:'Ask directly on the call: "Is your partner/spouse usually involved in decisions like this?" If yes — make it a condition of the booking. Offer times that work for both.',
+    tip:'Don\'t be afraid to push on this. "I want to make sure the assessment is as useful as possible for you both — can we find a time when [partner] is available too?" Most people appreciate it.'
+  },
+];
+
+let activeKpi = null;
+
+function toggleKpi(id) {
+  const card = document.getElementById('kpi-' + id);
+  if (activeKpi === id) {
+    card.classList.remove('active');
+    activeKpi = null;
+  } else {
+    if (activeKpi) document.getElementById('kpi-' + activeKpi).classList.remove('active');
+    card.classList.add('active');
+    activeKpi = id;
+    setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
+  }
+}
+
+function buildKpis() {
+  const grid = document.getElementById('kpi-grid');
+  KPIS.forEach(k => {
+    const card = document.createElement('div');
+    card.className = 'kpi-card';
+    card.id = 'kpi-' + k.id;
+    card.onclick = () => toggleKpi(k.id);
+    card.innerHTML = `
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:${k.iconBg};">${k.icon}</div>
+        <div class="kpi-meta">
+          <div class="kpi-name">${k.name}</div>
+          <div class="kpi-target-line">Target: <strong>${k.target}</strong></div>
+        </div>
+        <div class="kpi-number">
+          <div class="kn-value" style="color:#${k.color};">${k.number}</div>
+          <div class="kn-unit">${k.unit}</div>
+        </div>
+        <div class="kpi-arrow">›</div>
+      </div>
+      <div class="kpi-detail">
+        <div class="kd-divider"></div>
+        <div class="kd-grid">
+          <div class="kd-box">
+            <div class="kd-label">WHY IT MATTERS</div>
+            <div class="kd-text">${k.why}</div>
+          </div>
+          <div class="kd-box">
+            <div class="kd-label">HOW TO HIT IT</div>
+            <div class="kd-text">${k.how}</div>
+          </div>
+        </div>
+        <div class="kpi-tip">💡 <strong>Coach tip: </strong>${k.tip}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function updateCalc() {
+  const dials   = parseInt(document.getElementById('sl-dials').value);
+  const contact = parseInt(document.getElementById('sl-contact').value) / 100;
+  const book    = parseInt(document.getElementById('sl-book').value) / 100;
+  const confirm = parseInt(document.getElementById('sl-confirm').value) / 100;
+
+  document.getElementById('v-dials').textContent   = dials;
+  document.getElementById('v-contact').textContent = Math.round(contact * 100) + '%';
+  document.getElementById('v-book').textContent    = Math.round(book * 100) + '%';
+  document.getElementById('v-confirm').textContent = Math.round(confirm * 100) + '%';
+
+  const weekDials    = dials * 5;
+  const contacts     = Math.round(weekDials * contact);
+  const bookings     = Math.round(contacts * book);
+  const sits         = Math.round(bookings * confirm);
+
+  document.getElementById('r-dials').textContent    = weekDials.toLocaleString();
+  document.getElementById('r-bookings').textContent = bookings;
+  document.getElementById('r-sits').textContent     = sits;
+
+  // Message
+  const msg = document.getElementById('calc-message');
+  const dailyBookings = bookings / 5;
+  let text = '', bg = '', border = '';
+
+  if (dials < 180) {
+    text = '⚠️ <strong>Below minimum dials.</strong> At ' + dials + '/day you\'re leaving conversations on the table. Get to 180 first — everything else follows from volume.';
+    bg = 'rgba(181,37,27,.08)'; border = 'rgba(181,37,27,.25)';
+  } else if (dailyBookings < 5) {
+    text = '📈 <strong>Dials are solid, bookings need work.</strong> With ' + dials + ' dials/day you\'re having the conversations — focus on conviction and qualification to convert more.';
+    bg = 'rgba(212,148,10,.08)'; border = 'rgba(212,148,10,.25)';
+  } else if (confirm < 0.7) {
+    text = '🎯 <strong>Good volume and bookings — confirmation rate is the gap.</strong> ' + Math.round(confirm * 100) + '% is below the 70% target. Review your booking quality and CRM notes.';
+    bg = 'rgba(212,148,10,.08)'; border = 'rgba(212,148,10,.25)';
+  } else {
+    text = '✅ <strong>On track.</strong> ' + weekDials.toLocaleString() + ' dials, ' + bookings + ' bookings, ' + sits + ' confirmed sits per week. Keep this up and you\'re in commission territory.';
+    bg = 'rgba(11,122,78,.08)'; border = 'rgba(11,122,78,.25)';
+  }
+
+  msg.style.display = 'block';
+  msg.style.background = bg;
+  msg.style.border = '1.5px solid ' + border;
+  msg.style.color = 'rgba(255,255,255,.75)';
+  msg.innerHTML = text;
+}
+
+buildKpis();
+updateCalc();
+
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('prog-fill').style.width = Math.min(p, 100) + '%';
+});
+</script>
+</body>
+</html>
