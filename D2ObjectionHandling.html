@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Objection Handling | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --purple:#6B4FBB;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(10,53,66,.06),0 4px 12px rgba(10,53,66,.08);
+  --shadow-lg:0 4px 16px rgba(10,53,66,.1),0 12px 32px rgba(10,53,66,.1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* HERO */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:980px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:540px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);}
+
+/* LAYOUT */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:980px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:18px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:20px;}
+
+/* DTRC FRAMEWORK */
+.dtrc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+@media(max-width:700px){.dtrc-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:420px){.dtrc-grid{grid-template-columns:1fr;}}
+.dtrc-card{border-radius:12px;padding:18px 16px;text-align:center;position:relative;overflow:hidden;}
+.dtrc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.dtrc-d{background:rgba(0,174,239,.1);border:1.5px solid rgba(0,174,239,.2);}
+.dtrc-d::before{background:var(--sky);}
+.dtrc-t{background:rgba(107,79,187,.1);border:1.5px solid rgba(107,79,187,.2);}
+.dtrc-t::before{background:var(--purple);}
+.dtrc-r{background:rgba(212,148,10,.1);border:1.5px solid rgba(212,148,10,.2);}
+.dtrc-r::before{background:var(--gold);}
+.dtrc-c{background:rgba(11,122,78,.1);border:1.5px solid rgba(11,122,78,.2);}
+.dtrc-c::before{background:var(--green);}
+.dtrc-letter{font-family:var(--serif);font-size:36px;font-weight:700;margin-bottom:4px;line-height:1;}
+.dtrc-d .dtrc-letter{color:var(--sky);}
+.dtrc-t .dtrc-letter{color:#9B8FDB;}
+.dtrc-r .dtrc-letter{color:var(--gold);}
+.dtrc-c .dtrc-letter{color:#4DD9A0;}
+.dtrc-word{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.1em;margin-bottom:8px;}
+.dtrc-desc{font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.55;}
+.dtrc-example{font-size:10.5px;color:rgba(255,255,255,.3);margin-top:8px;font-style:italic;line-height:1.4;}
+
+.dtrc-note{background:#122430;border-radius:10px;padding:14px 18px;border-left:3px solid var(--sky);font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.65;}
+.dtrc-note strong{color:#fff;}
+
+/* FILTERS */
+.cat-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.cat-btn{
+  padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.45);transition:all .18s;
+}
+.cat-btn.active{border-color:var(--sky);color:var(--sky);background:rgba(0,174,239,.1);}
+.cat-btn:hover:not(.active){border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7);}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:18px;}
+.search-input{
+  width:100%;background:#122430;border:1.5px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:11px 16px 11px 42px;
+  font-family:var(--font);font-size:13px;color:#fff;outline:none;
+  transition:border-color .2s;
+}
+.search-input::placeholder{color:rgba(255,255,255,.2);}
+.search-input:focus{border-color:rgba(0,174,239,.4);}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.2);font-size:14px;}
+
+/* PROGRESS */
+.obj-progress{
+  display:flex;align-items:center;gap:12px;
+  background:#122430;border-radius:10px;padding:12px 18px;
+  border:1px solid rgba(255,255,255,.06);margin-bottom:20px;
+}
+.op-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);}
+.op-bar{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;min-width:80px;}
+.op-fill{height:100%;background:var(--sky);border-radius:3px;width:0%;transition:width .4s;}
+.op-count{font-size:11px;font-weight:700;color:var(--sky);white-space:nowrap;}
+
+/* OBJECTION GRID */
+.obj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:700px){.obj-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:440px){.obj-grid{grid-template-columns:1fr;}}
+
+.obj-card{
+  border-radius:12px;padding:14px 14px 10px;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.07);background:#122430;
+  transition:all .2s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
+}
+.obj-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-color,rgba(255,255,255,.1));}
+.obj-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--card-color,rgba(255,255,255,.2));}
+.obj-card.seen{border-color:rgba(11,122,78,.25);background:rgba(11,122,78,.05);}
+.obj-card.seen::before{background:var(--green);}
+.obj-card.active{border-color:var(--card-color,var(--sky));box-shadow:0 0 0 2px rgba(0,174,239,.12);}
+.obj-card.hidden{display:none;}
+.oc-cat{font-size:8px;font-weight:700;letter-spacing:.12em;color:var(--card-color,rgba(255,255,255,.3));margin-bottom:6px;}
+.oc-name{font-size:12px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px;}
+.obj-card.seen .oc-name{color:rgba(255,255,255,.4);}
+.oc-seen{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--green);display:none;align-items:center;justify-content:center;font-size:9px;}
+.obj-card.seen .oc-seen{display:flex;}
+
+/* DETAIL PANEL */
+.obj-detail{
+  display:none;background:var(--navy);border-radius:14px;
+  padding:22px 26px;margin-top:14px;border:1.5px solid rgba(0,174,239,.15);
+  animation:fadeUp .28s ease;
+}
+.obj-detail.visible{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.od-top{margin-bottom:16px;}
+.od-cat{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-bottom:8px;}
+.od-name{font-family:var(--serif);font-size:20px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.od-trigger{font-size:12px;color:rgba(255,255,255,.4);font-style:italic;}
+
+.od-dtrc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+@media(max-width:580px){.od-dtrc{grid-template-columns:1fr 1fr;}}
+.od-step{background:rgba(255,255,255,.04);border-radius:8px;padding:12px 14px;border:1px solid rgba(255,255,255,.06);}
+.od-step-label{font-size:8px;font-weight:700;letter-spacing:.14em;margin-bottom:6px;}
+.od-step-text{font-size:11.5px;color:rgba(255,255,255,.7);line-height:1.55;font-style:italic;}
+
+/* Script block */
+.od-script{
+  background:#0A1820;border-radius:10px;padding:16px 18px;
+  border-left:3px solid var(--sky);margin-bottom:12px;
+}
+.od-script-label{font-size:8.5px;font-weight:700;letter-spacing:.16em;color:var(--sky);margin-bottom:8px;opacity:.8;}
+.od-script-text{font-size:13px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.od-script-text strong{color:#fff;font-style:normal;}
+
+.od-tip{display:flex;gap:10px;align-items:flex-start;border-radius:9px;padding:11px 14px;font-size:12px;line-height:1.6;background:rgba(212,148,10,.07);border-left:3px solid var(--gold);}
+.od-tip-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.od-tip-text{color:rgba(255,255,255,.6);}
+.od-tip-text strong{color:#fff;}
+
+.od-close{display:block;margin-top:14px;text-align:right;font-size:11px;color:rgba(255,255,255,.2);cursor:pointer;font-weight:600;letter-spacing:.06em;transition:color .2s;}
+.od-close:hover{color:var(--sky);}
+
+/* NARRATION */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.nar-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.nar-text{font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.75;font-style:italic;}
+.nar-text strong{color:#fff;font-style:normal;}
+
+/* NEXT */
+.next-teaser{background:var(--navy);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;}
+.nt-label{font-size:8px;color:rgba(0,174,239,.6);letter-spacing:.2em;font-weight:700;margin-bottom:3px;}
+.nt-text{font-size:13px;color:#fff;font-weight:500;}
+.nt-arrow{color:var(--sky);font-size:18px;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DAY 2</div>
+    <h1 class="hero-title">Objection Handling —<br><em>The Full Library</em></h1>
+    <p class="hero-sub">Objections are not rejections. They're questions in disguise. Every one has a framework and a response — click each objection to see exactly how to handle it.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🧠 DTRC framework</div>
+      <div class="hero-pill">📚 Complete objection library</div>
+      <div class="hero-pill">🔍 Filter by category</div>
+    </div>
+  </div>
+</section>
+
+<!-- DTRC FRAMEWORK -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE FRAMEWORK</div>
+    <div class="s-title">DTRC — Four Steps, Every Time</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Every objection — regardless of what it is — gets the same four-step response. Master the framework first. Then the library fills itself in.</div>
+
+    <div class="dtrc-grid">
+      <div class="dtrc-card dtrc-d">
+        <div class="dtrc-letter">D</div>
+        <div class="dtrc-word">DISARM</div>
+        <div class="dtrc-desc">Lower their guard before anything else. Acknowledge the objection without fighting it.</div>
+        <div class="dtrc-example">"I'm really glad you brought that up…"</div>
+      </div>
+      <div class="dtrc-card dtrc-t">
+        <div class="dtrc-letter">T</div>
+        <div class="dtrc-word">TRANSITION</div>
+        <div class="dtrc-desc">Bridge from their concern to your response. Reframe without dismissing.</div>
+        <div class="dtrc-example">"That's actually one of the most common misconceptions…"</div>
+      </div>
+      <div class="dtrc-card dtrc-r">
+        <div class="dtrc-letter">R</div>
+        <div class="dtrc-word">RESPOND</div>
+        <div class="dtrc-desc">Deliver the sub-script. This is the specific response for this specific objection.</div>
+        <div class="dtrc-example">[See the library below — each objection has its own R]</div>
+      </div>
+      <div class="dtrc-card dtrc-c">
+        <div class="dtrc-letter">C</div>
+        <div class="dtrc-word">CHECK-IN</div>
+        <div class="dtrc-desc">Move them forward with a softened close. Don't pitch — guide.</div>
+        <div class="dtrc-example">"Based on that, would you be opposed to…"</div>
+      </div>
+    </div>
+
+    <div class="dtrc-note">
+      💡 <strong>The R changes per objection.</strong> The D, T, and C are mostly the same — you'll develop your own natural versions of those. The library below gives you the R for every common scenario. Always wrap it: D → T → R → C.
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION LIBRARY -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">CLICK ANY OBJECTION TO SEE THE FULL DTRC RESPONSE</div>
+    <div class="s-title">Complete Objection Library</div>
+    <div class="s-bar"></div>
+
+    <!-- Progress -->
+    <div class="obj-progress">
+      <div class="op-label">EXPLORED</div>
+      <div class="op-bar"><div class="op-fill" id="op-fill"></div></div>
+      <div class="op-count" id="op-count">0 of 20</div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-icon">🔍</div>
+      <input class="search-input" type="text" placeholder="Search objections..." oninput="searchObjs(this.value)" id="search-input">
+    </div>
+
+    <!-- Filters -->
+    <div class="cat-filters">
+      <div class="cat-btn active" onclick="filterCat('all',this)">All (20)</div>
+      <div class="cat-btn" onclick="filterCat('money',this)">💰 Money (5)</div>
+      <div class="cat-btn" onclick="filterCat('timing',this)">⏰ Timing (4)</div>
+      <div class="cat-btn" onclick="filterCat('trust',this)">🏆 Trust (3)</div>
+      <div class="cat-btn" onclick="filterCat('property',this)">🏠 Property (4)</div>
+      <div class="cat-btn" onclick="filterCat('technical',this)">⚡ Technical (4)</div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="obj-detail" id="obj-detail"></div>
+
+    <!-- Grid -->
+    <div class="obj-grid" id="obj-grid"></div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="nar-q">"</div>
+      <div class="nar-text">An objection is not a stop sign — <strong>it's a signal that the customer is still in the conversation.</strong> Someone who hangs up doesn't object. Someone who says "I can't afford it" is still talking to you. Work with that.</div>
+    </div>
+  </div>
+</div>
+
+<div class="next-teaser">
+  <div>
+    <div class="nt-label">NEXT UP</div>
+    <div class="nt-text">Day 1 Knowledge Check</div>
+  </div>
+  <div class="nt-arrow">→</div>
+</div>
+
+<script>
+const CATS = {
+  money:   { label:"MONEY & AFFORDABILITY", color:"#D4940A" },
+  timing:  { label:"TIMING & SITUATION",    color:"#00AEEF" },
+  trust:   { label:"TRUST & CREDIBILITY",   color:"#6B4FBB" },
+  property:{ label:"PROPERTY & ELIGIBILITY",color:"#0B7A4E" },
+  technical:{ label:"TECHNICAL & PRODUCT",  color:"#B5251B" },
+};
+
+const OBJS = [
+  // MONEY
+  {id:"pays", cat:"money", name:"I can't afford it / No upfront cost",
+   trigger:"Customer expresses concern about cost before you've mentioned the PAYS program.",
+   d:"I'm really glad you brought that up —",
+   t:"that's actually one of the most common misconceptions about going solar.",
+   r:"Have you heard about how you can install solar for nothing upfront and have the savings help pay off the system? You can get solar installed with no deposit or upfront costs. As your electricity bill is significantly reduced, you can use those savings to help pay for the repayments on the system. In some cases, the savings can even exceed the repayments — meaning the system could essentially pay for itself. It all depends on the size of the system and how much power you use, which is why the conversation with a specialist is so important.",
+   c:"Based on that, if we could custom design a system at no upfront cost — would you be opposed to seeing how much we could save you?",
+   tip:"Lead with the PAYS program, not the gross price. The moment you say '$8,000–$12,000' before mentioning $0 upfront, you've lost them."},
+
+  {id:"free", cat:"money", name:"Is solar free? / Government paying for it?",
+   trigger:"Customer has heard something about free solar or thinks the government covers the full cost.",
+   d:"That's a fair question —",
+   t:"and there's definitely some truth to it, though it's not quite the full picture.",
+   r:"Our company makes it possible for anyone who can afford to pay their current electricity bills to also afford solar. We offer funding options where installations can be done with no money upfront. Rather than continuing to pay those high bills every quarter, by investing in solar you add value to your property and the system essentially pays for itself with the savings it creates. Right now the government is also giving Australian homeowners thousands of dollars towards installing — which allows some homes to get a $0 upfront installation.",
+   c:"Would you be opposed to having a specialist show you exactly what that looks like for your home?",
+   tip:"Don't correct them aggressively — they're not wrong that there are government incentives. Clarify what's real without making them feel silly for asking."},
+
+  {id:"expensive", cat:"money", name:"It's too expensive / I want a cheap system",
+   trigger:"Customer is price-shopping or has seen cheaper quotes online.",
+   d:"I completely understand — cost is absolutely a factor,",
+   t:"and it's worth knowing what you're actually comparing.",
+   r:"There's a real difference between cheap solar advertised online and a quality installation by a company with 10+ years of post-installation support and thousands of genuine 5-star reviews. Going cheap means shortcuts — substandard cabling, poor connections, or installers who won't be around in 5 years. RESINC's guarantee is 150% of your system cost in savings — that's how confident we are in the quality.",
+   c:"Would you be open to at least seeing what a properly designed system would cost and save you — so you have something to compare against?",
+   tip:"Don't get defensive about price. Let the quality and guarantees do the work."},
+
+  {id:"commission", cat:"money", name:"Are you on commission? / Are you just trying to sell me?",
+   trigger:"Customer is suspicious about your motivations.",
+   d:"That's a fair thing to wonder —",
+   t:"and I want to be straight with you.",
+   r:"Yes, I get paid when appointments are booked — but only when they go ahead. That means it's actually not in my interest to book people who aren't a good fit. RESINC has a qualification process specifically to protect customers — if the numbers don't stack up for you, we won't recommend it. Our reputation depends on only putting people forward who genuinely benefit.",
+   c:"What I can tell you is the assessment itself is completely free and there's no obligation. Would you be open to just seeing the numbers?",
+   tip:"Honesty wins here. Don't dodge the question."},
+
+  {id:"bills_low", cat:"money", name:"My bills aren't that high",
+   trigger:"Customer's bill is close to the $300 threshold or they think their bill is fine.",
+   d:"That's actually really useful to know —",
+   t:"because it changes the conversation slightly.",
+   r:"Can I ask what your bill is roughly per quarter? Sometimes people underestimate because they've been limiting usage without realising — things like keeping the AC off when it's uncomfortable, or running the pool pump less. The other thing worth knowing is that electricity rates are forecast to keep increasing — what feels manageable now might not feel the same in 2 or 3 years. A lot of our customers got in early exactly for that reason.",
+   c:"Would it be worth having the specialist take a look and show you what the numbers look like for your situation specifically?",
+   tip:"Probe before disqualifying. 'Low bills' is sometimes a signal they're limiting usage to manage cost — which is actually a strong pain point."},
+
+  // TIMING
+  {id:"busy", cat:"timing", name:"I'm too busy right now",
+   trigger:"Customer says they don't have time, are at work, or life is hectic.",
+   d:"I completely get that —",
+   t:"and that's exactly why we've set the assessment up to work around busy schedules.",
+   r:"Our specialists are available from early morning until late evening, seven days a week — specifically to work around families and busy schedules. The assessment itself takes about 60–90 minutes, and with electricity prices continuing to rise, it's worth finding a window. What's great is we handle everything — so you benefit without adding to your plate.",
+   c:"What day this week or next tends to work best for you — even if it's early morning or an evening?",
+   tip:"Don't accept 'I'm busy' as a no. Offer flexibility immediately."},
+
+  {id:"moving", cat:"timing", name:"We're thinking of moving / Might sell in 1–2 years",
+   trigger:"Customer says they might not be in the property long enough to benefit.",
+   d:"That actually makes solar more valuable, not less —",
+   t:"and I know that might sound counterintuitive, so let me explain.",
+   r:"A high-performance solar system that significantly reduces your power bill is a major selling feature. Between now and moving, you'd benefit from the savings. When it comes time to sell, buyers see the system as a real add-on — especially since the warranties are transferable and they can see your electricity bills. Some estimates put the value solar adds at around 2–3% of the property value.",
+   c:"Would it be worth having the specialist show you what the numbers look like — both for the time you're there and the resale value?",
+   tip:"The 'we might move' objection is often a deflection. Reframe solar as an asset, not a fixture."},
+
+  {id:"building", cat:"timing", name:"We're building a new home",
+   trigger:"Customer is in the middle of a build or hasn't moved in yet.",
+   d:"Congratulations on the new build —",
+   t:"and actually, this is one of the best times to look at solar.",
+   r:"Once the roof is on we can assist — and it's actually the best time because we can minimise all external conduits to internal wall cavities for a much neater finish. The installation integrates cleanly with a new build in a way that's much harder to achieve on an existing home.",
+   c:"Have they given you an estimate on when the roof will be completed? I can make a note and have someone follow up at the right time.",
+   tip:"Don't try to book immediately — get the roof completion date and set a callback. This lead has high intent."},
+
+  {id:"buying", cat:"timing", name:"We're buying a new home",
+   trigger:"Customer is about to move into a new property and doesn't know their usage yet.",
+   d:"Congratulations on the new home —",
+   t:"and we can absolutely work around the timing.",
+   r:"Because it's a new property, your usage will vary from house to house. Once you've moved in and settled back into your normal routine, all we ask is a photo of your meter reading. We'll take another reading at the assessment to average your daily usage — so we design a system that's perfectly tailored to your needs.",
+   c:"How about I call you back about a week after your settlement date? What's the expected settlement?",
+   tip:"Get the settlement date. Set a precise callback task. This is a warm lead — don't let it expire."},
+
+  // TRUST
+  {id:"disreputable", cat:"trust", name:"I've heard bad things about solar companies",
+   trigger:"Customer is skeptical about the industry or has had a bad experience.",
+   d:"That's completely understandable —",
+   t:"and honestly, the solar industry hasn't always been great. That's exactly why RESINC operates differently.",
+   r:"We've been in business for nearly a decade — rare in solar. We're a social enterprise and have donated over $1.5 million to surf life saving clubs. To install for government and council-owned properties, we go through 15 levels of approval — including proving we'll be around for the next 10 years. We're not just here today and gone tomorrow. We've won awards for best rated and most popular solar business in Australia out of over 4,000 companies.",
+   c:"Would you be open to at least having a conversation with a specialist — no obligation — so you can judge for yourself?",
+   tip:"Name the surf clubs local to them if you know the area. Specificity builds trust."},
+
+  {id:"post_install", cat:"trust", name:"What happens after installation? / Will you be around?",
+   trigger:"Customer is worried about long-term support.",
+   d:"That's one of the most important questions you can ask —",
+   t:"and it's exactly where RESINC is different.",
+   r:"After your system is on the roof, we do a momentum session — a Zoom call one month after install where a specialist walks you through how to monitor your system and maximise self-consumption. A few months after that, we do an in-person check. And we remotely monitor your system for the next 10 years. Solar is a long-term investment — and that's how we treat it.",
+   c:"Would you be open to having the specialist walk you through the full post-install programme at the assessment?",
+   tip:"This objection is actually a buying signal — they're imagining themselves with the system. Don't rush past it."},
+
+  {id:"guarantee", cat:"trust", name:"Can you guarantee the savings?",
+   trigger:"Customer wants certainty before committing to a consultation.",
+   d:"That's a fair thing to want —",
+   t:"and RESINC is actually one of the few companies that backs this up in writing.",
+   r:"To protect our customers we have a 100% savings guarantee. During the assessment our specialist will calculate what the system will save you over a specific period — if those savings aren't hit in that timeframe, we'll refund the difference. That's how confident we are in what we design.",
+   c:"Would you be open to having the specialist run those numbers for your home specifically?",
+   tip:"The savings guarantee is a strong closer. Don't bury it — let it land."},
+
+  // PROPERTY
+  {id:"existing_solar", cat:"property", name:"I already have solar",
+   trigger:"Customer has an existing system.",
+   d:"Oh I'm glad to hear that —",
+   t:"more solar the better, and this actually changes things in your favour.",
+   r:"When did you have that installed? The figure you mentioned for your bill — is that still with solar, or was that before? Because even with solar, there are still government rebates available — including going solar for the second time or adding a battery. Your situation is quite unique, so I'm going to arrange for one of our specialists to call you directly for a 10–15 minute discovery call. Please have copies of your power bills and details about your current system.",
+   c:"Does that sound like something worth exploring?",
+   tip:"Use the existing solar sub-script. Don't disqualify on 'I already have solar' without exploring the battery or upgrade opportunity."},
+
+  {id:"renter", cat:"property", name:"I rent / Don't own the property",
+   trigger:"Customer doesn't own the property.",
+   d:"Appreciate you letting me know —",
+   t:"and because your situation is quite unique, I want to make sure you get the right information.",
+   r:"Because there are intricacies around ownership and our ability to qualify you for the government rebate, I'm going to arrange for one of our specialists to call you directly for a more detailed conversation — just to see if there's anything we can do to help. It'll be a 10–15 minute call. Please have a copy of your power bills so they can understand your situation properly.",
+   c:"Would that work for you?",
+   tip:"Don't flat-out disqualify renters without checking — there are sometimes paths forward depending on the arrangement with the landlord."},
+
+  {id:"strata", cat:"property", name:"We're in a unit / Apartment / Strata",
+   trigger:"Customer lives in a multi-unit complex.",
+   d:"That's worth exploring —",
+   t:"because it depends on the size of the complex.",
+   r:"Unfortunately with complexes that have more than 10 units, there are complexities regarding the grid connection — and those are rules set by the network operator, not us. As a company, due to those regulations, we have a policy that we can't work with complexes over 10 units. If your complex is under 10 — that's a different conversation, and we'd love to assess it.",
+   c:"Do you know roughly how many units are in your complex?",
+   tip:"Always ask the unit count before disqualifying. Under 10 = potentially qualifiable."},
+
+  {id:"shading", cat:"property", name:"We have a lot of trees / Shading issues",
+   trigger:"Customer mentions their roof is shaded.",
+   d:"That's definitely worth checking properly —",
+   t:"because shading affects different parts of the roof differently.",
+   r:"Our specialists use satellite imagery to assess your specific roof layout and identify the least-shaded sections. A lot of homes have usable roof space even when there are trees — it's often about panel placement and the right inverter setup. It's not a disqualifier until the specialist has actually looked at your property.",
+   c:"Would you be open to having them do that assessment? It's completely free and they'll be upfront if it's not viable.",
+   tip:"Never disqualify on shading without doing the satellite check first. Many shaded homes are still workable."},
+
+  // TECHNICAL
+  {id:"cloudy", cat:"technical", name:"Does solar work on cloudy days?",
+   trigger:"Customer doubts whether solar will generate enough in their climate.",
+   d:"That's one of the most common questions —",
+   t:"and the short answer is yes, though let me give you the honest version.",
+   r:"Solar still generates power on cloudy days — just at reduced output. Queensland winters actually still produce around 80–90% of summer output. Diffuse light still generates electricity. The panels we use — LONGi Hi-MO 6 — are specifically rated for high performance in low-light conditions. The real savings come from self-consumption: using your own power instead of buying expensive grid electricity.",
+   c:"Would it be worth having the specialist show you the projected output for your specific area and roof?",
+   tip:"Acknowledge the concern honestly — don't oversell. '80–90% of summer output' is credible and reassuring."},
+
+  {id:"feed_in", cat:"technical", name:"Feed-in tariffs aren't worth it anymore",
+   trigger:"Customer has heard that export rates have dropped.",
+   d:"You're right that feed-in tariffs have come down —",
+   t:"but that's actually changed how we think about solar savings.",
+   r:"The real value now is self-consumption — using the power your system generates rather than exporting it. When you use your own solar power, you're saving 26–34 cents per kWh instead of paying the grid. That's where the serious savings come from. The feed-in tariff is a bonus on top, not the main event. A battery makes this even better — it stores what you generate during the day so you can use it at night.",
+   c:"Would it be worth having the specialist show you the self-consumption model for your home specifically?",
+   tip:"Don't defend FiT rates — agree they've dropped, then pivot to the self-consumption story."},
+
+  {id:"battery_rebate", cat:"technical", name:"Tell me about the battery rebate",
+   trigger:"Customer has heard about government battery incentives and wants to know more.",
+   d:"Great timing to be asking about that —",
+   t:"because the battery rebate situation is moving fast.",
+   r:"There's a significant government program that takes around 30% off the cost of a home battery — but it steps down every six months, and you can only ever claim it once per property. So the longer someone waits, the less they get — and they can never go back and claim the difference. The main criteria is that the rebate is available to properties that already have solar, or are getting solar installed at the same time.",
+   c:"Would it be worth having the specialist run through the exact numbers for your situation before the rebate steps down again?",
+   tip:"The step-down urgency is real — use it, but don't exaggerate it."},
+
+  {id:"price_phone", cat:"technical", name:"Can you give me a price over the phone?",
+   trigger:"Customer wants a quote before agreeing to a consultation.",
+   d:"I completely understand why you'd want that —",
+   t:"and I want to give you a number that's actually useful, not just a rough ballpark.",
+   r:"A lot of companies throw a quick price over the phone without checking if solar is right for you — but that doesn't mean it'll save you anything. We custom-design your system based on how you use power and how your property is set up. Before we offer any pricing we need to make sure it's accurate and tailored to your situation — that's because we have a 100% savings guarantee and a 10-day downtime agreement in place. The assessment is the only way to get a number that's actually meaningful.",
+   c:"Would you be open to the assessment? It's completely free, no obligation, and you'll walk away with real numbers.",
+   tip:"Don't give a range — it anchors them at the top and creates resistance. The assessment IS the quote."},
+];
+
+const seen = new Set();
+let activeObj = null;
+const TOTAL = OBJS.length;
+
+function updateProgress() {
+  const done = seen.size;
+  document.getElementById('op-fill').style.width = (done/TOTAL*100)+'%';
+  document.getElementById('op-count').textContent = done+' of '+TOTAL;
+}
+
+function showObj(id) {
+  const obj = OBJS.find(o=>o.id===id);
+  if (!obj) return;
+
+  seen.add(id);
+  if (activeObj===id){closeObj();return;}
+  activeObj=id;
+
+  document.querySelectorAll('.obj-card').forEach(c=>c.classList.remove('active'));
+  const card = document.getElementById('oc-'+id);
+  card.classList.add('active','seen');
+
+  const panel = document.getElementById('obj-detail');
+  const cat = CATS[obj.cat];
+
+  panel.innerHTML=`
+    <div class="od-top">
+      <div class="od-cat" style="background:${cat.color}22;border:1px solid ${cat.color}44;color:${cat.color};">${cat.label}</div>
+      <div class="od-name">${obj.name}</div>
+      <div class="od-trigger">When to use: ${obj.trigger}</div>
+    </div>
+    <div class="od-dtrc">
+      <div class="od-step">
+        <div class="od-step-label" style="color:var(--sky);">D — DISARM</div>
+        <div class="od-step-text">"${obj.d}"</div>
+      </div>
+      <div class="od-step">
+        <div class="od-step-label" style="color:#9B8FDB;">T — TRANSITION</div>
+        <div class="od-step-text">"${obj.t}"</div>
+      </div>
+      <div class="od-step">
+        <div class="od-step-label" style="color:var(--gold);">C — CHECK-IN</div>
+        <div class="od-step-text">"${obj.c}"</div>
+      </div>
+      <div class="od-step">
+        <div class="od-step-label" style="color:#4DD9A0;">✓ RESULT</div>
+        <div class="od-step-text" style="font-style:normal;color:rgba(255,255,255,.5);">Conversation continues → booking possible</div>
+      </div>
+    </div>
+    <div class="od-script">
+      <div class="od-script-label">R — THE RESPONSE SCRIPT</div>
+      <div class="od-script-text">${obj.r}</div>
+    </div>
+    <div class="od-tip">
+      <div class="od-tip-icon">💡</div>
+      <div class="od-tip-text"><strong>Coach tip: </strong>${obj.tip}</div>
+    </div>
+    <span class="od-close" onclick="closeObj()">CLOSE ✕</span>
+  `;
+
+  panel.classList.add('visible');
+  updateProgress();
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+}
+
+function closeObj() {
+  document.getElementById('obj-detail').classList.remove('visible');
+  document.querySelectorAll('.obj-card').forEach(c=>c.classList.remove('active'));
+  activeObj=null;
+}
+
+function buildGrid() {
+  const grid = document.getElementById('obj-grid');
+  OBJS.forEach(obj=>{
+    const card = document.createElement('div');
+    card.className='obj-card';
+    card.id='oc-'+obj.id;
+    const cat=CATS[obj.cat];
+    card.style.setProperty('--card-color',cat.color);
+    card.setAttribute('data-cat',obj.cat);
+    card.setAttribute('data-name',obj.name.toLowerCase());
+    card.innerHTML=`
+      <div class="oc-seen">✓</div>
+      <div class="oc-cat">${cat.label}</div>
+      <div class="oc-name">${obj.name}</div>
+    `;
+    card.onclick=()=>showObj(obj.id);
+    grid.appendChild(card);
+  });
+}
+
+function filterCat(cat,btn) {
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  closeObj();
+  document.getElementById('search-input').value='';
+  document.querySelectorAll('.obj-card').forEach(c=>{
+    const match = cat==='all' || c.getAttribute('data-cat')===cat;
+    c.classList.toggle('hidden',!match);
+  });
+}
+
+function searchObjs(q) {
+  const query=q.toLowerCase().trim();
+  // Reset category filter visually
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.cat-btn').classList.add('active');
+  closeObj();
+  document.querySelectorAll('.obj-card').forEach(c=>{
+    const name=c.getAttribute('data-name');
+    c.classList.toggle('hidden', query.length>0 && !name.includes(query));
+  });
+}
+
+buildGrid();
+
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+</script>
+</body>
+</html>
