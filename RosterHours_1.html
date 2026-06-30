@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Roster & Hours | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;
+  --green:#0B7A4E;--green-lt:#D4F0E3;
+  --off:#1A2A32;--off-lt:rgba(255,255,255,.06);
+  --sat:#0A4A30;--sat-lt:#D0EDDF;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.06),0 4px 12px rgba(10,53,66,.08);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* HERO */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.14) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:1040px;margin:0 auto;padding:44px 28px 32px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:14px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(24px,4vw,40px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13px;line-height:1.65;max-width:500px;}
+
+/* LAYOUT */
+.section{padding:28px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:1040px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:6px;}
+.s-title{font-family:var(--serif);font-size:20px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:32px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+
+/* WEEK TABS */
+.week-tabs{display:flex;gap:8px;margin-bottom:20px;}
+.week-tab{
+  padding:8px 22px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+  color:rgba(255,255,255,.4);transition:all .18s;
+}
+.week-tab.active{border-color:var(--sky);color:var(--sky);background:rgba(0,174,239,.1);}
+
+/* ROSTER TABLE */
+.roster-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.07);}
+.roster-table{width:100%;border-collapse:collapse;min-width:680px;}
+.roster-table th{
+  background:#122430;padding:10px 12px;
+  font-size:10px;font-weight:700;letter-spacing:.12em;
+  color:rgba(255,255,255,.4);text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.roster-table th:first-child{text-align:left;color:rgba(255,255,255,.5);}
+.roster-table td{
+  padding:9px 12px;font-size:12px;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .15s;
+}
+.roster-table td:first-child{
+  text-align:left;font-weight:600;font-size:12.5px;
+  color:#fff;padding-left:16px;white-space:nowrap;
+}
+.roster-table tr:last-child td{border-bottom:none;}
+.roster-table tr:hover td{background:rgba(255,255,255,.02);}
+
+/* Shift types */
+.shift{display:inline-block;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap;}
+.shift-early{background:rgba(0,174,239,.12);color:#7DD8F5;border:1px solid rgba(0,174,239,.2);}
+.shift-late{background:rgba(107,79,187,.12);color:#B8A8E8;border:1px solid rgba(107,79,187,.2);}
+.shift-sat{background:var(--sat-lt);color:#0A5A35;border:1px solid rgba(11,122,78,.3);}
+.shift-off{color:rgba(255,255,255,.18);font-size:11px;}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:11.5px;color:rgba(255,255,255,.5);}
+.legend-dot{width:28px;height:18px;border-radius:4px;flex-shrink:0;}
+.leg-early{background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.2);}
+.leg-late{background:rgba(107,79,187,.12);border:1px solid rgba(107,79,187,.2);}
+.leg-sat{background:var(--sat-lt);border:1px solid rgba(11,122,78,.3);}
+.leg-off{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);}
+
+/* HOW IT WORKS */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:580px){.rules-grid{grid-template-columns:1fr;}}
+.rule-card{background:#0F1E28;border-radius:12px;padding:16px 18px;border:1.5px solid rgba(255,255,255,.06);}
+.rc-icon{font-size:22px;margin-bottom:8px;}
+.rc-title{font-size:12.5px;font-weight:700;color:#fff;margin-bottom:5px;}
+.rc-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.65;}
+.rc-desc strong{color:rgba(255,255,255,.75);}
+
+/* GOOD TO KNOW */
+.gtk-list{display:flex;flex-direction:column;gap:8px;}
+.gtk-row{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#0F1E28;border-radius:10px;padding:13px 16px;
+  border:1.5px solid rgba(255,255,255,.06);
+}
+.gtk-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.gtk-text{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.55;}
+.gtk-text strong{color:#fff;}
+
+/* NEXT */
+.next-teaser{background:var(--navy);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;}
+.nt-label{font-size:8px;color:rgba(0,174,239,.6);letter-spacing:.2em;font-weight:700;margin-bottom:3px;}
+.nt-text{font-size:13px;color:#fff;font-weight:500;}
+.nt-arrow{color:var(--sky);font-size:18px;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DAY 2</div>
+    <h1 class="hero-title">Roster & Hours —<br><em>Your Schedule</em></h1>
+    <p class="hero-sub">Your team runs on a fortnightly rotating roster. Here's how to read it and what to expect each week.</p>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">HOW THE ROSTER WORKS</div>
+    <div class="s-title">Two Weeks, Two Patterns</div>
+    <div class="s-bar"></div>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rc-icon">🔄</div>
+        <div class="rc-title">Early & late shifts rotate</div>
+        <div class="rc-desc">If you're on an <strong>early shift</strong> in Week 1, you'll be on a <strong>late shift</strong> in Week 2 — and vice versa. The shifts stay the same; who's on them changes.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-icon">📅</div>
+        <div class="rc-title">Saturdays rotate fortnightly</div>
+        <div class="rc-desc">You work <strong>every second Saturday</strong> and get the full weekend off the other week. Over the fortnight, everyone works one Saturday.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-icon">📞</div>
+        <div class="rc-title">Wednesday & Thursday are the fullest days</div>
+        <div class="rc-desc">Most of the team is on the floor on <strong>Wed and Thu</strong> — expect a full floor, high energy, and the best call momentum of the week.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-icon">🔃</div>
+        <div class="rc-title">Shift questions or swaps</div>
+        <div class="rc-desc">For anything roster-related — questions, swaps, or changes — <strong>see Jordan</strong> directly. Don't sort swaps between yourselves without TL sign-off.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROSTER TABLES -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE ROSTER</div>
+    <div class="s-title">Week 1 & Week 2</div>
+    <div class="s-bar"></div>
+
+    <div class="week-tabs">
+      <div class="week-tab active" onclick="showWeek(1,this)">Week 1</div>
+      <div class="week-tab" onclick="showWeek(2,this)">Week 2</div>
+    </div>
+
+    <div id="week1">
+      <div class="roster-wrap">
+        <table class="roster-table">
+          <thead>
+            <tr>
+              <th>Team Member</th>
+              <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
+              <th>Sat</th><th>Sun</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Ashleigh Edwards</td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Vee Patau</td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Christine Matol-Simpson</td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Tamara Biddulph</td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Jacob Eckersley</td><td><span class="shift-off">off</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Hugo Lysaught</td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Jakob Wall</td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Keisha Nelson</td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Abi Daly</td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Cherry Sitagata</td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Blake Ashton</td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Clancy Dunn</td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="week2" style="display:none;">
+      <div class="roster-wrap">
+        <table class="roster-table">
+          <thead>
+            <tr>
+              <th>Team Member</th>
+              <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
+              <th>Sat</th><th>Sun</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Ashleigh Edwards</td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Vee Patau</td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Christine Matol-Simpson</td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Tamara Biddulph</td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-late">11:15–7:15</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Jacob Eckersley</td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift shift-late">12:00–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Hugo Lysaught</td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Jakob Wall</td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Keisha Nelson</td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift shift-late">9:15–7:15</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Abi Daly</td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Cherry Sitagata</td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Blake Ashton</td><td><span class="shift-off">off</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-early">8:45–6:45</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+            <tr><td>Clancy Dunn</td><td><span class="shift-off">off</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift shift-early">8:45–4:45</span></td><td><span class="shift-off">off</span></td><td><span class="shift shift-sat">8:45–6:45</span></td><td><span class="shift-off">off</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" style="margin-top:16px;">
+      <div class="legend-item"><div class="legend-dot leg-early"></div>Early shift (8:45–4:45 · 8:45–6:45)</div>
+      <div class="legend-item"><div class="legend-dot leg-late"></div>Late shift (11:15–7:15 · 9:15–7:15 · 12:00–7:15)</div>
+      <div class="legend-item"><div class="legend-dot leg-sat"></div>Saturday (8:45–6:45)</div>
+      <div class="legend-item"><div class="legend-dot leg-off"></div>Off</div>
+    </div>
+  </div>
+</div>
+
+<!-- GOOD TO KNOW -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">GOOD TO KNOW</div>
+    <div class="s-title">Before Your First Shift</div>
+    <div class="s-bar"></div>
+    <div class="gtk-list">
+      <div class="gtk-row">
+        <div class="gtk-icon">⏰</div>
+        <div class="gtk-text"><strong>Be set up and ready to call at 9:00am.</strong> Mornings start at 8:45 — that's setup time, not arrival time. Dialer logged in, CRM open, headset on.</div>
+      </div>
+      <div class="gtk-row">
+        <div class="gtk-icon">📅</div>
+        <div class="gtk-text"><strong>Saturdays rotate every second week.</strong> You work one Saturday per fortnight and get the full weekend off the other. Check which week you're on if you're unsure.</div>
+      </div>
+      <div class="gtk-row">
+        <div class="gtk-icon">🔄</div>
+        <div class="gtk-text"><strong>Early and late shifts rotate between Week 1 and Week 2.</strong> If you're unsure which week it currently is, ask Jordan or a teammate.</div>
+      </div>
+      <div class="gtk-row">
+        <div class="gtk-icon">💬</div>
+        <div class="gtk-text"><strong>For shift questions, swaps, or changes — see Jordan.</strong> Don't arrange swaps between yourselves without TL approval first.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="next-teaser">
+  <div>
+    <div class="nt-label">NEXT UP</div>
+    <div class="nt-text">What Coaching Looks Like</div>
+  </div>
+  <div class="nt-arrow">→</div>
+</div>
+
+<script>
+function showWeek(n, btn) {
+  document.getElementById('week1').style.display = n===1 ? 'block' : 'none';
+  document.getElementById('week2').style.display = n===2 ? 'block' : 'none';
+  document.querySelectorAll('.week-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('prog-fill').style.width = Math.min(p, 100) + '%';
+});
+</script>
+</body>
+</html>
