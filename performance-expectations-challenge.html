@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Performance Expectations Challenge</title>
+<style>
+  :root{
+    --sky:#00AEEF;
+    --sky-dark:#0090c7;
+    --navy:#0A3542;
+    --navy-light:#124a5c;
+    --ink:#231F20;
+    --white:#FFFFFF;
+    --grey:#EAF1F3;
+    --green:#1FA672;
+    --red:#D64545;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Century Gothic","Futura","Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;
+    background:linear-gradient(160deg,var(--navy) 0%,var(--navy-light) 45%,var(--sky-dark) 100%);
+    min-height:100vh;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .app{
+    width:100%;
+    max-width:640px;
+  }
+  .card{
+    background:var(--white);
+    border-radius:20px;
+    box-shadow:0 20px 50px rgba(10,53,66,0.35);
+    padding:36px 32px;
+    position:relative;
+    overflow:hidden;
+    animation:rise .5s ease;
+  }
+  @keyframes rise{
+    from{opacity:0; transform:translateY(16px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .eyebrow{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--sky-dark);
+    font-weight:bold;
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1{
+    color:var(--navy);
+    font-size:28px;
+    margin:0 0 10px;
+    line-height:1.15;
+  }
+  p.lede{
+    color:#4a5a5f;
+    font-size:15px;
+    line-height:1.55;
+    margin:0 0 22px;
+  }
+  .pill-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:26px;
+    flex-wrap:wrap;
+  }
+  .pill{
+    background:var(--grey);
+    color:var(--navy);
+    font-size:13px;
+    font-weight:bold;
+    padding:8px 14px;
+    border-radius:999px;
+  }
+  button.primary{
+    background:var(--sky);
+    color:var(--white);
+    border:none;
+    font-family:inherit;
+    font-weight:bold;
+    font-size:16px;
+    padding:14px 28px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:transform .15s ease, background .15s ease;
+    width:100%;
+  }
+  button.primary:hover{background:var(--sky-dark); transform:translateY(-1px);}
+  button.primary:disabled{background:#b9c3c6; cursor:not-allowed; transform:none;}
+  button.ghost{
+    background:transparent;
+    color:var(--navy);
+    border:2px solid var(--grey);
+    font-family:inherit;
+    font-weight:bold;
+    font-size:14px;
+    padding:10px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    margin-top:12px;
+    width:100%;
+  }
+  button.ghost:hover{border-color:var(--sky);}
+
+  /* top bar during quiz */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .progress-track{
+    flex:1;
+    height:10px;
+    background:var(--grey);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg,var(--sky),var(--sky-dark));
+    border-radius:999px;
+    transition:width .35s ease;
+  }
+  .qcount{
+    font-size:13px;
+    font-weight:bold;
+    color:var(--navy);
+    white-space:nowrap;
+  }
+  .streak{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    font-size:13px;
+    font-weight:bold;
+    color:var(--sky-dark);
+    white-space:nowrap;
+  }
+  .streak .bolt{
+    font-size:16px;
+    filter:drop-shadow(0 0 0 transparent);
+  }
+  .streak.hot .bolt{
+    animation:pulse .6s ease infinite;
+  }
+  @keyframes pulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.25);}
+  }
+
+  .qtext{
+    font-size:19px;
+    font-weight:bold;
+    color:var(--navy);
+    line-height:1.4;
+    margin-bottom:20px;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .opt{
+    text-align:left;
+    background:var(--grey);
+    border:2px solid var(--grey);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:15px;
+    padding:14px 16px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:var(--sky);}
+  .opt:disabled{cursor:default;}
+  .opt.correct{background:#e5f7ee; border-color:var(--green); color:#0d5c39; font-weight:bold;}
+  .opt.incorrect{background:#fbe9e9; border-color:var(--red); color:#8a2323; font-weight:bold;}
+  .opt.reveal-correct{background:#e5f7ee; border-color:var(--green);}
+
+  .feedback{
+    font-size:14px;
+    line-height:1.5;
+    padding:14px 16px;
+    border-radius:12px;
+    margin:14px 0 18px;
+    display:none;
+  }
+  .feedback.show{display:block; animation:rise .3s ease;}
+  .feedback.good{background:#e5f7ee; color:#0d5c39;}
+  .feedback.bad{background:#fbe9e9; color:#8a2323;}
+
+  /* end screen */
+  .end-icon{
+    font-size:56px;
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .end-score{
+    text-align:center;
+    font-size:42px;
+    font-weight:bold;
+    color:var(--navy);
+    margin:6px 0 2px;
+  }
+  .end-sub{
+    text-align:center;
+    color:#4a5a5f;
+    font-size:14px;
+    margin-bottom:22px;
+  }
+  .result-banner{
+    text-align:center;
+    font-weight:bold;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-size:15px;
+  }
+  .result-banner.pass{background:#e5f7ee; color:#0d5c39;}
+  .result-banner.fail{background:#fff4e0; color:#8a5a00;}
+
+  .confetti{
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .confetti span{
+    position:absolute;
+    top:-10%;
+    font-size:18px;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(620px) rotate(300deg); opacity:0; }
+  }
+
+  .review-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .review-item{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size:13px;
+    background:var(--grey);
+    padding:10px 12px;
+    border-radius:10px;
+    line-height:1.4;
+  }
+  .review-item .mark{font-size:15px;}
+  .footer-note{
+    text-align:center;
+    font-size:12px;
+    color:#8a97a0;
+    margin-top:18px;
+  }
+  @media (max-width:480px){
+    .card{padding:26px 20px;}
+    h1{font-size:23px;}
+    .end-score{font-size:34px;}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const QUESTIONS = [
+  {
+    q: "What's RESINC's golden rule for daily performance?",
+    options: ["Speed beats quality","Consistency beats intensity","Talk time beats everything","Perfect beats good"],
+    correct: 1,
+    explain: "Success is built through disciplined daily habits — hundreds of small improvements, not occasional big pushes."
+  },
+  {
+    q: "What's expected of every setter before their shift even starts?",
+    options: ["Grab a coffee first","Check personal messages","Logged in and ready before shift commencement","Wait for the huddle to start logging in"],
+    correct: 2,
+    explain: "Ready before shift start — no exceptions. The first hour sets the tone for the whole day."
+  },
+  {
+    q: "Under the Standing Start Initiative, when can setters sit down?",
+    options: ["Whenever they like","After their first confirmed booking of the day","After the morning huddle","After lunch"],
+    correct: 1,
+    explain: "Standing keeps energy and pace up from the first dial — no easing in, the day starts at full speed."
+  },
+  {
+    q: "How long is the Morning Huddle?",
+    options: ["5 minutes","10 minutes","15 minutes","30 minutes"],
+    correct: 1,
+    explain: "10 minutes: yesterday's wins, the team target, individual focus, common objections, and a bit of motivation."
+  },
+  {
+    q: "How long is a typical Sprint Session?",
+    options: ["10–15 minutes","30–45 minutes","60–90 minutes","All day, no breaks"],
+    correct: 1,
+    explain: "30–45 minutes of pure focus — no phones, no distractions, maximum dials and conversations."
+  },
+  {
+    q: "What should NEVER be your first response to an objection?",
+    options: ["Asking a clarifying question","Simply accepting \"No\"","Offering more information","Staying positive"],
+    correct: 1,
+    explain: "Every interaction is an opportunity — not just another dial. Explore it properly first."
+  },
+  {
+    q: "Which of these is NOT one of the common objection areas in the SOP?",
+    options: ["Time","Trust","Weather","Cost concerns"],
+    correct: 2,
+    explain: "The real six are: time, interest, cost concerns, partner availability, existing quotes, and trust."
+  },
+  {
+    q: "Every quality booking must include which of these?",
+    options: ["A discount offer","Dual decision maker identified","A same-day install date","A free upgrade"],
+    correct: 1,
+    explain: "Correct contact details, accurate notes, both decision makers identified, correct time, genuine engagement."
+  },
+  {
+    q: "Which of these is tracked as part of Daily Accountability?",
+    options: ["Social media activity","Desk tidiness","Contact rate","Personal phone use"],
+    correct: 2,
+    explain: "Active hours, talk time, dials, contact rate, booking rate, booking quality, conversion, attendance, CRM notes."
+  },
+  {
+    q: "What's the name of the recognition for a setter's first booking of the day?",
+    options: ["Early Bird Award","First Booking Bell","Morning Medal","Booking Trophy"],
+    correct: 1,
+    explain: "The First Booking Bell — one of several ways momentum gets built in public."
+  },
+  {
+    q: "Which of these is a genuine non-negotiable — setters must NOT do this?",
+    options: ["Ask a coach a question","Take a scheduled break","Leave desks without notifying a Team Leader","Ask for help"],
+    correct: 2,
+    explain: "Always let a Team Leader know before you step away from your desk."
+  },
+  {
+    q: "According to Leader Expectations, what are Team Leaders responsible for?",
+    options: ["Doing the bookings themselves","Creating the environment that drives performance","Working from home","Staying off the floor"],
+    correct: 1,
+    explain: "Visible on the floor, coaching continuously, running huddles and sprints, removing distractions."
+  },
+  {
+    q: "What's the name of the last-hour sprint on Fridays?",
+    options: ["Friday Frenzy","Final Countdown","Friday Finals","Friday Push"],
+    correct: 2,
+    explain: "Friday Finals — one of the High Performance Initiatives that keeps things fresh and fun."
+  },
+  {
+    q: "Fill the blank: \"Bring energy. Follow the process. Embrace coaching. Stay accountable. ___ together.\"",
+    options: ["Grow","Win","Succeed","Work"],
+    correct: 1,
+    explain: "Win together — the standard, in five simple lines."
+  },
+  {
+    q: "What's the real goal behind this whole SOP?",
+    options: ["To create pressure","To build a high-performance environment through consistency, accountability and coaching","To reduce headcount","To replace huddles with emails"],
+    correct: 1,
+    explain: "Better booking volume, quality, customer experience and culture — through small daily improvements."
+  }
+];
+
+const PASS_PCT = 80;
+let current = 0;
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let answers = [];
+let answered = false;
+
+const app = document.getElementById("app");
+
+function renderStart(){
+  app.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">⚡ Appointment Setter Onboarding</div>
+      <h1>Performance Expectations Challenge</h1>
+      <p class="lede">15 quick questions on the Daily Performance Expectations SOP — huddles, sprints, objection handling, accountability, the lot. Score 80% or higher to pass.</p>
+      <div class="pill-row">
+        <div class="pill">📋 15 questions</div>
+        <div class="pill">🎯 80% to pass</div>
+        <div class="pill">⏱️ ~5 mins</div>
+      </div>
+      <button class="primary" onclick="startQuiz()">Start the Challenge</button>
+    </div>
+  `;
+}
+
+function startQuiz(){
+  current = 0; score = 0; streak = 0; bestStreak = 0; answers = [];
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered = false;
+  const item = QUESTIONS[current];
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  const streakClass = streak >= 3 ? "streak hot" : "streak";
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="topbar">
+        <div class="qcount">Q${current+1} / ${QUESTIONS.length}</div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="${streakClass}"><span class="bolt">⚡</span>${streak}</div>
+      </div>
+      <div class="qtext">${item.q}</div>
+      <div class="options" id="options">
+        ${item.options.map((opt,i)=>`<button class="opt" data-i="${i}" onclick="selectOption(${i})">${opt}</button>`).join("")}
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <button class="primary" id="nextBtn" style="display:none" onclick="nextQuestion()">
+        ${current === QUESTIONS.length - 1 ? "See my result" : "Next question"}
+      </button>
+    </div>
+  `;
+}
+
+function selectOption(i){
+  if(answered) return;
+  answered = true;
+  const item = QUESTIONS[current];
+  const correct = i === item.correct;
+  answers.push({q: item.q, chosen: item.options[i], correct});
+
+  document.querySelectorAll(".opt").forEach((btn,idx)=>{
+    btn.disabled = true;
+    if(idx === item.correct) btn.classList.add(idx===i? "correct":"reveal-correct");
+    if(idx === i && !correct) btn.classList.add("incorrect");
+  });
+
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback show " + (correct ? "good" : "bad");
+  fb.innerHTML = (correct ? "✅ Nice one. " : "Not quite. ") + item.explain;
+
+  if(correct){ score++; streak++; bestStreak = Math.max(bestStreak, streak); }
+  else{ streak = 0; }
+
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion(){
+  current++;
+  if(current < QUESTIONS.length){ renderQuestion(); }
+  else{ renderEnd(); }
+}
+
+function renderEnd(){
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  const passed = pct >= PASS_PCT;
+
+  const reviewHtml = answers.map(a => `
+    <div class="review-item">
+      <span class="mark">${a.correct ? "✅" : "⚠️"}</span>
+      <span>${a.q}</span>
+    </div>
+  `).join("");
+
+  app.innerHTML = `
+    <div class="card">
+      ${passed ? `<div class="confetti" id="confetti"></div>` : ""}
+      <div class="end-icon">${passed ? "🔔" : "💪"}</div>
+      <div class="end-score">${score}/${QUESTIONS.length}</div>
+      <div class="end-sub">${pct}% — best streak ${bestStreak} in a row</div>
+      <div class="result-banner ${passed ? "pass" : "fail"}">
+        ${passed
+          ? "First Booking Bell energy. You've passed the Performance Expectations Challenge!"
+          : `Not there yet — you need ${PASS_PCT}% to pass. Have a quick chat with your Team Leader, then give it another crack.`}
+      </div>
+      <div class="review-list">${reviewHtml}</div>
+      <button class="primary" onclick="startQuiz()">Try again</button>
+    </div>
+  `;
+
+  if(passed){
+    const confetti = document.getElementById("confetti");
+    const emojis = ["⚡","🔔","☀️","🏆"];
+    for(let i=0;i<24;i++){
+      const s = document.createElement("span");
+      s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      s.style.left = Math.random()*100+"%";
+      s.style.animationDuration = (2 + Math.random()*1.5)+"s";
+      s.style.animationDelay = (Math.random()*0.6)+"s";
+      confetti.appendChild(s);
+    }
+  }
+}
+
+renderStart();
+</script>
+</body>
+</html>
