@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Your Commission Structure</title>
+<style>
+  :root{
+    --sky:#00AEEF;
+    --sky-dark:#0090c7;
+    --navy:#0A3542;
+    --navy-light:#124a5c;
+    --ink:#231F20;
+    --white:#FFFFFF;
+    --grey:#EAF1F3;
+    --green:#1FA672;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Century Gothic","Futura","Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;
+    background:var(--grey);
+    color:var(--ink);
+    padding:32px 20px;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+  }
+  .hero{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);
+    color:var(--white);
+    border-radius:20px;
+    padding:32px 30px;
+    margin-bottom:22px;
+  }
+  .eyebrow{
+    color:var(--sky);
+    font-weight:bold;
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  h1{
+    font-size:27px;
+    margin:0 0 10px;
+    line-height:1.2;
+  }
+  .hero p{
+    font-size:15px;
+    line-height:1.6;
+    color:#dceef4;
+    margin:0;
+    max-width:560px;
+  }
+  .card{
+    background:var(--white);
+    border-radius:18px;
+    padding:26px 28px;
+    margin-bottom:20px;
+    box-shadow:0 6px 20px rgba(10,53,66,0.08);
+  }
+  h2{
+    color:var(--navy);
+    font-size:18px;
+    margin:0 0 16px;
+  }
+  .target-row{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:4px;
+  }
+  .target-box{
+    flex:1;
+    min-width:200px;
+    background:var(--grey);
+    border-radius:14px;
+    padding:16px 18px;
+  }
+  .target-box .label{
+    font-size:12px;
+    font-weight:bold;
+    color:var(--sky-dark);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-bottom:4px;
+  }
+  .target-box .value{
+    font-size:24px;
+    font-weight:bold;
+    color:var(--navy);
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:18px;
+    font-size:14px;
+  }
+  th{
+    background:var(--navy);
+    color:var(--white);
+    text-align:left;
+    padding:12px 14px;
+    font-size:13px;
+  }
+  td{
+    padding:12px 14px;
+    border-bottom:1px solid var(--grey);
+  }
+  tr:last-child td{border-bottom:none;}
+  td.amount{font-weight:bold; color:var(--navy);}
+
+  /* calculator */
+  .calc-row{
+    display:flex;
+    gap:14px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .calc-field{
+    flex:1;
+    min-width:200px;
+  }
+  .calc-field label{
+    display:block;
+    font-size:13px;
+    font-weight:bold;
+    color:var(--navy);
+    margin-bottom:6px;
+  }
+  .calc-field input{
+    width:100%;
+    font-family:inherit;
+    font-size:16px;
+    padding:12px 14px;
+    border:2px solid var(--grey);
+    border-radius:10px;
+    outline:none;
+  }
+  .calc-field input:focus{border-color:var(--sky);}
+  .result{
+    background:linear-gradient(135deg,var(--sky) 0%,var(--sky-dark) 100%);
+    color:var(--white);
+    border-radius:14px;
+    padding:20px 22px;
+  }
+  .result .row{
+    display:flex;
+    justify-content:space-between;
+    font-size:14px;
+    padding:4px 0;
+    color:#eaf9ff;
+  }
+  .result .row.total{
+    border-top:1px solid rgba(255,255,255,0.35);
+    margin-top:8px;
+    padding-top:10px;
+    font-size:18px;
+    font-weight:bold;
+    color:var(--white);
+  }
+  .result .note{
+    font-size:12px;
+    color:#dcf3fb;
+    margin-top:10px;
+    line-height:1.5;
+  }
+  ul.notes{
+    margin:0;
+    padding-left:18px;
+  }
+  ul.notes li{
+    font-size:14px;
+    line-height:1.7;
+    margin-bottom:6px;
+  }
+  ul.notes li b{color:var(--navy);}
+  .footer-note{
+    text-align:center;
+    font-size:12px;
+    color:#7f9198;
+    margin-top:10px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">⚡ Appointment Setter Onboarding</div>
+    <h1>Your Commission Structure</h1>
+    <p>On top of your base pay, RESINC runs a Commission Scheme that rewards you for going past target. Here's exactly how it works.</p>
+  </div>
+
+  <div class="card">
+    <h2>Your weekly targets</h2>
+    <div class="target-row">
+      <div class="target-box">
+        <div class="label">Minimum Target</div>
+        <div class="value">3 sales / week</div>
+      </div>
+      <div class="target-box">
+        <div class="label">Performance Bonus Target</div>
+        <div class="value">8 sales / week</div>
+      </div>
+    </div>
+    <table>
+      <tr><th>Item</th><th>Commission Amount</th></tr>
+      <tr><td>Sales Bonus</td><td class="amount">$100 per sale over minimum target</td></tr>
+      <tr><td>Performance Bonus</td><td class="amount">$350.00</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>🧮 Estimate your commission</h2>
+    <div class="calc-row">
+      <div class="calc-field">
+        <label for="salesInput">How many sales this week?</label>
+        <input type="number" id="salesInput" min="0" placeholder="e.g. 8" oninput="calc()">
+      </div>
+    </div>
+    <div class="result" id="result">
+      <div class="row"><span>Sales Bonus</span><span id="salesBonusOut">$0</span></div>
+      <div class="row"><span>Performance Bonus</span><span id="perfBonusOut">$0</span></div>
+      <div class="row total"><span>Estimated Commission</span><span id="totalOut">$0</span></div>
+      <div class="note" id="calcNote">Enter your sales for the week above to see an estimate.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>General notes</h2>
+    <ul class="notes">
+      <li>This Commission Scheme does <b>not</b> form part of your contract of employment or contractors agreement.</li>
+      <li>RESINC retains full discretion to determine whether commission criteria have been met.</li>
+      <li>Commission is only payable once the client has made <b>full payment</b>.</li>
+      <li>RESINC may alter, amend, or remove this commission structure at any time — you'll be notified of any changes.</li>
+      <li>Paid <b>every Friday</b>, for installations completed in the previous week.</li>
+      <li>Commissions are only paid once your total earned commission exceeds your monthly salary payments or any advanced payments.</li>
+    </ul>
+  </div>
+
+  <div class="footer-note">RESINC Solar &amp; Batteries — Appointment Setter Onboarding</div>
+</div>
+
+<script>
+function calc(){
+  const sales = parseInt(document.getElementById("salesInput").value) || 0;
+  const salesBonus = Math.max(0, sales - 3) * 100;
+  const perfBonus = sales >= 8 ? 350 : 0;
+  const total = salesBonus + perfBonus;
+
+  document.getElementById("salesBonusOut").textContent = "$" + salesBonus.toLocaleString();
+  document.getElementById("perfBonusOut").textContent = "$" + perfBonus.toLocaleString();
+  document.getElementById("totalOut").textContent = "$" + total.toLocaleString();
+
+  const noteEl = document.getElementById("calcNote");
+  if(sales === 0){
+    noteEl.textContent = "Enter your sales for the week above to see an estimate.";
+  } else if(sales < 3){
+    noteEl.textContent = `${3 - sales} more sale${3-sales===1?"":"s"} to hit your minimum target and start earning Sales Bonus.`;
+  } else if(sales < 8){
+    noteEl.textContent = `${8 - sales} more sale${8-sales===1?"":"s"} to unlock the $350 Performance Bonus.`;
+  } else {
+    noteEl.textContent = "Performance Bonus unlocked! This is an estimate only — final commission is subject to full client payment and RESINC's discretion.";
+  }
+}
+</script>
+</body>
+</html>
