@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dispositions — What to Select and When | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --purple:#6B4FBB;
+  --orange:#D4620A;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:980px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:540px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65);}
+
+/* ── LAYOUT ── */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:980px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:18px;}
+
+/* ── PROGRESS BAR ── */
+.disp-progress{
+  background:#122430;border-radius:12px;padding:14px 18px;
+  border:1px solid rgba(255,255,255,.06);margin-bottom:20px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.dp-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);white-space:nowrap;}
+.dp-bar{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;min-width:100px;}
+.dp-fill{height:100%;background:var(--sky);border-radius:3px;width:0%;transition:width .4s;}
+.dp-count{font-size:11px;font-weight:700;color:var(--sky);white-space:nowrap;}
+
+/* ── CATEGORY FILTERS ── */
+.cat-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.cat-btn{
+  padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.45);transition:all .18s;
+}
+.cat-btn.active{border-color:var(--sky);color:var(--sky);background:rgba(0,174,239,.1);}
+.cat-btn:hover:not(.active){border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7);}
+
+/* ── DISPOSITION GRID ── */
+.disp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:800px){.disp-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:560px){.disp-grid{grid-template-columns:1fr 1fr;}}
+
+.disp-card{
+  border-radius:12px;padding:14px 14px 10px;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.07);
+  background:#122430;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+.disp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc-color,rgba(255,255,255,.1));}
+.disp-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--dc-color,rgba(255,255,255,.2));}
+.disp-card.seen{border-color:rgba(11,122,78,.25);background:rgba(11,122,78,.05);}
+.disp-card.seen::before{background:var(--green);}
+.disp-card.active{border-color:var(--dc-color,var(--sky));box-shadow:0 0 0 2px color-mix(in srgb,var(--dc-color,var(--sky)) 20%,transparent);}
+.disp-card.hidden{display:none;}
+
+.dc-name{font-size:12px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px;}
+.disp-card.seen .dc-name{color:rgba(255,255,255,.5);}
+
+.dc-flags{display:flex;gap:4px;flex-wrap:wrap;}
+.dc-flag{
+  font-size:8px;font-weight:700;letter-spacing:.08em;
+  padding:2px 6px;border-radius:3px;
+}
+.dc-flag.pickup{background:rgba(0,174,239,.15);color:var(--sky);}
+.dc-flag.drop{background:rgba(107,79,187,.15);color:#9B8FDB;}
+.dc-flag.success{background:rgba(11,122,78,.15);color:#4DD9A0;}
+
+.dc-seen-badge{
+  position:absolute;top:8px;right:8px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--green);display:none;
+  align-items:center;justify-content:center;font-size:9px;
+}
+.disp-card.seen .dc-seen-badge{display:flex;}
+
+/* ── DETAIL PANEL ── */
+.disp-detail{
+  display:none;background:var(--navy);border-radius:14px;
+  padding:22px 26px;margin-top:14px;
+  border:1.5px solid rgba(0,174,239,.15);
+  animation:fadeUp .28s ease;
+}
+.disp-detail.visible{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.dd-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;}
+.dd-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:6px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:.1em;margin-bottom:6px;
+}
+.dd-name{font-family:var(--serif);font-size:20px;color:#fff;line-height:1.2;}
+.dd-flags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:540px){.dd-grid{grid-template-columns:1fr;}}
+.dd-card{background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,.07);}
+.dd-card-label{font-size:8.5px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:7px;opacity:.8;}
+.dd-card-text{font-size:13px;color:rgba(255,255,255,.75);line-height:1.65;}
+.dd-card-text strong{color:#fff;}
+
+.dd-warning{
+  margin-top:12px;display:flex;gap:10px;align-items:flex-start;
+  border-radius:9px;padding:11px 14px;font-size:12.5px;line-height:1.6;
+}
+.dd-warning.critical{background:rgba(181,37,27,.08);border-left:3px solid var(--red);}
+.dd-warning.tip{background:rgba(0,174,239,.07);border-left:3px solid var(--sky);}
+.dd-warning.gold{background:rgba(212,148,10,.08);border-left:3px solid var(--gold);}
+.dd-warning-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.dd-warning-text{color:rgba(255,255,255,.65);}
+.dd-warning-text strong{color:#fff;}
+
+.dd-close{display:block;margin-top:14px;text-align:right;font-size:11px;color:rgba(255,255,255,.25);cursor:pointer;font-weight:600;letter-spacing:.06em;transition:color .2s;}
+.dd-close:hover{color:var(--sky);}
+
+/* ── TWO RULES ── */
+.rules-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.rules-wrap{grid-template-columns:1fr;}}
+.rule-card{border-radius:14px;padding:20px 20px;border:1.5px solid rgba(255,255,255,.07);}
+.rule-card.r1{background:rgba(181,37,27,.08);border-color:rgba(181,37,27,.2);}
+.rule-card.r2{background:rgba(212,148,10,.06);border-color:rgba(212,148,10,.15);}
+.rule-num{font-family:var(--serif);font-size:32px;font-weight:700;line-height:1;margin-bottom:8px;}
+.rule-card.r1 .rule-num{color:var(--red);}
+.rule-card.r2 .rule-num{color:var(--gold);}
+.rule-title{font-size:13.5px;font-weight:700;color:#fff;margin-bottom:6px;}
+.rule-desc{font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.65;}
+.rule-desc strong{color:#fff;}
+.rule-steps{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+.rule-step{font-size:12px;color:rgba(255,255,255,.55);display:flex;align-items:flex-start;gap:7px;line-height:1.4;}
+.rule-step::before{content:'→';color:var(--gold);flex-shrink:0;font-weight:700;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+/* ── UNLOCK BANNER ── */
+#unlock-banner{display:none;background:linear-gradient(135deg,#0A5A38,#0B7A4E);border-radius:12px;padding:16px 22px;text-align:center;border:1px solid rgba(11,122,78,.4);margin-top:16px;animation:fadeUp .4s ease;}
+#unlock-banner.show{display:block;}
+.ub-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.ub-sub{font-size:12px;color:rgba(255,255,255,.6);}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DISPOSITIONS</div>
+    <h1 class="hero-title">Dispositions —<br><em>What to Select and When</em></h1>
+    <p class="hero-sub">The disposition you select tells the whole system what happened. Get it right every time — it affects what gets pushed to you next, what the TL sees, and whether the lead gets recycled or archived.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">📋 20 dispositions</div>
+      <div class="hero-pill">🖱️ Click each one to learn it</div>
+      <div class="hero-pill">🔒 All must be clicked to unlock</div>
+    </div>
+  </div>
+</section>
+
+<!-- DISPOSITIONS SECTION -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">CLICK ALL DISPOSITIONS TO UNLOCK</div>
+    <div class="s-title">Complete Disposition Reference</div>
+    <div class="s-bar"></div>
+
+    <!-- Progress -->
+    <div class="disp-progress">
+      <div class="dp-label">EXPLORED</div>
+      <div class="dp-bar"><div class="dp-fill" id="dp-fill"></div></div>
+      <div class="dp-count" id="dp-count">0 of 20</div>
+    </div>
+
+    <!-- Category filters -->
+    <div class="cat-filters">
+      <div class="cat-btn active" onclick="filterCat('all',this)">All (20)</div>
+      <div class="cat-btn" onclick="filterCat('success',this)">✅ Success (4)</div>
+      <div class="cat-btn" onclick="filterCat('callback',this)">🔄 Follow-up (3)</div>
+      <div class="cat-btn" onclick="filterCat('nq',this)">❌ Not Qualified (5)</div>
+      <div class="cat-btn" onclick="filterCat('ni',this)">🚫 Not Interested (2)</div>
+      <div class="cat-btn" onclick="filterCat('system',this)">⚙️ System (6)</div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="disp-detail" id="disp-detail"></div>
+
+    <!-- Grid -->
+    <div class="disp-grid" id="disp-grid"></div>
+
+    <!-- Unlock banner -->
+    <div id="unlock-banner">
+      <div class="ub-title">✅ All 20 dispositions explored</div>
+      <div class="ub-sub">You know what to select and when. Now the two rules you must never forget.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TWO CRITICAL RULES -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">NON-NEGOTIABLE</div>
+    <div class="s-title">Two Rules. Every Call. No Exceptions.</div>
+    <div class="s-bar"></div>
+    <div class="rules-wrap">
+      <div class="rule-card r1">
+        <div class="rule-num">01</div>
+        <div class="rule-title">Always disposition immediately after every call</div>
+        <div class="rule-desc">Never leave a call on <strong>No Disposition</strong>. The system can't process an undispositioned lead — it sits in limbo, your TL can't see what happened, and it may get pushed to another setter incorrectly.</div>
+      </div>
+      <div class="rule-card r2">
+        <div class="rule-num">02</div>
+        <div class="rule-title">Mislabelled? Fix it immediately.</div>
+        <div class="rule-desc">Mistakes happen — but leaving a wrong disposition is not an option. Here's how to correct it:</div>
+        <div class="rule-steps">
+          <div class="rule-step">Go to <strong>Dial Reporting</strong></div>
+          <div class="rule-step">Find the call in the list</div>
+          <div class="rule-step">Click the <strong>3 dots (⋯)</strong></div>
+          <div class="rule-step">Select <strong>Update Disposition</strong></div>
+          <div class="rule-step">Update the <strong>CRM to match</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">The disposition you select tells the whole system what happened. <strong>It affects what gets pushed to you next, what the TL sees, and whether the lead gets recycled or archived.</strong> Get it right every time — no shortcuts, no lazy defaults.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+const DISPS=[
+  {
+    id:'booked',name:'Booked',cat:'success',
+    color:'#0B7A4E',
+    pickup:true,drop:true,success:true,
+    when:'Appointment successfully booked and confirmed in the calendar.',
+    what:'The customer has agreed to a time, it\'s in the CRM calendar, and the booking is real. This is the outcome you\'re working toward on every call.',
+    system:'Lead moves to confirmation queue. The confirmation team will call the customer the day before to confirm attendance.',
+    warning:null,
+    tip:'Make sure the appointment is actually in the calendar before selecting this. Don\'t disposition as Booked until it\'s confirmed in the system.'
+  },
+  {
+    id:'callback',name:'Callback',cat:'callback',
+    color:'#00AEEF',
+    pickup:true,drop:true,success:false,
+    when:'Customer asked to be called back at a specific time.',
+    what:'The customer was engaged but couldn\'t talk right now. They\'ve given you a specific time to call back — this is a warm lead, not a rejection.',
+    system:'You must create a CRM activity/task immediately with the exact callback time. If you don\'t create the task, you\'ll miss the callback and lose the lead.',
+    warning:'Create the CRM task immediately — before moving to the next call. This is a committed follow-up.',
+    tip:null
+  },
+  {
+    id:'completed',name:'Completed',cat:'success',
+    color:'#0B7A4E',
+    pickup:true,drop:true,success:true,
+    when:'Call completed — conversation had, no further action needed.',
+    what:'A full conversation took place and reached a natural conclusion. No booking, no callback — the interaction is done.',
+    system:'Lead is closed out. No further follow-up required from the dialer.',
+    warning:null,
+    tip:'Only use Completed when the conversation genuinely concluded. Don\'t use it as a lazy alternative to a more specific disposition.'
+  },
+  {
+    id:'confirmed',name:'Confirmed',cat:'success',
+    color:'#0B7A4E',
+    pickup:true,drop:true,success:true,
+    when:'Appointment confirmed by customer — primarily used by the confirmation team.',
+    what:'The customer has verbally confirmed they\'ll attend the booked appointment. This disposition is used by the confirmation team after their day-before calls.',
+    system:'Appointment status updated to CONFIRMED (C) in the calendar. Specialist can see the appointment is solid.',
+    warning:null,
+    tip:'As an Appointment Setter, you\'ll rarely use this — it\'s primarily a confirmation team disposition.'
+  },
+  {
+    id:'disconnected',name:'Disconnected',cat:'system',
+    color:'#6B4FBB',
+    pickup:true,drop:true,success:false,
+    when:'Call dropped or disconnected mid-conversation — technical issue.',
+    what:'The call cut out before it was finished. Could be network, phone issue, or accidental hang-up. The conversation was in progress when it ended.',
+    system:'Lead re-enters the queue for a follow-up call.',
+    warning:'Call back immediately if the conversation was going well. Don\'t just disposition and move on — you had a warm lead.',
+    tip:null
+  },
+  {
+    id:'discovery',name:'Discovery',cat:'success',
+    color:'#0B7A4E',
+    pickup:true,drop:false,success:true,
+    when:'Discovery call scheduled with a specialist — used for existing solar or complex situations.',
+    what:'The customer has existing solar or a complex situation that requires a specialist discovery call before a full assessment can be booked.',
+    system:'Lead flagged for specialist discovery call. Follow the existing solar sub-script process.',
+    warning:null,
+    tip:'When a customer mentions they already have solar, don\'t immediately disqualify — use the existing solar sub-script first.'
+  },
+  {
+    id:'duplicate',name:'Duplicate',cat:'system',
+    color:'#6B4FBB',
+    pickup:true,drop:true,success:false,
+    when:'Lead already exists in the system or has already been called very recently.',
+    what:'The same customer has appeared in your queue twice, or has already been contacted by another setter in the last day or two.',
+    system:'Lead is flagged and removed from active queue to prevent double-dialling.',
+    warning:'Check the CRM notes carefully before using this. If in doubt, ask your TL rather than misusing this disposition.',
+    tip:null
+  },
+  {
+    id:'noanswer',name:'No Answer',cat:'system',
+    color:'rgba(255,255,255,.25)',
+    pickup:false,drop:false,success:false,
+    when:'Phone rang, nobody answered — no contact was made.',
+    what:'Standard no-contact outcome. The phone rang but the customer didn\'t pick up. This is the most common outcome — ~90% of your dials will end here.',
+    system:'Lead re-enters the queue and will be pushed back to you or another setter for a future attempt.',
+    warning:null,
+    tip:'No Answer is the most common disposition you\'ll use. Don\'t dwell on it — disposition and move straight to the next lead.'
+  },
+  {
+    id:'nopitch',name:'No Pitch',cat:'system',
+    color:'#6B4FBB',
+    pickup:true,drop:false,success:false,
+    when:'Connected briefly but had no opportunity to pitch — customer hung up immediately.',
+    what:'The customer answered but ended the call before you could introduce yourself or deliver any part of the pitch. Different from Not Interested — they didn\'t reject the offer, they just didn\'t stay on the line.',
+    system:'Lead re-enters the queue for another attempt.',
+    warning:null,
+    tip:'Review your opener if you\'re getting a lot of No Pitch dispositions — it may signal the intro isn\'t grabbing attention fast enough.'
+  },
+  {
+    id:'niatm',name:'Not Interested – ATM',cat:'ni',
+    color:'#D4620A',
+    pickup:true,drop:false,success:false,
+    when:'Not interested at this time — but could be revisited in the future.',
+    what:'The customer declined the appointment but didn\'t say never. They may have timing issues, financial concerns, or just aren\'t ready right now.',
+    system:'Lead remains in system for future outreach. Not permanently removed.',
+    warning:null,
+    tip:'If a customer says "not right now" but doesn\'t say "never" — this is the correct disposition. Don\'t use Not Interested Ever unless they\'re definitive.'
+  },
+  {
+    id:'niever',name:'Not Interested – Ever',cat:'ni',
+    color:'#B5251B',
+    pickup:true,drop:true,success:false,
+    when:'Definitively not interested — remove from dialer permanently.',
+    what:'The customer has made it clear they do not want to be contacted again. This is a permanent removal, not a temporary one.',
+    system:'Lead permanently removed from the dialer and flagged as DNC (Do Not Call).',
+    warning:'Only use this when the customer is explicit and definitive. "Not right now" is Not Interested ATM. "Never call me again" is Not Interested Ever.',
+    tip:null
+  },
+  {
+    id:'nqbattery',name:'Not Qualified – Battery Enquiry',cat:'nq',
+    color:'#B5251B',
+    pickup:true,drop:true,success:false,
+    when:'Only interested in battery with no solar — refer to DC call process.',
+    what:'The customer only wants a battery (no solar), which falls outside the standard Appointment Setter process.',
+    system:'Lead flagged for battery-only DC call process. Follow the specific sub-script for this scenario.',
+    warning:'Don\'t immediately disqualify a battery-only customer without checking with your TL first — there is a specific process for these leads.',
+    tip:null
+  },
+  {
+    id:'nqcustomer',name:'Not Qualified – Customer',cat:'nq',
+    color:'#B5251B',
+    pickup:true,drop:true,success:false,
+    when:'Customer doesn\'t meet qualification criteria — renter, housing commission, etc.',
+    what:'The person on the line doesn\'t own the property or doesn\'t meet the basic eligibility requirements for a solar assessment.',
+    system:'Lead disqualified and removed from active queue.',
+    warning:'Always confirm ownership early in the call. Don\'t go through the full pitch only to discover they rent.',
+    tip:null
+  },
+  {
+    id:'nqsolar',name:'Not Qualified – Existing Solar',cat:'nq',
+    color:'#B5251B',
+    pickup:true,drop:true,success:false,
+    when:'Already has solar — use existing solar sub-script BEFORE disqualifying.',
+    what:'The customer already has a solar system installed. This doesn\'t automatically disqualify them — an upgrade or battery addition may still be relevant.',
+    system:'Lead disqualified unless the existing solar sub-script reveals a valid upgrade or battery opportunity.',
+    warning:'Use the existing solar sub-script before selecting this disposition. Don\'t disqualify on "I already have solar" without exploring the upgrade conversation first.',
+    tip:null
+  },
+  {
+    id:'nqproperty',name:'Not Qualified – Property',cat:'nq',
+    color:'#B5251B',
+    pickup:true,drop:true,success:false,
+    when:'Property not suitable — multi-unit over 10, no roof access, too much shading.',
+    what:'The property itself doesn\'t meet the requirements for a solar installation. Common reasons: strata over 10 units, rented roof, excessive shading, no usable roof space.',
+    system:'Lead disqualified and removed from active queue.',
+    warning:null,
+    tip:'If shading is the only issue, ask about potential panel placement on less-shaded sections before disqualifying.'
+  },
+  {
+    id:'nqregion',name:'Not Qualified – Region',cat:'nq',
+    color:'#B5251B',
+    pickup:true,drop:true,success:false,
+    when:'Customer is outside RESINC\'s serviceable area.',
+    what:'The property is in a location where RESINC currently doesn\'t operate. Always confirm the address before going deep into the pitch.',
+    system:'Lead disqualified and removed from active queue.',
+    warning:null,
+    tip:'Confirm suburb/state early in the qualification. Don\'t pitch for 5 minutes only to find out they\'re in a non-serviceable area.'
+  },
+  {
+    id:'reschedule',name:'Reschedule',cat:'callback',
+    color:'#00AEEF',
+    pickup:true,drop:false,success:false,
+    when:'Customer wants to reschedule their existing appointment.',
+    what:'The customer has an existing appointment in the calendar but needs to change the time or date. Rebook them immediately on the same call.',
+    system:'Original appointment updated or replaced in the calendar with the new time.',
+    warning:'Rebook immediately on the call — don\'t let the customer hang up without a new appointment in the calendar. Every reschedule not rebooked on the spot is a lost lead.',
+    tip:null
+  },
+  {
+    id:'dnc',name:'Do Not Call',cat:'system',
+    color:'#B5251B',
+    pickup:true,drop:true,success:false,
+    when:'Customer explicitly requests no further contact.',
+    what:'The customer has stated clearly they do not want to be called again. This is a legal obligation — remove immediately.',
+    system:'Lead permanently flagged as DNC and removed from all dialer queues immediately.',
+    warning:'This is non-negotiable and has legal implications. Remove immediately. Do not call this number again under any circumstances.',
+    tip:null
+  },
+  {
+    id:'nodisp',name:'No Disposition',cat:'system',
+    color:'rgba(255,255,255,.15)',
+    pickup:false,drop:false,success:false,
+    when:'System default — you should NEVER leave a call on this.',
+    what:'No Disposition is the system\'s placeholder before you select the correct outcome. It means nothing has been recorded. This is never an acceptable final disposition.',
+    system:'Lead sits in limbo — the system doesn\'t know what to do with it. TL can\'t see the outcome. Lead may be pushed incorrectly.',
+    warning:'Never leave a call on No Disposition. Always override with the correct disposition immediately after every call.',
+    tip:null
+  },
+  {
+    id:'wrongnumber',name:'Wrong Number',cat:'system',
+    color:'#6B4FBB',
+    pickup:true,drop:true,success:false,
+    when:'The number on file is incorrect — not the right person.',
+    what:'The person who answered is not the customer on record. The number is wrong.',
+    system:'Lead flagged for number correction. Update CRM with the correct number if the customer provides it.',
+    warning:null,
+    tip:'If the person who answers knows the right number for the customer, update the CRM before moving on. Don\'t just disposition and lose a potentially warm lead.'
+  },
+];
+
+const seen=new Set();
+let activeDisp=null;
+const TOTAL=DISPS.length;
+
+function buildGrid(){
+  const grid=document.getElementById('disp-grid');
+  DISPS.forEach((d,i)=>{
+    const card=document.createElement('div');
+    card.className='disp-card';
+    card.id='dc-'+d.id;
+    card.style.setProperty('--dc-color',d.color);
+    card.setAttribute('data-cat',d.cat);
+
+    const flags=[
+      d.pickup?'<span class="dc-flag pickup">PICKUP</span>':'',
+      d.drop?'<span class="dc-flag drop">DROP</span>':'',
+      d.success?'<span class="dc-flag success">SUCCESS</span>':'',
+    ].join('');
+
+    card.innerHTML=`
+      <div class="dc-seen-badge">✓</div>
+      <div class="dc-name">${d.name}</div>
+      <div class="dc-flags">${flags}</div>
+    `;
+    card.onclick=()=>showDisp(d.id);
+    grid.appendChild(card);
+  });
+}
+
+function showDisp(id){
+  const d=DISPS.find(x=>x.id===id);
+  if(!d)return;
+
+  seen.add(id);
+  if(activeDisp===id){closeDisp();return;}
+  activeDisp=id;
+
+  document.querySelectorAll('.disp-card').forEach(c=>c.classList.remove('active'));
+  const card=document.getElementById('dc-'+id);
+  card.classList.add('active','seen');
+
+  const panel=document.getElementById('disp-detail');
+  panel.style.setProperty('--dd-color',d.color);
+
+  const flags=[
+    d.pickup?'<span class="dc-flag pickup">PICKUP</span>':'',
+    d.drop?'<span class="dc-flag drop">DROP</span>':'',
+    d.success?'<span class="dc-flag success">SUCCESS</span>':'',
+  ].join('');
+
+  const warnHTML=d.warning?`<div class="dd-warning critical"><div class="dd-warning-icon">⚠️</div><div class="dd-warning-text"><strong>Important:</strong> ${d.warning}</div></div>`:'';
+  const tipHTML=d.tip?`<div class="dd-warning tip"><div class="dd-warning-icon">💡</div><div class="dd-warning-text">${d.tip}</div></div>`:'';
+
+  panel.innerHTML=`
+    <div class="dd-top">
+      <div>
+        <div class="dd-badge" style="background:color-mix(in srgb,${d.color} 12%,transparent);border:1px solid color-mix(in srgb,${d.color} 25%,transparent);color:${d.color};">${d.cat.toUpperCase()}</div>
+        <div class="dd-name">${d.name}</div>
+        <div class="dd-flags">${flags}</div>
+      </div>
+    </div>
+    <div class="dd-grid">
+      <div class="dd-card">
+        <div class="dd-card-label">WHEN TO USE</div>
+        <div class="dd-card-text">${d.when}</div>
+      </div>
+      <div class="dd-card">
+        <div class="dd-card-label">WHAT IT MEANS</div>
+        <div class="dd-card-text">${d.what}</div>
+      </div>
+    </div>
+    <div class="dd-card" style="margin-top:12px;">
+      <div class="dd-card-label">WHAT HAPPENS IN THE SYSTEM</div>
+      <div class="dd-card-text">${d.system}</div>
+    </div>
+    ${warnHTML}${tipHTML}
+    <span class="dd-close" onclick="closeDisp()">CLOSE ✕</span>
+  `;
+
+  panel.classList.add('visible');
+  updateProgress();
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+}
+
+function closeDisp(){
+  document.getElementById('disp-detail').classList.remove('visible');
+  document.querySelectorAll('.disp-card').forEach(c=>c.classList.remove('active'));
+  activeDisp=null;
+}
+
+function updateProgress(){
+  const done=seen.size;
+  document.getElementById('dp-fill').style.width=(done/TOTAL*100)+'%';
+  document.getElementById('dp-count').textContent=done+' of '+TOTAL;
+  if(done===TOTAL){
+    document.getElementById('unlock-banner').classList.add('show');
+    setTimeout(()=>document.getElementById('unlock-banner').scrollIntoView({behavior:'smooth',block:'nearest'}),400);
+  }
+}
+
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  closeDisp();
+  document.querySelectorAll('.disp-card').forEach(c=>{
+    if(cat==='all'||c.getAttribute('data-cat')===cat){
+      c.classList.remove('hidden');
+    } else {
+      c.classList.add('hidden');
+    }
+  });
+}
+
+buildGrid();
+</script>
+</body>
+</html>
