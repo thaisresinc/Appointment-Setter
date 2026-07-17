@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Moving Dialer Tasks to CRM | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --green:#0B7A4E;--gold:#D4940A;--red:#B5251B;--orange:#D4620A;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:920px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:520px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);}
+
+/* ── LAYOUT ── */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:920px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:16px;}
+
+/* ── VIDEO ── */
+.video-wrap{background:#122430;border-radius:14px;overflow:hidden;border:1px solid rgba(0,174,239,.12);}
+.video-header{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);}
+.vh-dot{width:8px;height:8px;border-radius:50%;background:var(--sky);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.vh-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.1em;}
+video{width:100%;display:block;background:#000;}
+
+/* ── WHY CARDS ── */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:580px){.why-grid{grid-template-columns:1fr;}}
+.why-card{background:#122430;border-radius:12px;padding:18px 16px;border:1.5px solid rgba(255,255,255,.07);border-top:3px solid var(--wc-color,var(--sky));}
+.wc-icon{font-size:22px;margin-bottom:10px;}
+.wc-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:5px;}
+.wc-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.55;}
+
+/* ── STEP LIST ── */
+.step-list{display:flex;flex-direction:column;gap:0;position:relative;padding-left:28px;}
+.step-list::before{content:'';position:absolute;left:10px;top:20px;bottom:20px;width:2px;background:linear-gradient(180deg,var(--sky),rgba(0,174,239,.2));border-radius:1px;}
+.step-item{display:flex;align-items:flex-start;gap:14px;padding:8px 0;position:relative;}
+.si-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:var(--sky);position:absolute;left:-28px;top:12px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--navy);}
+.si-card{background:#122430;border-radius:10px;padding:13px 16px;flex:1;border:1.5px solid rgba(255,255,255,.07);}
+.si-action{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.si-detail{font-size:12px;color:rgba(255,255,255,.5);line-height:1.55;}
+.si-detail strong{color:rgba(255,255,255,.85);}
+
+/* ── DAILY RHYTHM ── */
+.rhythm-wrap{display:flex;flex-direction:column;gap:8px;}
+.rhythm-item{
+  display:flex;align-items:center;gap:14px;
+  background:#122430;border-radius:10px;padding:14px 16px;
+  border:1.5px solid rgba(255,255,255,.07);
+}
+.ri-time{
+  width:80px;flex-shrink:0;font-size:9px;font-weight:700;
+  letter-spacing:.14em;text-align:center;
+}
+.ri-time.morning{color:var(--sky);}
+.ri-time.midday{color:var(--gold);}
+.ri-time.evening{color:#9B8FDB;}
+.ri-divider{width:1px;height:36px;background:rgba(255,255,255,.08);flex-shrink:0;}
+.ri-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
+.ri-desc{font-size:12px;color:rgba(255,255,255,.4);}
+
+/* ── 5-DAY MINI TIMELINE ── */
+.mini-cycle{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:8px;}
+.mc-day{
+  flex-shrink:0;text-align:center;padding:12px 10px;
+  background:#122430;border:1px solid rgba(255,255,255,.07);
+  min-width:90px;
+}
+.mc-day:first-child{border-radius:10px 0 0 10px;}
+.mc-day:last-child{border-radius:0 10px 10px 0;background:rgba(181,37,27,.08);border-color:rgba(181,37,27,.2);}
+.mc-day-num{font-size:9px;font-weight:700;letter-spacing:.14em;margin-bottom:5px;}
+.mc-day:not(:last-child) .mc-day-num{color:var(--sky);}
+.mc-day:last-child .mc-day-num{color:#E07070;}
+.mc-day-action{font-size:11px;color:rgba(255,255,255,.65);line-height:1.3;}
+.mc-day:last-child .mc-day-action{color:rgba(255,255,255,.5);}
+.mc-arrow{font-size:14px;color:rgba(255,255,255,.15);flex-shrink:0;padding:0 2px;}
+
+/* ── RED SIGNAL ── */
+.red-signal{
+  background:rgba(181,37,27,.08);border:1.5px solid rgba(181,37,27,.2);
+  border-radius:12px;padding:18px 20px;
+  display:flex;gap:14px;align-items:flex-start;
+}
+.rs-icon{font-size:22px;flex-shrink:0;}
+.rs-label{font-size:10px;font-weight:700;letter-spacing:.16em;color:#E07070;margin-bottom:5px;}
+.rs-text{font-size:13px;color:rgba(255,255,255,.7);line-height:1.65;}
+.rs-text strong{color:#fff;}
+
+/* ── TIP BOX ── */
+.tip-box{display:flex;gap:10px;align-items:flex-start;border-radius:9px;padding:11px 14px;font-size:12.5px;line-height:1.6;}
+.tip-box.sky{background:rgba(0,174,239,.07);border-left:3px solid var(--sky);}
+.tip-box.gold{background:rgba(212,148,10,.07);border-left:3px solid var(--gold);}
+.tip-box-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.tip-box-text{color:rgba(255,255,255,.65);}
+.tip-box-text strong{color:#fff;}
+
+/* ── QUICK RECAP ── */
+.recap-list{display:flex;flex-direction:column;gap:7px;}
+.recap-item{display:flex;align-items:flex-start;gap:10px;background:#122430;border-radius:9px;padding:12px 15px;border:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(255,255,255,.7);}
+.recap-item strong{color:#fff;}
+.recap-arrow{color:var(--sky);font-weight:700;flex-shrink:0;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DIALER TO CRM</div>
+    <h1 class="hero-title">Moving Dialer Tasks<br><em>to CRM</em></h1>
+    <p class="hero-sub">The dialer connects the calls. The CRM tracks everything that happens after. One without the other is half a system.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🎬 Reference video</div>
+      <div class="hero-pill">📋 5-step process</div>
+      <div class="hero-pill">🔄 Daily call rhythm</div>
+      <div class="hero-pill">📅 5-day cycle</div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">WATCH FIRST</div>
+    <div class="s-title">Moving Dialer Tasks to CRM — Walkthrough</div>
+    <div class="s-bar"></div>
+    <div class="video-wrap">
+      <div class="video-header">
+        <div class="vh-dot"></div>
+        <div class="vh-label">MOVING DIALER TASKS TO CRM · REFERENCE VIDEO</div>
+      </div>
+      <video controls preload="metadata">
+        <source src="https://thaisresinc.github.io/alpha-hippo-training/Moving_Dialer_Tasks_compressed.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- WHY THIS MATTERS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">WHY THIS MATTERS</div>
+    <div class="s-title">Every Lead. Every Outcome. In the CRM.</div>
+    <div class="s-bar"></div>
+    <div class="why-grid">
+      <div class="why-card" style="--wc-color:var(--sky);">
+        <div class="wc-icon">📊</div>
+        <div class="wc-title">Full pipeline visibility</div>
+        <div class="wc-desc">Management can track every callback — who's being worked, for how long, and what stage it's at.</div>
+      </div>
+      <div class="why-card" style="--wc-color:var(--green);">
+        <div class="wc-icon">🔄</div>
+        <div class="wc-title">Structured follow-up</div>
+        <div class="wc-desc">CRM tasks keep you accountable. Nothing gets forgotten — the system reminds you automatically.</div>
+      </div>
+      <div class="why-card" style="--wc-color:#E07070;">
+        <div class="wc-icon">🔴</div>
+        <div class="wc-title">Overdue = re-upload signal</div>
+        <div class="wc-desc">After 5 days, overdue tasks tell management this lead was a quality opportunity — and can be re-uploaded to the dialer.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP BY STEP -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE PROCESS</div>
+    <div class="s-title">Step by Step — After Every Call</div>
+    <div class="s-bar"></div>
+
+    <div class="step-list">
+      <div class="step-item">
+        <div class="si-dot">1</div>
+        <div class="si-card">
+          <div class="si-action">Acknowledge the callback in the dialer</div>
+          <div class="si-detail">After calling the lead, acknowledge the callback in the dialer. The lead should already be loaded in the CRM from the preloaded link.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="si-dot">2</div>
+        <div class="si-card">
+          <div class="si-action">Open the lead in CRM → hover Open Activities → click +</div>
+          <div class="si-detail">Find the <strong>Open Activities</strong> section → hover to reveal the <strong>+</strong> button → click it → select <strong>Task</strong>.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="si-dot">3</div>
+        <div class="si-card">
+          <div class="si-action">Set the task for today</div>
+          <div class="si-detail">For a no answer, set a callback for the <strong>current day</strong> — a few hours later. Set the owner to yourself.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="si-dot">4</div>
+        <div class="si-card">
+          <div class="si-action">Add a reminder — delivered via email</div>
+          <div class="si-detail">Set a reminder for a few hours before the callback. Delivered via <strong>email</strong>. Set to <strong>never repeat</strong>.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="si-dot">5</div>
+        <div class="si-card">
+          <div class="si-action">Save</div>
+          <div class="si-detail">Click <strong>Save</strong>. The open activity now appears in the lead and on your home page task list.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY RHYTHM -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">YOUR DAILY CALL RHYTHM</div>
+    <div class="s-title">2–3 Attempts Per Callback Per Day</div>
+    <div class="s-bar"></div>
+    <div class="rhythm-wrap">
+      <div class="rhythm-item">
+        <div class="ri-time morning">☀️ MORNING</div>
+        <div class="ri-divider"></div>
+        <div>
+          <div class="ri-title">Work callbacks first — before new leads</div>
+          <div class="ri-desc">These are committed follow-ups. They go before anything else in the queue.</div>
+        </div>
+      </div>
+      <div class="rhythm-item">
+        <div class="ri-time midday">☕ MIDDAY</div>
+        <div class="ri-divider"></div>
+        <div>
+          <div class="ri-title">Second attempt on same-day callbacks</div>
+          <div class="ri-desc">If no answer in the morning, try again mid-shift.</div>
+        </div>
+      </div>
+      <div class="rhythm-item">
+        <div class="ri-time evening">🌆 END OF SHIFT</div>
+        <div class="ri-divider"></div>
+        <div>
+          <div class="ri-title">Final attempt — then roll to next day</div>
+          <div class="ri-desc">If still no answer after 2–3 attempts, edit the task date to tomorrow.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5-DAY CYCLE -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE CYCLE</div>
+    <div class="s-title">Work Every Lead for 5 Business Days</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">After each day of no answer — click ⋯ → Edit → change date to next business day.</div>
+
+    <div class="mini-cycle">
+      <div class="mc-day">
+        <div class="mc-day-num">DAY 1</div>
+        <div class="mc-day-action">Call 2–3x<br>Create task<br>same day</div>
+      </div>
+      <div class="mc-arrow">→</div>
+      <div class="mc-day">
+        <div class="mc-day-num">DAY 2</div>
+        <div class="mc-day-action">Edit date<br>Call 2–3x<br>again</div>
+      </div>
+      <div class="mc-arrow">→</div>
+      <div class="mc-day">
+        <div class="mc-day-num">DAY 3</div>
+        <div class="mc-day-action">Edit date<br>Call 2–3x<br>again</div>
+      </div>
+      <div class="mc-arrow">→</div>
+      <div class="mc-day">
+        <div class="mc-day-num">DAY 4</div>
+        <div class="mc-day-action">Edit date<br>Call 2–3x<br>again</div>
+      </div>
+      <div class="mc-arrow">→</div>
+      <div class="mc-day">
+        <div class="mc-day-num">DAY 5</div>
+        <div class="mc-day-action">Edit date<br>Final<br>attempts</div>
+      </div>
+      <div class="mc-arrow">→</div>
+      <div class="mc-day">
+        <div class="mc-day-num">AFTER DAY 5</div>
+        <div class="mc-day-action">Leave red<br>Do NOT<br>mark done</div>
+      </div>
+    </div>
+
+    <div class="tip-box gold" style="margin-top:14px;">
+      <div class="tip-box-icon">💡</div>
+      <div class="tip-box-text">To roll forward: <strong>Open Activities → 3 dots (⋯) → Edit → change date to next business day → Save.</strong> Takes 10 seconds.</div>
+    </div>
+
+    <div class="red-signal" style="margin-top:14px;">
+      <div class="rs-icon">🔴</div>
+      <div>
+        <div class="rs-label">AFTER DAY 5 — LEAVE IT RED</div>
+        <div class="rs-text">Once you've worked the lead for 5 days with no contact, <strong>leave the task overdue. Do not mark it complete.</strong><br><br>Red = the signal that you've done your job. Management sees it as a quality callback opportunity and can <strong>re-upload the lead to the dialer</strong> for the team to work again — giving the customer another chance to pick up at a better time.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK RECAP -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">QUICK RECAP</div>
+    <div class="s-title">The Rules in 30 Seconds</div>
+    <div class="s-bar"></div>
+    <div class="recap-list">
+      <div class="recap-item"><span class="recap-arrow">→</span><div><strong>Every lead</strong> you call goes into the CRM — booked or not</div></div>
+      <div class="recap-item"><span class="recap-arrow">→</span><div>Acknowledge in dialer → open CRM → <strong>+ Task → set for today</strong></div></div>
+      <div class="recap-item"><span class="recap-arrow">→</span><div>Call <strong>2–3 times per day</strong> — morning, midday, end of shift</div></div>
+      <div class="recap-item"><span class="recap-arrow">→</span><div>No answer → <strong>⋯ → Edit → change date to next day</strong></div></div>
+      <div class="recap-item"><span class="recap-arrow">→</span><div>Repeat for <strong>5 business days</strong></div></div>
+      <div class="recap-item" style="border-color:rgba(181,37,27,.2);"><span class="recap-arrow" style="color:#E07070;">→</span><div>After Day 5: <strong>leave red — do not mark complete.</strong> Red = re-upload signal.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">The dialer connects the calls. The CRM tracks everything that happens after. <strong>One without the other is half a system.</strong> Every lead you work deserves to be tracked — and every red task you leave is a pipeline opportunity kept alive for the team.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+</script>
+</body>
+</html>
