@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Zoho CRM — Home Page & Dashboard Setup | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:940px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:520px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);}
+
+/* ── LAYOUT ── */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:940px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:16px;}
+
+/* ── SETUP STEPS ── */
+.setup-steps{display:flex;flex-direction:column;gap:0;position:relative;padding-left:28px;}
+.setup-steps::before{content:'';position:absolute;left:10px;top:20px;bottom:20px;width:2px;background:linear-gradient(180deg,var(--sky),rgba(0,174,239,.2));border-radius:1px;}
+.setup-step{display:flex;align-items:flex-start;gap:16px;padding:10px 0;position:relative;}
+.ss-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:var(--sky);position:absolute;left:-28px;top:14px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--navy);}
+.ss-card{background:#122430;border-radius:10px;padding:13px 16px;flex:1;border:1.5px solid rgba(255,255,255,.07);}
+.ss-action{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.ss-detail{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;}
+.ss-detail strong{color:rgba(255,255,255,.85);}
+
+/* ── SCREENSHOT VIEWER ── */
+.screenshot-wrap{
+  background:#122430;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(0,174,239,.12);
+  box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+.sw-bar{background:#0F2028;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);}
+.sw-dots{display:flex;gap:5px;}
+.sw-dot{width:9px;height:9px;border-radius:50%;}
+.sw-dot.r{background:#FF5F57;}.sw-dot.y{background:#FEBC2E;}.sw-dot.g{background:#28C840;}
+.sw-label{font-size:10px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.08em;}
+.sw-img{width:100%;display:block;}
+.sw-caption{padding:10px 16px;background:#0F2028;font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.5;border-top:1px solid rgba(255,255,255,.06);}
+.sw-caption strong{color:rgba(255,255,255,.8);}
+
+/* Screenshot tabs */
+.sw-tabs{display:flex;gap:6px;padding:10px 16px;background:#0F2028;border-bottom:1px solid rgba(255,255,255,.06);}
+.sw-tab{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+.sw-tab.active{background:var(--sky);color:var(--navy);border-color:var(--sky);}
+.sw-tab:not(.active){background:rgba(255,255,255,.06);color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.08);}
+.sw-tab:hover:not(.active){background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);}
+.sw-panel{display:none;}
+.sw-panel.active{display:block;}
+
+/* ── 4 COMPONENTS GRID ── */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){.comp-grid{grid-template-columns:1fr;}}
+.comp-card{
+  background:#122430;border-radius:12px;padding:16px 16px;
+  border:1.5px solid rgba(255,255,255,.07);border-top:3px solid var(--cc-color,var(--sky));
+}
+.comp-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:5px;}
+.comp-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;}
+.comp-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;margin-top:8px;background:color-mix(in srgb,var(--cc-color,var(--sky)) 12%,transparent);color:var(--cc-color,var(--sky));}
+
+/* ── TIP BOX ── */
+.tip-box{display:flex;gap:10px;align-items:flex-start;border-radius:9px;padding:11px 14px;font-size:12.5px;line-height:1.6;}
+.tip-box.sky{background:rgba(0,174,239,.07);border-left:3px solid var(--sky);}
+.tip-box.gold{background:rgba(212,148,10,.07);border-left:3px solid var(--gold);}
+.tip-box.green{background:rgba(11,122,78,.07);border-left:3px solid var(--green);}
+.tip-box-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.tip-box-text{color:rgba(255,255,255,.65);}
+.tip-box-text strong{color:#fff;}
+
+/* ── DASHBOARD USE CASE ── */
+.usecase-steps{display:flex;flex-direction:column;gap:8px;}
+.uc-step{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#122430;border-radius:10px;padding:13px 15px;
+  border:1.5px solid rgba(255,255,255,.07);
+}
+.uc-num{
+  width:26px;height:26px;border-radius:7px;flex-shrink:0;
+  background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--sky);
+}
+.uc-text{font-size:13px;color:rgba(255,255,255,.75);line-height:1.55;}
+.uc-text strong{color:#fff;}
+
+/* ── TIMEZONE TABLE ── */
+.tz-table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;}
+.tz-table th{background:#0F2028;padding:10px 14px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.35);}
+.tz-table td{padding:12px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.06);background:#122430;}
+.tz-table tr:last-child td{border-bottom:none;}
+.tz-table td:first-child{color:rgba(255,255,255,.55);font-weight:600;}
+.tz-table td:last-child{color:#fff;font-weight:600;}
+.tz-flag{background:rgba(212,148,10,.1);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;margin-top:10px;}
+.tz-flag strong{color:var(--gold);}
+
+/* ── DAILY CHECKLIST ── */
+.daily-check{display:flex;flex-direction:column;gap:8px;}
+.dc-item{
+  display:flex;align-items:center;gap:12px;
+  background:#122430;border-radius:10px;padding:12px 15px;
+  border:1.5px solid rgba(255,255,255,.07);cursor:pointer;
+  transition:all .18s;user-select:none;
+}
+.dc-item:hover{border-color:rgba(0,174,239,.2);background:rgba(0,174,239,.05);}
+.dc-item.checked{border-color:rgba(11,122,78,.25);background:rgba(11,122,78,.06);}
+.dc-box{width:22px;height:22px;border-radius:6px;flex-shrink:0;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .18s;}
+.dc-item.checked .dc-box{background:var(--green);border-color:var(--green);}
+.dc-label{font-size:13px;font-weight:600;color:#fff;}
+.dc-item.checked .dc-label{color:rgba(255,255,255,.4);}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · ZOHO CRM SETUP</div>
+    <h1 class="hero-title">Zoho CRM — Home Page<br><em>& Dashboard Setup</em></h1>
+    <p class="hero-sub">Set this up before your first call. Your home page is your cockpit — it shows everything that needs your attention the moment you log in.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🏠 Home page setup</div>
+      <div class="hero-pill">📊 Dashboard walkthrough</div>
+      <div class="hero-pill">🕐 Timezone configuration</div>
+      <div class="hero-pill">📅 Reschedule management</div>
+    </div>
+  </div>
+</section>
+
+<!-- PART 1: HOME PAGE SETUP -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">PART 1 — HOME PAGE SETUP</div>
+    <div class="s-title">Setting Up Your Cockpit</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Your home page shows everything due today — callbacks, follow-ups, tasks. Set it up once and it works for you every single shift.</div>
+
+    <!-- Step by step -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);margin-bottom:12px;">SETUP STEPS</div>
+        <div class="setup-steps">
+          <div class="setup-step">
+            <div class="ss-dot">1</div>
+            <div class="ss-card">
+              <div class="ss-action">Go to your Home screen</div>
+              <div class="ss-detail">Click <strong>Home</strong> in the left sidebar — same as the screenshot on the right.</div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="ss-dot">2</div>
+            <div class="ss-card">
+              <div class="ss-action">Click the 3 dots (⋯) — top right</div>
+              <div class="ss-detail">You'll see options: <strong>Add Component, Reorder, View in Full Screen.</strong></div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="ss-dot">3</div>
+            <div class="ss-card">
+              <div class="ss-action">Click Add Component</div>
+              <div class="ss-detail">Select <strong>Custom View</strong> → choose the <strong>Tasks</strong> module.</div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="ss-dot">4</div>
+            <div class="ss-card">
+              <div class="ss-action">Search "My" and add all 4 components</div>
+              <div class="ss-detail">Type <strong>my</strong> in the search box — only add the <strong>"My"</strong> versions. See the 4 components below.</div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="ss-dot">5</div>
+            <div class="ss-card">
+              <div class="ss-action">Drag to reorder</div>
+              <div class="ss-detail">Once added, drag the components into whatever order suits you best.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-box sky" style="margin-top:14px;">
+          <div class="tip-box-icon">⚠️</div>
+          <div class="tip-box-text">Always choose the <strong>"My"</strong> versions — e.g. <strong>My Today's Tasks</strong>, not "Today's Tasks". The "My" version shows only YOUR tasks, not the whole team's.</div>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);margin-bottom:12px;">WHAT IT LOOKS LIKE</div>
+        <div class="screenshot-wrap">
+          <div class="sw-bar">
+            <div class="sw-dots"><div class="sw-dot r"></div><div class="sw-dot y"></div><div class="sw-dot g"></div></div>
+            <div class="sw-label">ZOHO CRM — HOME PAGE</div>
+          </div>
+          <div class="sw-tabs">
+            <div class="sw-tab active" onclick="switchScreenshot(0,this)">Home (done)</div>
+            <div class="sw-tab" onclick="switchScreenshot(1,this)">3 dots menu</div>
+            <div class="sw-tab" onclick="switchScreenshot(2,this)">Add component</div>
+          </div>
+          <div class="sw-panel active" id="swp-0">
+            <img src="https://thaisresinc.github.io/alpha-hippo-training/1780976872048_image.png" class="sw-img" alt="Zoho CRM home page with 4 task components">
+            <div class="sw-caption">Your home page once set up — 4 task panels showing today's callbacks, overdue tasks, tomorrow's tasks, and the 7-day view.</div>
+          </div>
+          <div class="sw-panel" id="swp-1">
+            <img src="https://thaisresinc.github.io/alpha-hippo-training/1780976877843_image.png" class="sw-img" alt="3 dots menu showing Add Component option">
+            <div class="sw-caption">Click the <strong>3 dots (⋯)</strong> in the top right — then click <strong>Add Component</strong>.</div>
+          </div>
+          <div class="sw-panel" id="swp-2">
+            <img src="https://thaisresinc.github.io/alpha-hippo-training/1780976881277_image.png" class="sw-img" alt="Customize home page with My tasks search">
+            <div class="sw-caption">Search <strong>"my"</strong> in the Custom Views panel — only add the 4 components that start with "My".</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Components -->
+    <div style="margin-top:24px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);margin-bottom:12px;">THE 4 COMPONENTS TO ADD</div>
+      <div class="comp-grid">
+        <div class="comp-card" style="--cc-color:var(--sky);">
+          <div class="comp-name">My Today's Tasks</div>
+          <div class="comp-desc">Everything due today — callbacks, bookings to confirm, follow-ups. This is your starting point every morning.</div>
+          <span class="comp-tag">CHECK FIRST</span>
+        </div>
+        <div class="comp-card" style="--cc-color:var(--red);">
+          <div class="comp-name">My Overdue Tasks</div>
+          <div class="comp-desc">Tasks from yesterday and earlier that haven't been completed. Red signals — these need immediate attention.</div>
+          <span class="comp-tag" style="--cc-color:var(--red);">ACTION NEEDED</span>
+        </div>
+        <div class="comp-card" style="--cc-color:var(--green);">
+          <div class="comp-name">My Tomorrow's Tasks</div>
+          <div class="comp-desc">Tasks set for the next day — lets you plan ahead and prepare for tomorrow's callbacks before you log off.</div>
+          <span class="comp-tag" style="--cc-color:var(--green);">PLAN AHEAD</span>
+        </div>
+        <div class="comp-card" style="--cc-color:var(--gold);">
+          <div class="comp-name">My Next 7 Days + Overdue</div>
+          <div class="comp-desc">Full view of all leads to call including overdue ones. The complete picture of your pipeline for the week.</div>
+          <span class="comp-tag" style="--cc-color:var(--gold);">FULL PIPELINE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 2: DASHBOARD -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">PART 2 — AGENT DASHBOARD</div>
+    <div class="s-title">Your Dashboard — What It Shows</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">The dashboard shows what happens to your bookings after you make them. Check it every morning — especially the status breakdown.</div>
+
+    <!-- 3 views -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:#122430;border-radius:12px;padding:16px;border:1.5px solid rgba(255,255,255,.07);text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">📅</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Daily</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.4;">Day-by-day status breakdown of your appointments</div>
+      </div>
+      <div style="background:#122430;border-radius:12px;padding:16px;border:1.5px solid rgba(255,255,255,.07);text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">📆</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Weekly</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.4;">Last week, this week, and next week's bookings at a glance</div>
+      </div>
+      <div style="background:#122430;border-radius:12px;padding:16px;border:1.5px solid rgba(255,255,255,.07);text-align:center;">
+        <div style="font-size:22px;margin-bottom:8px;">🗓️</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Monthly</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.4;">Confirmed vs rescheduled appointments over the month</div>
+      </div>
+    </div>
+
+    <div class="tip-box sky" style="margin-bottom:20px;">
+      <div class="tip-box-icon">💡</div>
+      <div class="tip-box-text"><strong>New Sales Weekly will appear blank for you.</strong> Agents and appointment setters don't have access to potentials — this section won't display data on your end. That's normal.</div>
+    </div>
+
+    <!-- Use case -->
+    <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);margin-bottom:12px;">USE CASE — CATCHING A RESCHEDULE</div>
+    <div class="usecase-steps">
+      <div class="uc-step"><div class="uc-num">1</div><div class="uc-text">Navigate to the relevant date — e.g. go back to <strong>yesterday</strong> to review what happened to your appointments.</div></div>
+      <div class="uc-step"><div class="uc-num">2</div><div class="uc-text">Spot a reschedule on the list — it'll show as <strong>Rescheduled</strong> status in your breakdown.</div></div>
+      <div class="uc-step"><div class="uc-num">3</div><div class="uc-text">Click on the appointment, then click the <strong>blue link</strong> to open the meeting record.</div></div>
+      <div class="uc-step"><div class="uc-num">4</div><div class="uc-text">Review the <strong>notes left by the confirmation team</strong> — understand what happened with the booking.</div></div>
+      <div class="uc-step"><div class="uc-num">5</div><div class="uc-text">If it's feasible, <strong>jump on the reschedule immediately</strong> — call the customer and get them rebooked before the opportunity slips away.</div></div>
+    </div>
+
+    <div class="tip-box gold" style="margin-top:14px;">
+      <div class="tip-box-icon">⚡</div>
+      <div class="tip-box-text"><strong>Speed matters with reschedules.</strong> The longer you wait, the colder the lead gets. Check your dashboard every morning and act on reschedules the same day you spot them.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 3: TIMEZONE -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">PART 3 — TIMEZONE SETTING</div>
+    <div class="s-title">Set Your Time Zone Correctly</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Do this once — it affects every task, callback, and appointment in the system.</div>
+
+    <table class="tz-table">
+      <thead><tr><th>SETTING</th><th>VALUE</th></tr></thead>
+      <tbody>
+        <tr><td>Time Zone</td><td>(GMT+10:00) Australian Eastern Standard Time — New South Wales / Sydney</td></tr>
+      </tbody>
+    </table>
+
+    <div class="tz-flag" style="margin-top:10px;">
+      <strong>🇮🇩 Bali team:</strong> Set your Zoho timezone to GMT+10 to match Australian Eastern time — <strong>not</strong> your local Bali time (GMT+8). All appointments, tasks, and callbacks run on AU Eastern time. If your timezone is wrong, your tasks will show at the wrong times and you'll miss callbacks.
+    </div>
+  </div>
+</div>
+
+<!-- DAILY CHECKLIST -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">YOUR MORNING ROUTINE</div>
+    <div class="s-title">Before Your First Call — Every Day</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Click each item as you learn it. This is the routine that keeps your pipeline clean.</div>
+    <div class="daily-check">
+      <div class="dc-item" onclick="this.classList.toggle('checked');this.querySelector('.dc-box').textContent=this.classList.contains('checked')?'✓':'';">
+        <div class="dc-box"></div>
+        <div class="dc-label">Open Zoho CRM Home — check My Today's Tasks</div>
+      </div>
+      <div class="dc-item" onclick="this.classList.toggle('checked');this.querySelector('.dc-box').textContent=this.classList.contains('checked')?'✓':'';">
+        <div class="dc-box"></div>
+        <div class="dc-label">Check My Overdue Tasks — action anything from yesterday</div>
+      </div>
+      <div class="dc-item" onclick="this.classList.toggle('checked');this.querySelector('.dc-box').textContent=this.classList.contains('checked')?'✓':'';">
+        <div class="dc-box"></div>
+        <div class="dc-label">Open Agent Dashboard — check Booked Apps by Status</div>
+      </div>
+      <div class="dc-item" onclick="this.classList.toggle('checked');this.querySelector('.dc-box').textContent=this.classList.contains('checked')?'✓':'';">
+        <div class="dc-box"></div>
+        <div class="dc-label">Spot any reschedules — review notes and act immediately</div>
+      </div>
+      <div class="dc-item" onclick="this.classList.toggle('checked');this.querySelector('.dc-box').textContent=this.classList.contains('checked')?'✓':'';">
+        <div class="dc-box"></div>
+        <div class="dc-label">Open dialer alongside CRM — split screen ready</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">Set this up before your first call. Your home page is your cockpit — it shows everything that needs your attention the moment you log in. <strong>The dashboard is how you catch reschedules before they fall through the cracks.</strong> Check both every morning. No exceptions.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+function switchScreenshot(i,btn){
+  document.querySelectorAll('.sw-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sw-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('swp-'+i).classList.add('active');
+}
+</script>
+</body>
+</html>
