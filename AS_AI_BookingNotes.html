@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Booking Notes with Claude | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --green:#0B7A4E;--gold:#D4940A;--red:#B5251B;
+  --purple:#6B4FBB;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:920px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:520px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);}
+
+/* ── LAYOUT ── */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:920px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:16px;}
+
+/* ── VIDEO ── */
+.video-wrap{background:#122430;border-radius:14px;overflow:hidden;border:1px solid rgba(0,174,239,.12);}
+.video-header{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);}
+.vh-dot{width:8px;height:8px;border-radius:50%;background:var(--sky);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.vh-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.1em;}
+video{width:100%;display:block;background:#000;}
+
+/* ── BOOKING NOTES FORMAT ── */
+.notes-preview{
+  background:#1E2A30;border-radius:12px;padding:20px 22px;
+  border:1.5px solid rgba(0,174,239,.15);box-shadow:var(--shadow-lg);
+  font-family:var(--mono);
+}
+.notes-preview-bar{
+  display:flex;align-items:center;gap:8px;margin-bottom:14px;
+  padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08);
+}
+.npb-dot{width:8px;height:8px;border-radius:50%;}
+.npb-dot.r{background:#FF5F57;}.npb-dot.y{background:#FEBC2E;}.npb-dot.g{background:#28C840;}
+.npb-label{font-size:10px;color:rgba(255,255,255,.35);font-family:var(--font);font-weight:600;letter-spacing:.08em;}
+.note-line{font-size:13px;color:rgba(255,255,255,.7);line-height:1.8;}
+.note-line.header{font-weight:700;color:#fff;font-size:14px;}
+.note-line.field{color:rgba(255,255,255,.6);}
+.note-line.field strong{color:#fff;}
+.note-section{margin-top:6px;}
+
+/* ── COPY BUTTON ── */
+.copy-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(0,174,239,.1);border:1px solid rgba(0,174,239,.2);
+  border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;
+  color:var(--sky);cursor:pointer;transition:all .18s;margin-top:12px;
+  font-family:var(--font);
+}
+.copy-btn:hover{background:rgba(0,174,239,.18);border-color:var(--sky);}
+.copy-btn.copied{background:rgba(11,122,78,.12);border-color:var(--green);color:#4DD9A0;}
+
+/* ── PROMPT BOX ── */
+.prompt-box{
+  background:#0F2028;border-radius:12px;padding:18px 20px;
+  border:1.5px solid rgba(107,79,187,.25);
+  position:relative;
+}
+.prompt-box-label{
+  font-size:9px;font-weight:700;letter-spacing:.18em;color:#9B8FDB;
+  margin-bottom:10px;display:flex;align-items:center;gap:7px;
+}
+.prompt-box-label span{width:6px;height:6px;border-radius:50%;background:#9B8FDB;display:inline-block;}
+.prompt-text{
+  font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.75);
+  line-height:1.7;white-space:pre-wrap;
+}
+.prompt-text .highlight{color:#00AEEF;}
+.prompt-text .bold{color:#fff;font-weight:700;}
+
+/* ── STEP CARDS ── */
+.step-list{display:flex;flex-direction:column;gap:12px;}
+.step-card{
+  border-radius:12px;overflow:hidden;
+  border:1.5px solid rgba(255,255,255,.07);
+}
+.step-card-header{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;background:#122430;
+}
+.sc-num{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;
+}
+.step-card:nth-child(1) .sc-num{background:rgba(0,174,239,.15);color:var(--sky);}
+.step-card:nth-child(2) .sc-num{background:rgba(107,79,187,.15);color:#9B8FDB;}
+.step-card:nth-child(3) .sc-num{background:rgba(212,148,10,.15);color:var(--gold);}
+.step-card:nth-child(4) .sc-num{background:rgba(11,122,78,.15);color:#4DD9A0;}
+.step-card:nth-child(5) .sc-num{background:rgba(0,174,239,.15);color:var(--sky);}
+.sc-title{font-size:14px;font-weight:700;color:#fff;flex:1;}
+.sc-badge{font-size:9px;font-weight:700;letter-spacing:.1em;padding:3px 9px;border-radius:5px;}
+.step-card:nth-child(1) .sc-badge{background:rgba(0,174,239,.1);color:var(--sky);}
+.step-card:nth-child(2) .sc-badge{background:rgba(107,79,187,.1);color:#9B8FDB;}
+.step-card:nth-child(3) .sc-badge{background:rgba(212,148,10,.1);color:var(--gold);}
+.step-card:nth-child(4) .sc-badge{background:rgba(11,122,78,.1);color:#4DD9A0;}
+.step-card:nth-child(5) .sc-badge{background:rgba(0,174,239,.1);color:var(--sky);}
+.step-card-body{padding:14px 18px;background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.05);}
+.step-card-text{font-size:13px;color:rgba(255,255,255,.7);line-height:1.65;}
+.step-card-text strong{color:#fff;}
+.step-card-text ul{padding-left:14px;margin-top:6px;display:flex;flex-direction:column;gap:5px;}
+.step-card-text li{font-size:12.5px;}
+
+/* ── KEYBOARD SHORTCUT ── */
+.kbd{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:5px;padding:2px 8px;
+  font-family:var(--mono);font-size:11px;color:#fff;
+  box-shadow:0 2px 0 rgba(0,0,0,.3);
+}
+
+/* ── CTRL+SHIFT+V CALLOUT ── */
+.paste-callout{
+  background:#122430;border-radius:14px;padding:20px 22px;
+  border:1.5px solid rgba(181,37,27,.2);
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+@media(max-width:540px){.paste-callout{grid-template-columns:1fr;}}
+.paste-side{border-radius:10px;padding:16px;}
+.paste-side.wrong{background:rgba(181,37,27,.07);border:1px solid rgba(181,37,27,.15);}
+.paste-side.right{background:rgba(11,122,78,.07);border:1px solid rgba(11,122,78,.15);}
+.paste-side-label{font-size:9px;font-weight:700;letter-spacing:.16em;margin-bottom:8px;}
+.paste-side.wrong .paste-side-label{color:#E07070;}
+.paste-side.right .paste-side-label{color:#4DD9A0;}
+.paste-kbd-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.paste-result{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;}
+.paste-side.wrong .paste-result{color:#E07070;}
+.paste-side.right .paste-result{color:#4DD9A0;}
+
+/* ── TIP BOXES ── */
+.tip-box{display:flex;gap:10px;align-items:flex-start;border-radius:9px;padding:11px 14px;font-size:12.5px;line-height:1.6;}
+.tip-box.sky{background:rgba(0,174,239,.07);border-left:3px solid var(--sky);}
+.tip-box.gold{background:rgba(212,148,10,.07);border-left:3px solid var(--gold);}
+.tip-box.green{background:rgba(11,122,78,.07);border-left:3px solid var(--green);}
+.tip-box-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.tip-box-text{color:rgba(255,255,255,.65);}
+.tip-box-text strong{color:#fff;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · AI BOOKING NOTES</div>
+    <h1 class="hero-title">AI Booking Notes<br><em>with Claude</em></h1>
+    <p class="hero-sub">Set up the template once. Use it on every booked call after that. Saves 5–10 minutes per booking and makes your notes more consistent than anything written from memory.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🎬 Reference video</div>
+      <div class="hero-pill">⚙️ One-time setup</div>
+      <div class="hero-pill">📋 5-step process</div>
+      <div class="hero-pill">🤖 AI-powered notes</div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">WATCH FIRST</div>
+    <div class="s-title">AI Booking Notes — Full Walkthrough</div>
+    <div class="s-bar"></div>
+    <div class="video-wrap">
+      <div class="video-header">
+        <div class="vh-dot"></div>
+        <div class="vh-label">AI BOOKING NOTES WITH CLAUDE · REFERENCE VIDEO</div>
+      </div>
+      <video controls preload="metadata">
+        <source src="https://thaisresinc.github.io/alpha-hippo-training/AI_Summary_compressed.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING NOTES FORMAT -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE FORMAT — MEMORISE THIS</div>
+    <div class="s-title">Booking Notes Structure</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Every booking note in the CRM follows this exact format. No exceptions — the confirmation team and specialist rely on this structure.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);margin-bottom:10px;">WHAT IT LOOKS LIKE IN THE CRM</div>
+        <div class="notes-preview">
+          <div class="notes-preview-bar">
+            <div class="npb-dot r"></div><div class="npb-dot y"></div><div class="npb-dot g"></div>
+            <div class="npb-label">ZOHO CRM — NOTE</div>
+          </div>
+          <div class="note-line header">BOOKING NOTES</div>
+          <div class="note-section">
+            <div class="note-line field"><strong>DECISION MAKERS:</strong> Sandra and her husband</div>
+          </div>
+          <div class="note-section">
+            <div class="note-line field"><strong>WHO WILL ATTEND:</strong> Both present at 9am</div>
+          </div>
+          <div class="note-section">
+            <div class="note-line field"><strong>ROOF CHECK:</strong> No shading issues</div>
+          </div>
+          <div class="note-section">
+            <div class="note-line field"><strong>GENERAL NOTES:</strong> Customer aware of battery rebate. Quarterly bill $580. Keen to reduce costs before winter.</div>
+          </div>
+        </div>
+        <button class="copy-btn" id="copy-btn" onclick="copyFormat()">📋 Copy blank template</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);margin-bottom:2px;">THE 4 SECTIONS</div>
+        <div style="background:#122430;border-radius:10px;padding:14px 16px;border:1.5px solid rgba(255,255,255,.07);">
+          <div style="font-size:12px;font-weight:700;color:var(--sky);margin-bottom:3px;">DECISION MAKERS</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);">Who owns the decision — both partners? Solo homeowner?</div>
+        </div>
+        <div style="background:#122430;border-radius:10px;padding:14px 16px;border:1.5px solid rgba(255,255,255,.07);">
+          <div style="font-size:12px;font-weight:700;color:#9B8FDB;margin-bottom:3px;">WHO WILL ATTEND</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);">Who will actually be at the appointment</div>
+        </div>
+        <div style="background:#122430;border-radius:10px;padding:14px 16px;border:1.5px solid rgba(255,255,255,.07);">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:3px;">ROOF CHECK</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);">No shading issues <span style="color:rgba(255,255,255,.3);">OR</span> Willing to trim</div>
+        </div>
+        <div style="background:#122430;border-radius:10px;padding:14px 16px;border:1.5px solid rgba(255,255,255,.07);">
+          <div style="font-size:12px;font-weight:700;color:#4DD9A0;margin-bottom:3px;">GENERAL NOTES</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);">Anything else relevant — bill amount, motivations, objections handled</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLAUDE PROMPT -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">ONE-TIME SETUP</div>
+    <div class="s-title">The Claude Template Prompt</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Copy this prompt, paste it into a new Claude chat, and save that chat. You'll reuse it for every booked call from here on.</div>
+
+    <div class="prompt-box">
+      <div class="prompt-box-label"><span></span>CLAUDE PROMPT — COPY AND PASTE THIS ONCE</div>
+      <div class="prompt-text" id="prompt-text">"Create a booking notes template. I'll upload call transcripts — read them line by line and generate booking notes in this exact format for an already-booked customer:
+
+<span class="bold">BOOKING NOTES
+DECISION MAKERS:
+WHO WILL ATTEND:
+ROOF CHECK:</span> <span class="highlight">No shading issues</span> OR <span class="highlight">Willing to trim</span>
+<span class="bold">GENERAL NOTES:</span>
+
+Output as plain text."</div>
+    </div>
+    <button class="copy-btn" id="prompt-copy-btn" onclick="copyPrompt()" style="margin-top:12px;">📋 Copy prompt</button>
+
+    <div class="tip-box sky" style="margin-top:14px;">
+      <div class="tip-box-icon">💡</div>
+      <div class="tip-box-text"><strong>Save this chat in Claude.</strong> Every time you have a booked call, come back to this same chat and paste the transcript. The template is already set up — you just add the transcript and get the notes.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 STEPS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE PROCESS</div>
+    <div class="s-title">5 Steps — After Every Booked Call</div>
+    <div class="s-bar"></div>
+
+    <div class="step-list">
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="sc-num">1</div>
+          <div class="sc-title">Set up your Claude template</div>
+          <span class="sc-badge">ONE TIME ONLY</span>
+        </div>
+        <div class="step-card-body">
+          <div class="step-card-text">Paste the prompt above into a new Claude chat. Save the chat — you'll return to it after every booked call. <strong>You only do this once.</strong></div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="sc-num">2</div>
+          <div class="sc-title">Pull the transcript from the dialer</div>
+          <span class="sc-badge">AFTER BOOKING</span>
+        </div>
+        <div class="step-card-body">
+          <div class="step-card-text">
+            <ul>
+              <li>Go to <strong>Reporting → Dials</strong></li>
+              <li>Filter by Disposition: <strong>Booked</strong> and your name</li>
+              <li>Click <strong>Play</strong> on the call</li>
+              <li>Hover just below the call ID → <span class="kbd">Ctrl</span> + <span class="kbd">C</span> to copy the transcript</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="sc-num">3</div>
+          <div class="sc-title">Paste transcript into Claude → generate notes</div>
+          <span class="sc-badge">30 SECONDS</span>
+        </div>
+        <div class="step-card-body">
+          <div class="step-card-text">Open your saved Claude chat → paste the transcript → press Enter. Claude generates the booking notes instantly.<br><br>Want more detail? Type: <strong>"Add more detail and sales-relevant context."</strong></div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="sc-num">4</div>
+          <div class="sc-title">Paste into Zoho CRM as plain text</div>
+          <span class="sc-badge">CRITICAL STEP</span>
+        </div>
+        <div class="step-card-body">
+          <div class="step-card-text">
+            <ul>
+              <li>Open a <strong>new note</strong> on the lead in Zoho CRM</li>
+              <li>Title: <strong>BOOKING NOTES</strong></li>
+              <li>Body: paste using <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">V</span> — <strong>not</strong> Ctrl+V</li>
+            </ul>
+            <br>See below for why this matters ↓
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-card-header">
+          <div class="sc-num">5</div>
+          <div class="sc-title">Tidy up and save</div>
+          <span class="sc-badge">FINAL STEP</span>
+        </div>
+        <div class="step-card-body">
+          <div class="step-card-text">
+            <ul>
+              <li>Delete any leftover AI commentary or preamble</li>
+              <li><strong>Bold</strong> the BOOKING NOTES header and all 4 section titles</li>
+              <li>Read through to confirm accuracy</li>
+              <li>Click <strong>Save</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CTRL+SHIFT+V -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">WHY IT MATTERS</div>
+    <div class="s-title">Always Paste with <span style="font-family:var(--mono);font-size:18px;">Ctrl+Shift+V</span></div>
+    <div class="s-bar"></div>
+
+    <div class="paste-callout">
+      <div class="paste-side wrong">
+        <div class="paste-side-label">❌ CTRL + V — DON'T USE THIS</div>
+        <div class="paste-kbd-row">
+          <span class="kbd" style="background:rgba(181,37,27,.15);border-color:rgba(181,37,27,.3);color:#E07070;">Ctrl</span>
+          <span style="color:rgba(255,255,255,.3);">+</span>
+          <span class="kbd" style="background:rgba(181,37,27,.15);border-color:rgba(181,37,27,.3);color:#E07070;">V</span>
+        </div>
+        <div class="paste-result">Pastes with formatting — creates messy spacing, broken line breaks, inconsistent fonts in the CRM. Looks unprofessional.</div>
+      </div>
+      <div class="paste-side right">
+        <div class="paste-side-label">✅ CTRL + SHIFT + V — USE THIS</div>
+        <div class="paste-kbd-row">
+          <span class="kbd" style="background:rgba(11,122,78,.15);border-color:rgba(11,122,78,.3);color:#4DD9A0;">Ctrl</span>
+          <span style="color:rgba(255,255,255,.3);">+</span>
+          <span class="kbd" style="background:rgba(11,122,78,.15);border-color:rgba(11,122,78,.3);color:#4DD9A0;">Shift</span>
+          <span style="color:rgba(255,255,255,.3);">+</span>
+          <span class="kbd" style="background:rgba(11,122,78,.15);border-color:rgba(11,122,78,.3);color:#4DD9A0;">V</span>
+        </div>
+        <div class="paste-result">Pastes as plain text — clean, consistent, professional. Exactly what the specialist and confirmation team see.</div>
+      </div>
+    </div>
+
+    <div class="tip-box gold" style="margin-top:14px;">
+      <div class="tip-box-icon">💡</div>
+      <div class="tip-box-text"><strong>Mac users:</strong> the equivalent is <span class="kbd" style="background:rgba(255,255,255,.08);">Cmd</span> + <span class="kbd" style="background:rgba(255,255,255,.08);">Shift</span> + <span class="kbd" style="background:rgba(255,255,255,.08);">V</span> — same principle.</div>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">Set up the Claude template once. Use it on every booked call after that. <strong>It saves 5–10 minutes per booking and makes your notes more consistent than anything written from memory.</strong> The specialist walks in prepared. The confirmation team knows what to say. Everyone wins.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+const TEMPLATE=`BOOKING NOTES
+DECISION MAKERS:
+WHO WILL ATTEND:
+ROOF CHECK:
+GENERAL NOTES:`;
+
+const PROMPT=`"Create a booking notes template. I'll upload call transcripts — read them line by line and generate booking notes in this exact format for an already-booked customer:
+
+BOOKING NOTES
+DECISION MAKERS:
+WHO WILL ATTEND:
+ROOF CHECK: No shading issues OR Willing to trim
+GENERAL NOTES:
+
+Output as plain text."`;
+
+function copyFormat(){
+  navigator.clipboard.writeText(TEMPLATE).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.innerHTML='✓ Copied!';
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='📋 Copy blank template';},2000);
+  });
+}
+
+function copyPrompt(){
+  navigator.clipboard.writeText(PROMPT).then(()=>{
+    const btn=document.getElementById('prompt-copy-btn');
+    btn.classList.add('copied');
+    btn.innerHTML='✓ Copied!';
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='📋 Copy prompt';},2000);
+  });
+}
+</script>
+</body>
+</html>
