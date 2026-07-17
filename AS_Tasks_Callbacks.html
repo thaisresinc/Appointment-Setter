@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Creating Tasks & Managing Callbacks | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --orange:#D4620A;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:920px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:520px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);}
+
+/* ── LAYOUT ── */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:920px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:16px;}
+
+/* ── VIDEO ── */
+.video-wrap{background:#122430;border-radius:14px;overflow:hidden;border:1px solid rgba(0,174,239,.12);}
+.video-header{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);}
+.vh-dot{width:8px;height:8px;border-radius:50%;background:var(--sky);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.vh-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.1em;}
+video{width:100%;display:block;background:#000;}
+
+/* ── STEP LIST ── */
+.step-list{display:flex;flex-direction:column;gap:0;position:relative;padding-left:28px;}
+.step-list::before{content:'';position:absolute;left:10px;top:20px;bottom:20px;width:2px;background:linear-gradient(180deg,var(--sky),rgba(0,174,239,.2));border-radius:1px;}
+.step-item{display:flex;align-items:flex-start;gap:14px;padding:8px 0;position:relative;}
+.si-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:var(--sky);position:absolute;left:-28px;top:12px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--navy);}
+.si-card{background:#122430;border-radius:10px;padding:13px 16px;flex:1;border:1.5px solid rgba(255,255,255,.07);}
+.si-action{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.si-detail{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;}
+.si-detail strong{color:rgba(255,255,255,.85);}
+.si-example{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  border-radius:6px;padding:4px 10px;margin-top:7px;
+  font-family:var(--mono);font-size:11px;color:var(--sky);
+}
+
+/* ── COLOUR CODES ── */
+.colour-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:520px){.colour-grid{grid-template-columns:1fr;}}
+.colour-card{border-radius:12px;padding:18px 16px;border:1.5px solid rgba(255,255,255,.07);text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.colour-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.colour-card.orange-c::before{background:#D4620A;}
+.colour-card.red-c::before{background:var(--red);}
+.colour-card.green-c::before{background:var(--green);}
+.colour-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.colour-dot{width:36px;height:36px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.colour-card.orange-c .colour-dot{background:rgba(212,98,10,.2);border:2px solid #D4620A;}
+.colour-card.red-c .colour-dot{background:rgba(181,37,27,.2);border:2px solid var(--red);}
+.colour-card.green-c .colour-dot{background:rgba(11,122,78,.2);border:2px solid var(--green);}
+.colour-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:5px;}
+.colour-card.orange-c .colour-name{color:#E87840;}
+.colour-card.red-c .colour-name{color:#E07070;}
+.colour-card.green-c .colour-name{color:#4DD9A0;}
+.colour-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;}
+
+/* ── 5-DAY CYCLE ── */
+.cycle-wrap{display:flex;flex-direction:column;gap:8px;}
+.cycle-day{
+  border-radius:12px;overflow:hidden;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.07);transition:all .2s;
+}
+.cycle-day:hover{border-color:rgba(0,174,239,.2);}
+.cycle-day.active{border-color:var(--sky);}
+.cycle-day.final{border-color:rgba(181,37,27,.2);}
+.cycle-day.final.active{border-color:var(--red);}
+
+.cd-header{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#122430;user-select:none;}
+.cd-num{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+}
+.cycle-day:not(.final) .cd-num{background:rgba(0,174,239,.12);color:var(--sky);}
+.cycle-day.final .cd-num{background:rgba(181,37,27,.12);color:#E07070;}
+.cycle-day.active:not(.final) .cd-num{background:var(--sky);color:var(--navy);}
+.cycle-day.active.final .cd-num{background:var(--red);color:#fff;}
+
+.cd-label{font-size:13px;font-weight:700;color:#fff;flex:1;}
+.cd-status{font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 8px;border-radius:5px;}
+.cycle-day:not(.final) .cd-status{background:rgba(0,174,239,.1);color:var(--sky);}
+.cycle-day.final .cd-status{background:rgba(181,37,27,.1);color:#E07070;}
+.cd-arrow{font-size:11px;color:rgba(255,255,255,.25);transition:transform .2s;flex-shrink:0;}
+.cycle-day.active .cd-arrow{transform:rotate(180deg);}
+
+.cd-body{
+  display:none;padding:14px 16px;background:rgba(0,0,0,.15);
+  border-top:1px solid rgba(255,255,255,.06);
+  animation:fadeDown .2s ease;
+}
+.cycle-day.active .cd-body{display:block;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.cd-body-text{font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.65;}
+.cd-body-text strong{color:#fff;}
+.cd-body-text ul{padding-left:14px;margin-top:6px;display:flex;flex-direction:column;gap:4px;}
+.cd-body-text li{font-size:12px;}
+
+/* After Day 5 callout */
+.after-5{
+  background:rgba(181,37,27,.08);border:1.5px solid rgba(181,37,27,.2);
+  border-radius:12px;padding:18px 20px;margin-top:12px;
+  display:flex;gap:14px;align-items:flex-start;
+}
+.a5-icon{font-size:22px;flex-shrink:0;}
+.a5-label{font-size:10px;font-weight:700;letter-spacing:.16em;color:#E07070;margin-bottom:5px;}
+.a5-text{font-size:13px;color:rgba(255,255,255,.7);line-height:1.65;}
+.a5-text strong{color:#fff;}
+
+/* ── TIP BOX ── */
+.tip-box{display:flex;gap:10px;align-items:flex-start;border-radius:9px;padding:11px 14px;font-size:12.5px;line-height:1.6;}
+.tip-box.sky{background:rgba(0,174,239,.07);border-left:3px solid var(--sky);}
+.tip-box.gold{background:rgba(212,148,10,.07);border-left:3px solid var(--gold);}
+.tip-box.green{background:rgba(11,122,78,.07);border-left:3px solid var(--green);}
+.tip-box-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.tip-box-text{color:rgba(255,255,255,.65);}
+.tip-box-text strong{color:#fff;}
+
+/* ── SUBJECT FORMAT ── */
+.subject-examples{display:flex;flex-direction:column;gap:8px;}
+.se-row{display:flex;align-items:center;gap:12px;background:#122430;border-radius:9px;padding:11px 14px;border:1.5px solid rgba(255,255,255,.07);}
+.se-scenario{font-size:12px;color:rgba(255,255,255,.45);flex:1;}
+.se-subject{font-family:var(--mono);font-size:11.5px;color:var(--sky);background:rgba(0,174,239,.08);border:1px solid rgba(0,174,239,.15);border-radius:6px;padding:4px 10px;white-space:nowrap;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · TASKS & CALLBACKS</div>
+    <h1 class="hero-title">Creating Tasks &<br><em>Managing Callbacks</em></h1>
+    <p class="hero-sub">The callback system is how nothing falls through the cracks. Every lead gets 5 days. After that — red is the signal, not the failure.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🎬 2 reference videos</div>
+      <div class="hero-pill">📋 Step-by-step task creation</div>
+      <div class="hero-pill">📅 5-day callback cycle</div>
+      <div class="hero-pill">🔴 Colour code reference</div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO 1 — CREATE A TASK -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">VIDEO 1 — WATCH FIRST</div>
+    <div class="s-title">Creating a Task in Zoho CRM</div>
+    <div class="s-bar"></div>
+    <div class="video-wrap">
+      <div class="video-header">
+        <div class="vh-dot"></div>
+        <div class="vh-label">CREATING A TASK / CALLBACK · REFERENCE VIDEO</div>
+      </div>
+      <video controls preload="metadata">
+        <source src="https://thaisresinc.github.io/alpha-hippo-training/Create_a_task_compressed.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- STEP BY STEP -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">PART 1 — STEP BY STEP</div>
+    <div class="s-title">How to Create a Task After Every Call</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Do this immediately after finishing a conversation — before moving to the next lead.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+      <!-- Steps -->
+      <div>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="si-dot">1</div>
+            <div class="si-card">
+              <div class="si-action">Open the lead in CRM</div>
+              <div class="si-detail">After finishing the call on the dialer, navigate to the lead record in Zoho CRM.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="si-dot">2</div>
+            <div class="si-card">
+              <div class="si-action">Hover over Open Activities → click +</div>
+              <div class="si-detail">Find the <strong>Open Activities</strong> section → hover to reveal the <strong>+</strong> button → click it.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="si-dot">3</div>
+            <div class="si-card">
+              <div class="si-action">Select Task</div>
+              <div class="si-detail">From the dropdown, choose <strong>Task</strong>.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="si-dot">4</div>
+            <div class="si-card">
+              <div class="si-action">Write a specific Subject</div>
+              <div class="si-detail">Be descriptive — explain when and why to call. See examples on the right.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="si-dot">5</div>
+            <div class="si-card">
+              <div class="si-action">Set the Date</div>
+              <div class="si-detail">Set it to the correct callback day.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="si-dot">6</div>
+            <div class="si-card">
+              <div class="si-action">Set a Reminder — 5 min before</div>
+              <div class="si-detail">Click <strong>Reminder</strong> → set 5 minutes before the callback time. You'll get an email alert so nothing slips.</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="si-dot">7</div>
+            <div class="si-card">
+              <div class="si-action">Set Owner to yourself → Save</div>
+              <div class="si-detail">Make sure the task is assigned to <strong>you</strong>, then click <strong>Save</strong>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject examples + tip -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);margin-bottom:10px;">SUBJECT LINE EXAMPLES</div>
+          <div class="subject-examples">
+            <div class="se-row">
+              <div class="se-scenario">Customer at work until 5pm</div>
+              <div class="se-subject">CB after 5pm — at work</div>
+            </div>
+            <div class="se-row">
+              <div class="se-scenario">Customer wants early morning call</div>
+              <div class="se-subject">CB before 9am — interested</div>
+            </div>
+            <div class="se-row">
+              <div class="se-scenario">Customer asked for weekend</div>
+              <div class="se-subject">CB Saturday — requested</div>
+            </div>
+            <div class="se-row">
+              <div class="se-scenario">Customer busy, try again tomorrow</div>
+              <div class="se-subject">CB tomorrow — try again</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-box sky">
+          <div class="tip-box-icon">💡</div>
+          <div class="tip-box-text"><strong>Be specific in the subject line.</strong> "Callback" alone tells you nothing. "CB after 5pm — at work" tells you exactly when to call and why. Future you will thank present you.</div>
+        </div>
+
+        <div class="tip-box gold">
+          <div class="tip-box-icon">🔔</div>
+          <div class="tip-box-text"><strong>The reminder emails your Gmail</strong> 5 minutes before the callback is due. Especially useful if you're already on a call — you'll know to make this one next the moment you hang up.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COLOUR CODES -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">PART 2 — COLOUR CODES</div>
+    <div class="s-title">What the Colours Mean</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">The Next Action at the top of every lead is colour coded. Read it at a glance before every call.</div>
+    <div class="colour-grid">
+      <div class="colour-card orange-c">
+        <div class="colour-dot">🟠</div>
+        <div class="colour-name">Orange</div>
+        <div class="colour-desc">Due today — call this lead before end of shift</div>
+      </div>
+      <div class="colour-card red-c">
+        <div class="colour-dot">🔴</div>
+        <div class="colour-name">Red</div>
+        <div class="colour-desc">Overdue — either needs working today OR has been left as the Day 5 re-upload signal</div>
+      </div>
+      <div class="colour-card green-c">
+        <div class="colour-dot">🟢</div>
+        <div class="colour-name">Green</div>
+        <div class="colour-desc">Set for a future date — scheduled and coming up</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO 2 — MANAGING CALLBACKS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">VIDEO 2 — WATCH BEFORE PART 3</div>
+    <div class="s-title">Managing Callbacks Over 5 Days</div>
+    <div class="s-bar"></div>
+    <div class="video-wrap">
+      <div class="video-header">
+        <div class="vh-dot"></div>
+        <div class="vh-label">CALLBACK MANAGEMENT PROCESS · REFERENCE VIDEO</div>
+      </div>
+      <video controls preload="metadata">
+        <source src="https://thaisresinc.github.io/alpha-hippo-training/Managing_callbacks_compressed.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- 5-DAY CYCLE -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">PART 3 — THE CALLBACK CYCLE</div>
+    <div class="s-title">The 5-Day Callback Cycle</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Every no-answer gets 5 days. Click each day to see exactly what to do.</div>
+
+    <div class="cycle-wrap" id="cycle-wrap"></div>
+
+    <div class="after-5">
+      <div class="a5-icon">🔴</div>
+      <div>
+        <div class="a5-label">AFTER DAY 5 — LEAVE IT RED</div>
+        <div class="a5-text">If the customer still hasn't picked up after 5 days, <strong>leave the task as overdue (red). Do not mark it complete.</strong><br><br>A red overdue activity signals to management that this lead was once a quality callback opportunity — the customer showed interest. That tells them the lead can be <strong>re-uploaded to the dialer</strong> when appropriate, giving the team another chance to reach the customer.<br><br>Red doesn't mean failure. It means you've done your job for 5 days and management will handle the rest.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK REFERENCE -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">QUICK REFERENCE</div>
+    <div class="s-title">The Callback Rules in 30 Seconds</div>
+    <div class="s-bar"></div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#122430;border-radius:9px;padding:12px 15px;border:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(255,255,255,.75);">
+        <span style="color:var(--sky);font-weight:700;flex-shrink:0;">→</span>Create a task after <strong style="color:#fff;">every call</strong> where a callback was discussed
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#122430;border-radius:9px;padding:12px 15px;border:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(255,255,255,.75);">
+        <span style="color:var(--sky);font-weight:700;flex-shrink:0;">→</span>Subject line: <strong style="color:#fff;">specific</strong> — when and why, not just "callback"
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#122430;border-radius:9px;padding:12px 15px;border:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(255,255,255,.75);">
+        <span style="color:var(--sky);font-weight:700;flex-shrink:0;">→</span>Call <strong style="color:#fff;">1–3 times per day</strong> on each callback lead
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#122430;border-radius:9px;padding:12px 15px;border:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(255,255,255,.75);">
+        <span style="color:var(--sky);font-weight:700;flex-shrink:0;">→</span>No answer → <strong style="color:#fff;">edit task date</strong> to next day and repeat
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#122430;border-radius:9px;padding:12px 15px;border:1px solid rgba(255,255,255,.07);font-size:13px;color:rgba(255,255,255,.75);">
+        <span style="color:var(--sky);font-weight:700;flex-shrink:0;">→</span>After Day 5: <strong style="color:#fff;">leave red — do not mark complete</strong>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#122430;border-radius:9px;padding:12px 15px;border:1.5px solid rgba(181,37,27,.2);font-size:13px;color:rgba(255,255,255,.75);">
+        <span style="color:#E07070;font-weight:700;flex-shrink:0;">→</span><strong style="color:#fff;">Red = re-upload signal</strong> for management — not failure
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">The callback system is how nothing falls through the cracks. <strong>Red doesn't mean failure — it means you've done your job for 5 days and management will handle the rest.</strong> Work the system, trust the system.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+const CYCLE=[
+  {
+    day:'Day 1',label:'First callback attempt',status:'START',final:false,
+    body:`<strong>What to do:</strong>
+    <ul>
+      <li>Call the customer <strong>1–3 times</strong> on the day of the first callback</li>
+      <li>The task is already created from your previous conversation</li>
+      <li>Try at the time specified in the subject line</li>
+    </ul>
+    <br><strong>If they pick up:</strong> have the conversation, rebook, update the CRM.<br>
+    <strong>If no answer:</strong> go to Day 2.`
+  },
+  {
+    day:'Day 2',label:'Roll forward — edit the date',status:'NO ANSWER',final:false,
+    body:`<strong>What to do:</strong>
+    <ul>
+      <li>Go to the task in <strong>Open Activities</strong></li>
+      <li>Click the <strong>3 dots (⋯)</strong> → click <strong>Edit</strong></li>
+      <li>Change the date to <strong>Day 2</strong></li>
+      <li>Keep the same subject if it still applies (e.g. "CB after 5pm" still makes sense)</li>
+      <li>Call 1–3 times on Day 2</li>
+    </ul>`
+  },
+  {
+    day:'Day 3',label:'Roll forward again',status:'NO ANSWER',final:false,
+    body:`<strong>What to do:</strong>
+    <ul>
+      <li>Edit the task date to <strong>Day 3</strong></li>
+      <li>Call 1–3 times</li>
+      <li>No answer → go to Day 4</li>
+    </ul>
+    <br><strong>Reminder tip:</strong> after the first call you can remove the reminder — it's mainly useful for the initial attempt. Up to you if you want to keep it.`
+  },
+  {
+    day:'Day 4',label:'Still rolling',status:'NO ANSWER',final:false,
+    body:`<strong>What to do:</strong>
+    <ul>
+      <li>Edit task date to <strong>Day 4</strong></li>
+      <li>Call 1–3 times</li>
+      <li>No answer → one more day to go</li>
+    </ul>`
+  },
+  {
+    day:'Day 5',label:'Final attempts',status:'FINAL DAY',final:false,
+    body:`<strong>What to do:</strong>
+    <ul>
+      <li>Edit task date to <strong>Day 5</strong></li>
+      <li>Make your final 1–3 attempts</li>
+      <li>This is the last day of the manual cycle</li>
+    </ul>
+    <br><strong>If still no answer after Day 5</strong> → see the After Day 5 section below.`
+  },
+];
+
+let activeDay=null;
+
+function buildCycle(){
+  const wrap=document.getElementById('cycle-wrap');
+  CYCLE.forEach((d,i)=>{
+    const el=document.createElement('div');
+    el.className='cycle-day'+(d.final?' final':'');
+    el.id='cd-'+i;
+    el.innerHTML=`
+      <div class="cd-header" onclick="toggleDay(${i})">
+        <div class="cd-num">${i+1}</div>
+        <div class="cd-label">${d.day} — ${d.label}</div>
+        <span class="cd-status">${d.status}</span>
+        <span class="cd-arrow">▾</span>
+      </div>
+      <div class="cd-body"><div class="cd-body-text">${d.body}</div></div>
+    `;
+    wrap.appendChild(el);
+  });
+}
+
+function toggleDay(i){
+  const el=document.getElementById('cd-'+i);
+  const isOpen=el.classList.contains('active');
+  document.querySelectorAll('.cycle-day').forEach(d=>d.classList.remove('active'));
+  if(!isOpen) el.classList.add('active');
+}
+
+buildCycle();
+</script>
+</body>
+</html>
