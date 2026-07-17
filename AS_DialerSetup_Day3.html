@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dialer Setup — Getting Started | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --red:#B5251B;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.1);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:860px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:520px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);}
+
+/* ── LAYOUT ── */
+.section{padding:32px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:860px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:16px;}
+
+/* ── VIDEO SECTION ── */
+.video-wrap{background:#122430;border-radius:14px;overflow:hidden;border:1px solid rgba(0,174,239,.12);}
+.video-header{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);}
+.vh-dot{width:8px;height:8px;border-radius:50%;background:var(--sky);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.vh-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.1em;}
+video{width:100%;display:block;max-height:420px;background:#000;}
+
+/* ── PROGRESS TRACKER ── */
+.progress-track{
+  background:#122430;border-radius:14px;padding:16px 20px;
+  border:1px solid rgba(255,255,255,.06);margin-bottom:24px;
+}
+.pt-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pt-label{font-size:10px;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.3);}
+.pt-count{font-size:11px;font-weight:700;color:var(--sky);}
+.pt-bar{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.pt-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);border-radius:3px;width:0%;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.pt-steps{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap;}
+.pt-step-dot{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:rgba(255,255,255,.2);
+  transition:all .25s;flex-shrink:0;
+}
+.pt-step-dot.active{border-color:var(--sky);color:var(--sky);background:rgba(0,174,239,.12);}
+.pt-step-dot.done{border-color:var(--green);background:var(--green);color:#fff;}
+
+/* ── STEP CARDS ── */
+.steps-list{display:flex;flex-direction:column;gap:10px;}
+
+.step-card{
+  border-radius:14px;overflow:hidden;
+  border:1.5px solid rgba(255,255,255,.07);
+  transition:border-color .2s;
+}
+.step-card.active{border-color:rgba(0,174,239,.25);}
+.step-card.done{border-color:rgba(11,122,78,.25);}
+.step-card.locked{opacity:.45;pointer-events:none;}
+
+.step-header{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;cursor:pointer;
+  background:#122430;
+  transition:background .15s;
+  user-select:none;
+}
+.step-card.active .step-header{background:#0D2535;}
+.step-card.done .step-header{background:#0A1F18;}
+.step-header:hover{background:rgba(255,255,255,.06);}
+.step-card.done .step-header:hover{background:#0A1F18;}
+
+.step-num{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;
+  background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);
+  border:1.5px solid rgba(255,255,255,.1);
+  transition:all .2s;
+}
+.step-card.active .step-num{background:rgba(0,174,239,.15);color:var(--sky);border-color:rgba(0,174,239,.3);}
+.step-card.done .step-num{background:var(--green);color:#fff;border-color:var(--green);}
+
+.step-title-wrap{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:rgba(255,255,255,.6);line-height:1.2;}
+.step-card.active .step-title{color:#fff;}
+.step-card.done .step-title{color:rgba(255,255,255,.4);}
+.step-short{font-size:11px;color:rgba(255,255,255,.25);margin-top:2px;}
+.step-card.active .step-short{color:rgba(255,255,255,.4);}
+
+.step-status{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  padding:3px 10px;border-radius:6px;flex-shrink:0;
+}
+.step-card:not(.active):not(.done) .step-status{background:rgba(255,255,255,.06);color:rgba(255,255,255,.2);}
+.step-card.active .step-status{background:rgba(0,174,239,.12);color:var(--sky);}
+.step-card.done .step-status{background:rgba(11,122,78,.15);color:#4DD9A0;}
+
+/* Step body */
+.step-body{
+  display:none;padding:0 18px 18px;background:#0D2535;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.step-card.active .step-body{display:block;animation:fadeDown .25s ease;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+.step-body-inner{padding-top:16px;}
+
+/* Instructions list */
+.step-instructions{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.si{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,.7);line-height:1.6;}
+.si-bullet{
+  width:20px;height:20px;border-radius:5px;flex-shrink:0;
+  background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:var(--sky);margin-top:2px;
+}
+.si strong{color:#fff;}
+
+/* URL chip */
+.url-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:8px 14px;margin:4px 0;
+  font-family:var(--mono);font-size:11px;color:var(--sky);
+  text-decoration:none;transition:all .15s;cursor:pointer;
+  word-break:break-all;
+}
+.url-chip:hover{background:rgba(0,174,239,.1);border-color:rgba(0,174,239,.25);}
+
+/* Warning / tip boxes */
+.warn-box{
+  display:flex;gap:10px;align-items:flex-start;
+  border-radius:9px;padding:11px 14px;margin:10px 0;font-size:12px;line-height:1.6;
+}
+.warn-box.warning{background:rgba(212,148,10,.08);border-left:3px solid var(--gold);}
+.warn-box.tip{background:rgba(0,174,239,.07);border-left:3px solid var(--sky);}
+.warn-box.critical{background:rgba(181,37,27,.08);border-left:3px solid var(--red);}
+.warn-box-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.warn-box-text{color:rgba(255,255,255,.65);}
+.warn-box-text strong{color:#fff;}
+
+/* Skills grid */
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;}
+@media(max-width:480px){.skills-grid{grid-template-columns:1fr;}}
+.skill-card{border-radius:9px;padding:12px 14px;}
+.skill-card.now{background:rgba(0,174,239,.1);border:1px solid rgba(0,174,239,.2);}
+.skill-card.later{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);}
+.skill-card-label{font-size:8.5px;font-weight:700;letter-spacing:.16em;margin-bottom:6px;}
+.skill-card.now .skill-card-label{color:var(--sky);}
+.skill-card.later .skill-card-label{color:rgba(255,255,255,.3);}
+.skill-item{font-size:12px;color:rgba(255,255,255,.7);padding:3px 0;display:flex;align-items:center;gap:7px;}
+.skill-item::before{content:'→';color:var(--sky);font-size:10px;}
+.skill-card.later .skill-item::before{color:rgba(255,255,255,.2);}
+
+/* Done button */
+.done-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--sky);color:var(--navy);border:none;
+  border-radius:10px;padding:12px 24px;
+  font-family:var(--font);font-size:13.5px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 14px rgba(0,174,239,.25);
+  margin-top:14px;
+}
+.done-btn:hover{background:var(--sky2);transform:translateY(-1px);}
+.done-btn.last{background:var(--green);box-shadow:0 4px 14px rgba(11,122,78,.3);}
+.done-btn.last:hover{background:#0A6040;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+/* ── COMPLETION ── */
+#completion{display:none;padding:28px 28px 36px;}
+.cpl-inner{max-width:860px;margin:0 auto;}
+.cpl-card{background:linear-gradient(135deg,#0A5A38,#0B7A4E);border-radius:16px;padding:28px 26px;text-align:center;border:1px solid rgba(11,122,78,.4);}
+.cpl-icon{font-size:48px;margin-bottom:12px;}
+.cpl-title{font-family:var(--serif);font-size:28px;color:#fff;margin-bottom:6px;}
+.cpl-title span{color:#4DD9A0;font-style:italic;}
+.cpl-sub{font-size:13px;color:rgba(255,255,255,.65);line-height:1.65;max-width:500px;margin:0 auto 18px;}
+.cpl-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.cpl-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:#fff;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DIALER SETUP</div>
+    <h1 class="hero-title">Dialer Setup —<br><em>Getting Started</em></h1>
+    <p class="hero-sub">9 steps. Do them in order, tick each one off as you go. Watch the reference video first, then work through the steps below.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🎬 Reference video included</div>
+      <div class="hero-pill">☑️ Tick off each step as you go</div>
+      <div class="hero-pill">⏱️ First setup takes 15–20 min</div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">WATCH FIRST</div>
+    <div class="s-title">Dialer Setup Walkthrough</div>
+    <div class="s-bar"></div>
+    <div class="video-wrap">
+      <div class="video-header">
+        <div class="vh-dot"></div>
+        <div class="vh-label">DIALER START-UP GUIDE · REFERENCE VIDEO</div>
+      </div>
+      <video controls preload="metadata">
+        <source src="Dialer%20Start%20Up.mp4" type="video/mp4">
+        Your browser does not support video playback.
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- STEPS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">FOLLOW ALONG — TICK EACH STEP</div>
+    <div class="s-title">9-Step Setup Sequence</div>
+    <div class="s-bar"></div>
+
+    <!-- Progress tracker -->
+    <div class="progress-track">
+      <div class="pt-top">
+        <div class="pt-label">SETUP PROGRESS</div>
+        <div class="pt-count" id="pt-count">0 of 9 complete</div>
+      </div>
+      <div class="pt-bar"><div class="pt-fill" id="pt-fill"></div></div>
+      <div class="pt-steps" id="pt-steps"></div>
+    </div>
+
+    <!-- Steps list -->
+    <div class="steps-list" id="steps-list"></div>
+
+  </div>
+</div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">Don't rush the setup. The first time takes patience — especially on a new device. <strong>Once it's done, every login after this is 30 seconds.</strong> Save your passwords now. Future you will thank you.</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="cpl-inner">
+    <div class="cpl-card">
+      <div class="cpl-icon">📞</div>
+      <div class="cpl-title">Dialer <span>ready.</span></div>
+      <div class="cpl-sub">All 9 steps complete. You're logged in, your headset is configured, and your first call is one click away. Next up — the CRM.</div>
+      <div class="cpl-chips">
+        <span class="cpl-chip">✓ Five9 password set</span>
+        <span class="cpl-chip">✓ Logged into dialer.io</span>
+        <span class="cpl-chip">✓ Extension installed</span>
+        <span class="cpl-chip">✓ Software running</span>
+        <span class="cpl-chip">✓ Headset configured</span>
+        <span class="cpl-chip">✓ Resinc Connectors – Speed to Lead selected</span>
+        <span class="cpl-chip">✓ Ready for first call</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+const STEPS=[
+  {
+    title:'Update Your Five9 Password',
+    short:'five9.com → set new password + security questions',
+    instructions:[
+      {text:'Go to <a class="url-chip" href="https://us9.five9.com/login/" target="_blank">🔗 https://us9.five9.com/login/</a>'},
+      {text:'Click <strong>Login</strong> and enter the credentials provided by IT via email'},
+      {text:'Enter your current password (from the IT email), then create and confirm a new password'},
+      {text:'Select and save your security questions'},
+      {text:'Once done, close this tab — everything else happens on the dialer site'},
+    ],
+    warnings:[
+      {type:'tip',icon:'💡',text:'<strong>This is the only step on the Five9 site.</strong> After this, all logins go through dialer.io.'},
+      {type:'warning',icon:'⚠️',text:'<strong>Save your new password to your browser now.</strong> You\'ll need it every session.'},
+    ]
+  },
+  {
+    title:'Log In to the Dialer Dashboard',
+    short:'app.dialer.io → enter IT credentials',
+    instructions:[
+      {text:'Go to <a class="url-chip" href="https://app.dialer.io/" target="_blank">🔗 https://app.dialer.io/</a>'},
+      {text:'Enter the username and password provided by IT via email'},
+      {text:'You\'ll land on the dialer dashboard — Appointment Setters are under the <strong>Resinc Connectors</strong> section'},
+    ],
+    warnings:[
+      {type:'tip',icon:'💡',text:'<strong>Bookmark this URL now.</strong> This is where you log in every single shift.'},
+    ]
+  },
+  {
+    title:'Launch the Dialer',
+    short:'Click headset icon → Launch Dialer → wait 5–10 min',
+    instructions:[
+      {text:'From the dashboard, click the <strong>headset icon</strong>'},
+      {text:'Click <strong>Launch Dialer</strong>'},
+      {text:'Wait — on a new device this takes <strong>5 to 10 minutes</strong>. You\'ll see a nine-dot loading icon while it prepares'},
+      {text:'Once loaded, log in with your email and the new password you set in Step 1'},
+    ],
+    warnings:[
+      {type:'warning',icon:'⏱️',text:'<strong>First-time setup is slow — this is normal.</strong> Don\'t close the window or click away. Give it up to 10 minutes.'},
+    ]
+  },
+  {
+    title:'Enter Your Station Details',
+    short:'Station number → Soft Phone → Confirm',
+    instructions:[
+      {text:'Enter your <strong>station number</strong> — it\'s usually displayed above your station setup title. IT also has it on file if needed'},
+      {text:'Select <strong>Soft Phone</strong>'},
+      {text:'Click the blue <strong>Confirm</strong> button at the bottom'},
+      {text:'This step also takes a little time to load — be patient'},
+    ],
+    warnings:[
+      {type:'tip',icon:'💡',text:'<strong>Can\'t find your station number?</strong> Contact IT — they have it on file.'},
+    ]
+  },
+  {
+    title:'Install the Browser Extension',
+    short:'Install → Add to Chrome → refresh for green tick',
+    instructions:[
+      {text:'Click the blue <strong>Install</strong> button when prompted'},
+      {text:'You\'ll be taken to the Chrome extension page — click <strong>Add to Chrome</strong>, then <strong>Add Extension</strong>'},
+      {text:'Return to the dialer page and <strong>refresh</strong>'},
+      {text:'You should now see a <strong>green tick</strong> confirming the extension is installed'},
+    ],
+    warnings:[
+      {type:'warning',icon:'⚠️',text:'<strong>Must use Chrome.</strong> The extension is Chrome-only. If you\'re on another browser, switch now.'},
+    ]
+  },
+  {
+    title:'Download and Install the Software',
+    short:'Download → run installer → Finish',
+    instructions:[
+      {text:'Click <strong>Download</strong> to begin the software download'},
+      {text:'Wait for the download to complete — <strong>this can take a while</strong>, even on a fast connection'},
+      {text:'Run the installer and click <strong>Finish</strong> when done'},
+      {text:'The software doesn\'t need to be opened manually — it just needs to be installed and running in the background'},
+      {text:'<strong>Allow any permissions it requests</strong>'},
+    ],
+    warnings:[
+      {type:'warning',icon:'⏱️',text:'<strong>The download is slow — this is normal.</strong> Don\'t cancel it. Let it finish completely before moving on.'},
+      {type:'tip',icon:'💡',text:'Once installed, the software runs silently in the background every time you start your computer.'},
+    ]
+  },
+  {
+    title:'Configure Your Headset',
+    short:'Select input + output → 3 test tones → Confirm',
+    instructions:[
+      {text:'Click <strong>Next</strong> after the install completes'},
+      {text:'Select your headset for <strong>both input and output</strong> (e.g. Logitech for both)'},
+      {text:'Wait for the check to complete — you\'ll hear <strong>three test tones</strong>'},
+      {text:'Click <strong>Confirm</strong>'},
+    ],
+    warnings:[
+      {type:'tip',icon:'🎧',text:'<strong>Headset is required for all calls</strong> — no built-in laptop speakers or microphones. If you don\'t have a headset yet, contact your TL.'},
+      {type:'critical',icon:'⚠️',text:'<strong>Select the same device for both input AND output.</strong> Mismatched devices cause audio issues on calls.'},
+    ]
+  },
+  {
+    title:'Select Your Skills',
+    short:'Resinc Connectors – Speed to Lead only — tick one box',
+    instructions:[
+      {text:'You\'ll be shown a list of dialer queues (called "skills")'},
+      {text:'As a new starter: <strong>tick only Resinc Connectors – Speed to Lead</strong>'},
+      {text:'Click <strong>Confirm</strong>'},
+    ],
+    warnings:[],
+    skills:true
+  },
+  {
+    title:'Make Your First Call',
+    short:'Click off red Not Ready → green Ready for Voice → first call connects',
+    instructions:[
+      {text:'Once on the main dialing screen, <strong>click off the red Not Ready status</strong>'},
+      {text:'Click the <strong>green Ready for Voice and Voicemail</strong> status'},
+      {text:'You\'ll be connected to your first call automatically'},
+      {text:'Load the lead information displayed on screen — and you\'re good to go'},
+    ],
+    warnings:[
+      {type:'tip',icon:'💡',text:'<strong>Separate guides cover the full dialer interface in more detail.</strong> For now, just get connected — you\'ll learn the rest in the next module.'},
+    ]
+  },
+];
+
+let completedSteps=new Set();
+
+function buildSteps(){
+  const list=document.getElementById('steps-list');
+  const dots=document.getElementById('pt-steps');
+
+  STEPS.forEach((step,i)=>{
+    // dot
+    const dot=document.createElement('div');
+    dot.className='pt-step-dot'+(i===0?' active':'');
+    dot.id='ptd-'+i;
+    dot.textContent=i+1;
+    dots.appendChild(dot);
+
+    // card
+    const card=document.createElement('div');
+    card.className='step-card'+(i===0?' active':i>0?' locked':'');
+    card.id='sc-'+i;
+
+    let skillsHTML='';
+    if(step.skills){
+      skillsHTML=`<div class="skills-grid">
+        <div class="skill-card now">
+          <div class="skill-card-label">NOW — NEW STARTER</div>
+          <div class="skill-item">Resinc Connectors – Speed to Lead</div>
+        </div>
+        <div class="skill-card later">
+          <div class="skill-card-label">LATER — ONCE FULLY TRAINED</div>
+          <div class="skill-item">Manual Calls</div>
+          <div class="skill-item">Inbound Line</div>
+        </div>
+      </div>`;
+    }
+
+    const warningsHTML=step.warnings.map(w=>
+      `<div class="warn-box ${w.type}"><div class="warn-box-icon">${w.icon}</div><div class="warn-box-text">${w.text}</div></div>`
+    ).join('');
+
+    const instructionsHTML=step.instructions.map((inst,j)=>
+      `<div class="si"><div class="si-bullet">${j+1}</div><div>${inst.text}</div></div>`
+    ).join('');
+
+    const isLast=i===STEPS.length-1;
+
+    card.innerHTML=`
+      <div class="step-header" onclick="toggleStep(${i})">
+        <div class="step-num" id="sn-${i}">${i+1}</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Step ${i+1} — ${step.title}</div>
+          <div class="step-short">${step.short}</div>
+        </div>
+        <div class="step-status" id="ss-${i}">${i===0?'IN PROGRESS':'PENDING'}</div>
+      </div>
+      <div class="step-body">
+        <div class="step-body-inner">
+          <div class="step-instructions">${instructionsHTML}</div>
+          ${warningsHTML}
+          ${skillsHTML}
+          <button class="done-btn${isLast?' last':''}" onclick="markDone(${i})" id="db-${i}">
+            ${isLast?'✓ Setup complete — I\'m ready to dial':'✓ Done — move to Step '+(i+2)}
+          </button>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function toggleStep(i){
+  if(document.getElementById('sc-'+i).classList.contains('locked')) return;
+  const card=document.getElementById('sc-'+i);
+  const isOpen=card.classList.contains('active');
+  // close all
+  document.querySelectorAll('.step-card').forEach(c=>{
+    if(!c.classList.contains('done')&&!c.classList.contains('locked'))
+      c.classList.remove('active');
+  });
+  if(!isOpen&&!card.classList.contains('done')) card.classList.add('active');
+}
+
+function markDone(i){
+  completedSteps.add(i);
+  const card=document.getElementById('sc-'+i);
+  card.classList.remove('active');
+  card.classList.add('done');
+  document.getElementById('sn-'+i).textContent='✓';
+  document.getElementById('ss-'+i).textContent='DONE';
+  document.getElementById('ptd-'+i).className='pt-step-dot done';
+
+  // unlock next
+  if(i<STEPS.length-1){
+    const next=document.getElementById('sc-'+(i+1));
+    next.classList.remove('locked');
+    next.classList.add('active');
+    document.getElementById('ss-'+(i+1)).textContent='IN PROGRESS';
+    document.getElementById('ptd-'+(i+1)).className='pt-step-dot active';
+    setTimeout(()=>next.scrollIntoView({behavior:'smooth',block:'start'}),150);
+  }
+
+  // update progress
+  const done=completedSteps.size;
+  document.getElementById('pt-fill').style.width=(done/STEPS.length*100)+'%';
+  document.getElementById('pt-count').textContent=done+' of '+STEPS.length+' complete';
+
+  if(done===STEPS.length){
+    setTimeout(()=>{
+      document.getElementById('completion').style.display='block';
+      document.getElementById('prog-fill').style.width='100%';
+      document.getElementById('completion').scrollIntoView({behavior:'smooth',block:'start'});
+    },400);
+  }
+}
+
+buildSteps();
+</script>
+</body>
+</html>
