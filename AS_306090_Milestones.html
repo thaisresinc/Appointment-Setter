@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>30 / 60 / 90 Day Milestones | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--light);color:var(--body);min-height:100vh;overflow-x:hidden;}
+
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:200;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00C4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy);position:relative;overflow:hidden;min-height:290px;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:48px 48px;}
+.hero-glow{position:absolute;top:-100px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:900px;margin:0 auto;padding:48px 28px 38px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:14px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,42px);line-height:1.1;margin-bottom:10px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:14px;line-height:1.7;max-width:540px;}
+
+/* ── LAYOUT ── */
+.section{padding:40px 0;}
+.inner{max-width:900px;margin:0 auto;padding:0 28px;}
+.s-label{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--sky);text-transform:uppercase;margin-bottom:6px;}
+.s-title{font-family:var(--serif);font-size:clamp(22px,3vw,30px);color:var(--navy);margin-bottom:6px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:22px;}
+.sep{height:1px;background:var(--line);max-width:900px;margin:0 auto;}
+
+/* ── PHASE TABS ── */
+.tabs{display:flex;gap:10px;margin-bottom:24px;}
+.tab{flex:1;border:none;border-radius:12px;padding:14px 10px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .22s;text-align:center;border:2px solid transparent;}
+.tab .tab-num{font-family:var(--serif);font-size:26px;display:block;line-height:1;margin-bottom:4px;}
+.tab .tab-label{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px;}
+.tab .tab-phase{display:block;font-size:11px;font-weight:600;}
+.tab.t1{background:var(--sky-bg);color:var(--sky2);border-color:var(--border);}
+.tab.t2{background:var(--sky-bg);color:var(--sky2);border-color:var(--border);}
+.tab.t3{background:#E8EFF2;color:var(--navy);border-color:var(--border);}
+.tab.t1.active{background:var(--sky);color:#fff;border-color:var(--sky);}
+.tab.t2.active{background:var(--sky2);color:#fff;border-color:var(--sky2);}
+.tab.t3.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+/* ── PANEL ── */
+.panel{display:none;}
+.panel.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.panel-head{border-radius:14px;padding:22px 24px;margin-bottom:16px;display:flex;align-items:flex-start;gap:16px;}
+.panel-head.p1{background:var(--sky);}
+.panel-head.p2{background:var(--sky2);}
+.panel-head.p3{background:var(--navy);}
+.ph-days{font-family:var(--serif);font-size:52px;color:rgba(255,255,255,.25);line-height:1;flex-shrink:0;margin-top:-4px;}
+.ph-content{}
+.ph-eyebrow{font-size:9.5px;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,.6);margin-bottom:5px;}
+.ph-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;margin-bottom:5px;}
+.ph-sub{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;}
+
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.metric-card{background:#fff;border-radius:12px;padding:16px 14px;border:1.5px solid var(--line);box-shadow:var(--shadow);text-align:center;}
+.metric-num{font-family:var(--serif);font-size:26px;line-height:1;margin-bottom:3px;}
+.metric-num.c1{color:var(--sky);}
+.metric-num.c2{color:var(--sky2);}
+.metric-num.c3{color:var(--navy);}
+.metric-label{font-size:10.5px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.metric-sub{font-size:10.5px;color:var(--muted);line-height:1.4;}
+
+.behaviours-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.behaviour-card{background:#fff;border-radius:12px;padding:14px 16px;border:1.5px solid var(--line);box-shadow:var(--shadow);display:flex;gap:10px;align-items:flex-start;}
+.bh-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.c1 .bh-dot,.bh-dot.c1{background:var(--sky);}
+.c2 .bh-dot,.bh-dot.c2{background:var(--sky2);}
+.c3 .bh-dot,.bh-dot.c3{background:var(--navy);}
+.bh-text{font-size:13px;color:var(--body);line-height:1.55;}
+.bh-text strong{color:var(--navy);}
+
+/* ── SELF CHECK ── */
+.check-box{background:#fff;border-radius:14px;border:1.5px solid var(--line);overflow:hidden;box-shadow:var(--shadow);}
+.check-head{padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.check-head.h1{background:var(--sky-lt);}
+.check-head.h2{background:var(--sky-bg);}
+.check-head.h3{background:#E8EFF2;}
+.check-icon{font-size:18px;}
+.check-title{font-size:13px;font-weight:700;color:var(--navy);}
+.check-items{padding:16px 20px;display:flex;flex-direction:column;gap:10px;}
+.check-item{display:flex;gap:12px;align-items:flex-start;cursor:pointer;user-select:none;}
+.check-box-el{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:1px;transition:all .18s;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;}
+.check-item.done .check-box-el{background:var(--green);border-color:var(--green);color:#fff;}
+.check-item-text{font-size:13px;color:var(--muted);line-height:1.55;transition:color .18s;}
+.check-item.done .check-item-text{color:var(--green);text-decoration:line-through;text-decoration-color:rgba(11,122,78,.3);}
+.check-counter{font-size:11px;color:var(--muted);padding:10px 20px 16px;text-align:right;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:16px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:24px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.78);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+/* ── COMPLETION ── */
+#completion{display:none;background:var(--navy2);padding:48px 28px;}
+.cpl-inner{max-width:520px;margin:0 auto;text-align:center;}
+.cpl-icon{font-size:48px;margin-bottom:12px;}
+.cpl-title{font-family:var(--serif);color:#fff;font-size:28px;margin-bottom:8px;}
+.cpl-title span{color:var(--sky);font-style:italic;}
+.cpl-sub{color:rgba(255,255,255,.5);font-size:13px;line-height:1.7;margin-bottom:20px;}
+.cpl-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.cpl-chip{background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.25);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--sky);}
+
+@media(max-width:600px){
+  .tabs{flex-direction:column;}
+  .metrics-row{grid-template-columns:1fr 1fr;}
+  .behaviours-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · MILESTONES</div>
+    <h1 class="hero-title">What Success Looks Like —<br><em>30 / 60 / 90 Days</em></h1>
+    <p class="hero-sub">These milestones aren't a threat — they're a roadmap. Know what good looks like at each checkpoint and you can self-assess every week.</p>
+  </div>
+</section>
+
+<!-- MILESTONES -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">Your 90-Day Map</div>
+    <div class="s-title">Click each phase to explore</div>
+    <div class="s-bar"></div>
+    <div style="background:var(--gold-lt);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:10px 16px;font-size:12px;color:#7a5c00;line-height:1.6;margin-bottom:20px;max-width:900px;">📌 <strong>Note:</strong> the Day 90 numbers match your confirmed KPIs exactly. The Day 30 and Day 60 progression figures are a reasonable estimate to show the ramp-up — flag to Jordan for sign-off before treating them as official targets.</div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab t1 active" onclick="setPanel(1)">
+        <span class="tab-num">30</span>
+        <span class="tab-label">Days 1–30</span>
+        <span class="tab-phase">Learn</span>
+      </button>
+      <button class="tab t2" onclick="setPanel(2)">
+        <span class="tab-num">60</span>
+        <span class="tab-label">Days 31–60</span>
+        <span class="tab-phase">Build</span>
+      </button>
+      <button class="tab t3" onclick="setPanel(3)">
+        <span class="tab-num">90</span>
+        <span class="tab-label">Days 61–90</span>
+        <span class="tab-phase">Perform</span>
+      </button>
+    </div>
+
+    <!-- PANEL 1: 30 DAYS -->
+    <div class="panel active" id="panel-1">
+      <div class="panel-head p1">
+        <div class="ph-days">30</div>
+        <div class="ph-content">
+          <div class="ph-eyebrow">DAYS 1–30 · LEARN</div>
+          <div class="ph-title">First Month — Build the Foundation</div>
+          <div class="ph-sub">Follow the system. Ask questions. Build the habits that everything else depends on. You're not expected to perform at full speed yet — you are expected to learn fast.</div>
+        </div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-card"><div class="metric-num c1">120–150</div><div class="metric-label">Daily Dials</div><div class="metric-sub">Ramping toward the 180/day minimum</div></div>
+        <div class="metric-card"><div class="metric-num c1">2–3/day</div><div class="metric-label">Appointments Booked</div><div class="metric-sub">Building toward the 5/day minimum</div></div>
+        <div class="metric-card"><div class="metric-num c1">50%+</div><div class="metric-label">Confirmation Rate</div><div class="metric-sub">Building toward the 70% target</div></div>
+      </div>
+      <div class="behaviours-grid">
+        <div class="behaviour-card"><div class="bh-dot c1"></div><div class="bh-text">Displaying all <strong>core values</strong> on and off the phone</div></div>
+        <div class="behaviour-card"><div class="bh-dot c1"></div><div class="bh-text">Active in the team chat — sharing calls for feedback with peers and Jordan</div></div>
+        <div class="behaviour-card"><div class="bh-dot c1"></div><div class="bh-text">Full <strong>shift hours logged consistently</strong> by week 3–4</div></div>
+        <div class="behaviour-card"><div class="bh-dot c1"></div><div class="bh-text">CRM notes clean enough for someone else to pick up</div></div>
+        <div class="behaviour-card"><div class="bh-dot c1"></div><div class="bh-text">Zero missed callbacks — pipeline owned and managed</div></div>
+        <div class="behaviour-card"><div class="bh-dot c1"></div><div class="bh-text">Asking Jordan when unsure — staying coachable, applying feedback</div></div>
+      </div>
+    </div>
+
+    <!-- PANEL 2: 60 DAYS -->
+    <div class="panel" id="panel-2">
+      <div class="panel-head p2">
+        <div class="ph-days">60</div>
+        <div class="ph-content">
+          <div class="ph-eyebrow">DAYS 31–60 · BUILD</div>
+          <div class="ph-title">Finding Your Rhythm</div>
+          <div class="ph-sub">Consistency on the dialler. Objection handling improving. Your qualification checklist becoming automatic. You're not just learning anymore — you're building a performance track record.</div>
+        </div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-card"><div class="metric-num c2">180+</div><div class="metric-label">Daily Dials</div><div class="metric-sub">Hitting the minimum consistently</div></div>
+        <div class="metric-card"><div class="metric-num c2">4+/day</div><div class="metric-label">Appointments Booked</div><div class="metric-sub">Trending toward the 5/day minimum</div></div>
+        <div class="metric-card"><div class="metric-num c2">60–65%</div><div class="metric-label">Confirmation Rate</div><div class="metric-sub">Trending toward the 70% target</div></div>
+      </div>
+      <div class="behaviours-grid">
+        <div class="behaviour-card"><div class="bh-dot c2"></div><div class="bh-text">Hitting <strong>minimum KPIs consistently</strong> — not just occasionally</div></div>
+        <div class="behaviour-card"><div class="bh-dot c2"></div><div class="bh-text">Turning "not interested" into booked appointments</div></div>
+        <div class="behaviour-card"><div class="bh-dot c2"></div><div class="bh-text">Communicating USPs and solar concepts clearly with <strong>conviction</strong></div></div>
+        <div class="behaviour-card"><div class="bh-dot c2"></div><div class="bh-text">Confirmation rate trending upward — bookings protected</div></div>
+        <div class="behaviour-card"><div class="bh-dot c2"></div><div class="bh-text">Working <strong>independently</strong> — reaching out for feedback proactively</div></div>
+        <div class="behaviour-card"><div class="bh-dot c2"></div><div class="bh-text">Fewer escalations needed each week</div></div>
+      </div>
+    </div>
+
+    <!-- PANEL 3: 90 DAYS -->
+    <div class="panel" id="panel-3">
+      <div class="panel-head p3">
+        <div class="ph-days">90</div>
+        <div class="ph-content">
+          <div class="ph-eyebrow">DAYS 61–90 · PERFORM</div>
+          <div class="ph-title">Full Speed</div>
+          <div class="ph-sub">Hitting target KPIs — not just minimums. Qualifying confidently. Working independently. Contributing to the team. This is where the foundation pays off.</div>
+        </div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-card"><div class="metric-num c3">180+</div><div class="metric-label">Daily Dials</div><div class="metric-sub">Non-negotiable minimum, every day</div></div>
+        <div class="metric-card"><div class="metric-num c3">5+/day</div><div class="metric-label">Appointments Booked</div><div class="metric-sub">Minimum, trending above</div></div>
+        <div class="metric-card"><div class="metric-num c3">3+/week</div><div class="metric-label">Sales</div><div class="metric-sub">Commission threshold, hit consistently</div></div>
+      </div>
+      <div class="behaviours-grid">
+        <div class="behaviour-card"><div class="bh-dot c3"></div><div class="bh-text"><strong>Exceeding all KPIs</strong> consistently — not just surviving them</div></div>
+        <div class="behaviour-card"><div class="bh-dot c3"></div><div class="bh-text">Specialists noticing the <strong>quality</strong> of your appointments</div></div>
+        <div class="behaviour-card"><div class="bh-dot c3"></div><div class="bh-text">Contributing to the team — sharing feedback and call reviews</div></div>
+        <div class="behaviour-card"><div class="bh-dot c3"></div><div class="bh-text">Self-developing in own time — bringing ideas to the team</div></div>
+        <div class="behaviour-card"><div class="bh-dot c3"></div><div class="bh-text">Spreading positivity — <strong>communicative and present</strong> every day</div></div>
+        <div class="behaviour-card"><div class="bh-dot c3"></div><div class="bh-text">Not just surviving — <strong>leading from the phones</strong></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- WEEKLY SELF-CHECK -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">Weekly Self-Check</div>
+    <div class="s-title">Questions to ask yourself</div>
+    <div class="s-bar"></div>
+    <p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:22px;">At the end of each week, run through the questions for your current phase. Honest answers here are worth more than any review.</p>
+
+    <!-- 30 Days Check -->
+    <div class="check-box" style="margin-bottom:14px;">
+      <div class="check-head h1">
+        <span class="check-icon">📋</span>
+        <span class="check-title">Days 1–30 · Am I building the right foundations?</span>
+      </div>
+      <div class="check-items" id="check-1">
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I checking the CRM before every call?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Are my notes clean enough for someone else to pick up?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I managing my callbacks — zero missed?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I asking my TL when I'm unsure?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I staying coachable and applying feedback immediately?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I sharing at least one call per day for review?</div></div>
+      </div>
+      <div class="check-counter" id="cc-1">0 of 6</div>
+    </div>
+
+    <!-- 60 Days Check -->
+    <div class="check-box" style="margin-bottom:14px;">
+      <div class="check-head h2">
+        <span class="check-icon">📋</span>
+        <span class="check-title">Days 31–60 · Am I finding my rhythm?</span>
+      </div>
+      <div class="check-items" id="check-2">
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I hitting minimum KPIs consistently — not just occasionally?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Is my conviction improving call by call?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I handling common objections without hesitation?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Is my confirmation rate trending upward?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I needing fewer escalations each week?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I reaching out for feedback proactively — not waiting to be asked?</div></div>
+      </div>
+      <div class="check-counter" id="cc-2">0 of 6</div>
+    </div>
+
+    <!-- 90 Days Check -->
+    <div class="check-box">
+      <div class="check-head h3">
+        <span class="check-icon">📋</span>
+        <span class="check-title">Days 61–90 · Am I performing at the standard?</span>
+      </div>
+      <div class="check-items" id="check-3">
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I hitting target KPIs — not just minimums?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Are my appointments sitting and converting?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I working independently without hand-holding?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Are specialists noticing the quality of my bookings?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I contributing to the team — not just surviving?</div></div>
+        <div class="check-item" onclick="tick(this)"><div class="check-box-el">✓</div><div class="check-item-text">Am I self-developing in my own time?</div></div>
+      </div>
+      <div class="check-counter" id="cc-3">0 of 6</div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- NARRATION -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">These milestones aren't a threat — they're a roadmap. <strong>If you know what good looks like at 30 days, you can self-assess every single week.</strong> The people who hit 90-day targets are the ones who took the 30-day targets seriously.</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="cpl-inner">
+    <div class="cpl-icon">🗓️</div>
+    <div class="cpl-title">Module <span>complete.</span></div>
+    <div class="cpl-sub">You know what the roadmap looks like. Use the weekly self-check every Friday.</div>
+    <div class="cpl-chips">
+      <span class="cpl-chip">✓ 30 days — Learn</span>
+      <span class="cpl-chip">✓ 60 days — Build</span>
+      <span class="cpl-chip">✓ 90 days — Perform</span>
+      <span class="cpl-chip">✓ Weekly self-check</span>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+  if(p>90&&document.getElementById('completion').style.display==='none'){
+    document.getElementById('completion').style.display='block';
+  }
+});
+
+function setPanel(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');
+  document.querySelectorAll('.tab')[n-1].classList.add('active');
+}
+
+function tick(item){
+  item.classList.toggle('done');
+  // find parent check-items, count done
+  const list = item.closest('.check-items');
+  const idx = list.id.replace('check-','');
+  const total = list.querySelectorAll('.check-item').length;
+  const done = list.querySelectorAll('.check-item.done').length;
+  document.getElementById('cc-'+idx).textContent = done+' of '+total;
+}
+</script>
+</body>
+</html>
