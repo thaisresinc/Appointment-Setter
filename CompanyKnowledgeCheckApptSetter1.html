@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Breaker 1 — Company Knowledge Check</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --amber:#E8A33D;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.06),0 4px 12px rgba(10,53,66,.08);
+}
+html,body{
+  height:100%;font-family:var(--font);
+  background:var(--navy2);color:var(--body);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+  overflow-x:hidden;
+}
+
+/* ambient background sparks behind the card */
+.bg-field{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.bg-mote{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--sky);opacity:0;animation:motefloat 7s ease-in-out infinite;}
+@keyframes motefloat{
+  0%{opacity:0;transform:translateY(0) scale(.6);}
+  15%{opacity:.55;}
+  85%{opacity:.35;}
+  100%{opacity:0;transform:translateY(-140px) scale(1);}
+}
+
+/* CARD */
+.card{
+  position:relative;z-index:1;
+  background:#fff;border-radius:20px;
+  width:100%;max-width:660px;
+  box-shadow:0 8px 40px rgba(0,0,0,.3);
+  overflow:hidden;
+}
+
+/* CARD HEADER */
+.card-header{
+  background:var(--navy);padding:20px 28px 20px;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:18px;
+}
+.card-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);z-index:2;}
+
+/* ENERGY CORE */
+.core-wrap{position:relative;width:64px;height:64px;flex-shrink:0;}
+.core-wrap svg{width:64px;height:64px;transform:rotate(-90deg);}
+.core-track{fill:none;stroke:rgba(255,255,255,.12);stroke-width:5;}
+.core-fill{
+  fill:none;stroke:var(--sky);stroke-width:5;stroke-linecap:round;
+  stroke-dasharray:163.36;stroke-dashoffset:163.36;
+  transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1);
+  filter:drop-shadow(0 0 6px rgba(0,174,239,.9));
+}
+.core-bolt{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:22px;filter:drop-shadow(0 0 4px rgba(0,174,239,.6));
+  animation:idlepulse 2.6s ease-in-out infinite;
+}
+@keyframes idlepulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.core-bolt.zap{animation:zapkick .5s ease;}
+@keyframes zapkick{
+  0%{transform:scale(1) rotate(0deg);}
+  30%{transform:scale(1.35) rotate(-8deg);filter:drop-shadow(0 0 12px rgba(0,174,239,1));}
+  60%{transform:scale(.92) rotate(6deg);}
+  100%{transform:scale(1) rotate(0deg);}
+}
+.core-bolt.dip{animation:dipflicker .5s ease;}
+@keyframes dipflicker{
+  0%,100%{opacity:1;}
+  20%{opacity:.15;}
+  40%{opacity:.9;}
+  60%{opacity:.2;}
+  80%{opacity:.8;}
+}
+
+.ch-copy{flex:1;min-width:0;}
+.ch-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;gap:8px;}
+.ch-eyebrow{color:var(--sky);font-size:8px;letter-spacing:.24em;font-weight:600;opacity:.85;}
+.ch-badge{
+  background:rgba(0,174,239,.15);border:1px solid rgba(0,174,239,.3);
+  border-radius:20px;padding:3px 11px;
+  color:var(--sky);font-size:8px;font-weight:600;letter-spacing:.12em;
+  white-space:nowrap;
+}
+.ch-title{color:#fff;font-size:21px;font-weight:700;font-family:var(--serif);line-height:1.15;}
+.ch-sub{color:rgba(255,255,255,.55);font-size:11.5px;margin-top:3px;line-height:1.5;}
+
+/* CHARGE METER (replaces dots) */
+.charge-meter{
+  display:flex;align-items:center;gap:6px;
+  padding:16px 28px 0;
+}
+.charge-seg{
+  height:7px;flex:1;border-radius:4px;
+  background:var(--line);position:relative;overflow:hidden;
+}
+.charge-seg-fill{
+  position:absolute;inset:0;width:0%;border-radius:4px;
+  background:linear-gradient(90deg,var(--sky),#5FD4FF);
+  transition:width .7s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px rgba(0,174,239,.6);
+}
+.charge-label{
+  font-size:8.5px;color:var(--muted);letter-spacing:.14em;font-weight:700;
+  padding:6px 28px 0;text-align:right;
+}
+
+/* CARD BODY */
+.card-body{padding:20px 28px 24px;position:relative;}
+.card-body.flicker::before{
+  content:'';position:absolute;inset:0;background:#0A3542;z-index:5;
+  opacity:0;
+  animation:powercut .45s ease;pointer-events:none;
+}
+@keyframes powercut{
+  0%{opacity:0;}
+  15%{opacity:.5;}
+  30%{opacity:.05;}
+  45%{opacity:.35;}
+  100%{opacity:0;}
+}
+
+/* QUESTION */
+.q-num{
+  font-size:9px;color:var(--sky);font-weight:600;letter-spacing:.16em;
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.q-num::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sky);flex-shrink:0;}
+.q-text{font-size:17px;font-weight:700;color:var(--navy);line-height:1.45;margin-bottom:18px;}
+.q-opts{display:flex;flex-direction:column;gap:9px;}
+.q-opt{
+  position:relative;overflow:visible;
+  display:flex;align-items:center;gap:13px;
+  padding:13px 16px;border-radius:10px;
+  border:1.5px solid var(--line);background:#fff;
+  cursor:pointer;transition:all .18s;user-select:none;
+}
+.q-opt:hover:not(.correct):not(.wrong):not(.disabled){
+  border-color:var(--sky);background:var(--sky-lt);transform:translateX(3px);
+}
+.q-opt.correct{border-color:var(--green);background:var(--green-lt);pointer-events:none;animation:surge .5s ease;}
+@keyframes surge{
+  0%{box-shadow:0 0 0 0 rgba(11,122,78,.5);}
+  60%{box-shadow:0 0 0 10px rgba(11,122,78,0);}
+  100%{box-shadow:0 0 0 0 rgba(11,122,78,0);}
+}
+.q-opt.wrong{border-color:var(--red);background:var(--red-lt);pointer-events:none;animation:shortcircuit .45s ease;}
+@keyframes shortcircuit{
+  0%,100%{transform:translateX(0);}
+  15%{transform:translateX(-6px);}
+  30%{transform:translateX(5px);}
+  45%{transform:translateX(-4px);}
+  60%{transform:translateX(3px);}
+  75%{transform:translateX(-2px);}
+}
+.q-opt.disabled{pointer-events:none;opacity:.4;}
+.q-dot{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;transition:all .18s;
+}
+.q-opt.correct .q-dot{background:var(--green);border-color:var(--green);}
+.q-opt.wrong .q-dot{background:var(--red);border-color:var(--red);}
+.q-opt-text{font-size:13px;color:var(--body);line-height:1.4;flex:1;}
+.q-opt.correct .q-opt-text{color:#0A4425;font-weight:600;}
+.q-opt.wrong .q-opt-text{color:#7A1010;}
+
+/* spark particles fired from correct option */
+.spark{
+  position:absolute;left:30px;top:50%;width:4px;height:4px;border-radius:50%;
+  background:var(--sky);pointer-events:none;
+  animation:sparkfly .6s ease-out forwards;
+}
+@keyframes sparkfly{
+  0%{opacity:1;transform:translate(0,0) scale(1);}
+  100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(.2);}
+}
+
+/* FEEDBACK */
+.q-feedback{border-radius:10px;padding:13px 16px;font-size:13px;line-height:1.65;margin-top:12px;display:none;}
+.q-feedback.show{display:block;animation:fbin .3s ease;}
+@keyframes fbin{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.q-feedback.ok{background:var(--green-lt);border-left:4px solid var(--green);color:#0A4425;}
+.q-feedback.bad{background:var(--red-lt);border-left:4px solid var(--red);color:#7A1010;}
+.q-retry{font-size:12px;color:var(--red);font-weight:600;margin-top:7px;display:none;}
+.q-retry.show{display:block;}
+
+/* COMPLETE STATE — grid online */
+.complete-state{display:none;text-align:center;padding:6px 0 4px;position:relative;}
+.complete-state.show{display:block;animation:fadeUp .5s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.online-stage{position:relative;width:120px;height:120px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;}
+.online-ring{
+  position:absolute;border-radius:50%;border:2px solid var(--sky);
+  opacity:0;animation:ringpulse 2.2s ease-out infinite;
+}
+.online-ring.r1{width:60px;height:60px;animation-delay:0s;}
+.online-ring.r2{width:60px;height:60px;animation-delay:.6s;}
+.online-ring.r3{width:60px;height:60px;animation-delay:1.2s;}
+@keyframes ringpulse{
+  0%{width:60px;height:60px;opacity:.7;}
+  100%{width:130px;height:130px;opacity:0;}
+}
+.online-core{
+  position:relative;z-index:2;width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#5FD4FF,var(--sky) 60%,var(--sky2));
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  box-shadow:0 0 24px rgba(0,174,239,.75),0 0 60px rgba(0,174,239,.35);
+  animation:corebreathe 2.4s ease-in-out infinite;
+}
+@keyframes corebreathe{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+.rise-mote{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--sky);opacity:0;animation:risemote 2.6s ease-in infinite;}
+@keyframes risemote{
+  0%{opacity:0;transform:translate(0,10px) scale(.6);}
+  20%{opacity:.9;}
+  100%{opacity:0;transform:translate(var(--mx),-70px) scale(1);}
+}
+
+.cpl-title{font-size:23px;font-weight:700;color:var(--navy);margin-bottom:5px;font-family:var(--serif);}
+.cpl-sub{font-size:12.5px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
+.cpl-score{
+  display:inline-block;
+  background:var(--sky-bg);border:1.5px solid var(--border);
+  border-radius:12px;padding:11px 26px;margin-bottom:18px;
+}
+.cpl-score-n{font-size:32px;font-weight:700;color:var(--sky);font-family:var(--serif);}
+.cpl-score-lbl{font-size:9px;color:var(--muted);letter-spacing:.12em;}
+.cpl-grade{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--navy);
+  background:#fff;border:1.5px solid var(--border);border-radius:20px;
+  padding:5px 14px;margin-left:10px;vertical-align:middle;
+}
+.cpl-next{
+  background:var(--sky);color:#fff;border:none;
+  border-radius:10px;padding:12px 26px;
+  font-family:var(--font);font-size:13.5px;font-weight:600;
+  cursor:pointer;letter-spacing:.02em;
+  box-shadow:0 4px 14px rgba(0,174,239,.35);
+  transition:all .18s;display:inline-flex;align-items:center;gap:8px;
+}
+.cpl-next:hover{background:var(--sky2);transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,174,239,.4);}
+.cpl-rows{display:flex;flex-direction:column;gap:7px;max-width:420px;margin:0 auto 18px;}
+.cpl-row{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:600;text-align:left;}
+.cpl-row.ok{background:var(--green-lt);border:1.5px solid rgba(11,122,78,.2);color:#0A4425;}
+.cpl-row.bad{background:var(--red-lt);border:1.5px solid rgba(181,37,27,.2);color:#7A1010;}
+
+/* NEXT MODULE TEASER */
+.next-teaser{
+  background:var(--navy);margin:0;padding:16px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  display:none;
+}
+.next-teaser.show{display:flex;}
+.nt-label{font-size:8px;color:rgba(0,174,239,.6);letter-spacing:.2em;font-weight:600;margin-bottom:3px;}
+.nt-text{font-size:13px;color:#fff;font-weight:500;}
+.nt-arrow{color:var(--sky);font-size:18px;}
+</style>
+</head>
+<body>
+
+<div class="bg-field" id="bg-field"></div>
+
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="card-header">
+    <div class="core-wrap">
+      <svg viewBox="0 0 60 60">
+        <circle class="core-track" cx="30" cy="30" r="26"></circle>
+        <circle class="core-fill" id="core-fill" cx="30" cy="30" r="26"></circle>
+      </svg>
+      <div class="core-bolt" id="core-bolt">⚡</div>
+    </div>
+    <div class="ch-copy">
+      <div class="ch-top">
+        <span class="ch-eyebrow">APPOINTMENT SETTER · DAY 1</span>
+        <span class="ch-badge">BREAKER</span>
+      </div>
+      <div class="ch-title">Company Knowledge Check</div>
+      <div class="ch-sub">Every correct answer feeds the circuit. Get all 3 to bring the grid fully online.</div>
+    </div>
+  </div>
+
+  <!-- CHARGE METER -->
+  <div class="charge-meter" id="charge-meter">
+    <div class="charge-seg"><div class="charge-seg-fill" id="seg0"></div></div>
+    <div class="charge-seg"><div class="charge-seg-fill" id="seg1"></div></div>
+    <div class="charge-seg"><div class="charge-seg-fill" id="seg2"></div></div>
+  </div>
+  <div class="charge-label" id="charge-label">0% CHARGED</div>
+
+  <!-- BODY -->
+  <div class="card-body" id="card-body">
+    <div id="quiz-body"></div>
+    <div class="complete-state" id="complete-state">
+      <div class="online-stage">
+        <div class="online-ring r1"></div>
+        <div class="online-ring r2"></div>
+        <div class="online-ring r3"></div>
+        <div class="online-core">⚡</div>
+        <div class="rise-mote" style="left:14px;top:50px;--mx:-6px;animation-delay:.1s;"></div>
+        <div class="rise-mote" style="left:100px;top:55px;--mx:8px;animation-delay:.8s;"></div>
+        <div class="rise-mote" style="left:55px;top:70px;--mx:-4px;animation-delay:1.4s;"></div>
+        <div class="rise-mote" style="left:75px;top:45px;--mx:5px;animation-delay:2s;"></div>
+      </div>
+      <div class="cpl-title">Grid online.</div>
+      <div class="cpl-sub">Company knowledge confirmed — you're ready to move into product content.</div>
+      <div class="cpl-score">
+        <div class="cpl-score-n" id="cpl-score">3/3</div>
+        <div class="cpl-score-lbl">FIRST-CONNECTION</div>
+        <span class="cpl-grade" id="cpl-grade">⚡ Clean Connection</span>
+      </div>
+      <div class="cpl-rows" id="cpl-rows"></div>
+    </div>
+  </div>
+
+  <!-- NEXT TEASER -->
+  <div class="next-teaser" id="next-teaser">
+    <div>
+      <div class="nt-label">NEXT UP</div>
+      <div class="nt-text">How Solar Works</div>
+    </div>
+    <div class="nt-arrow">→</div>
+  </div>
+
+</div>
+
+<script>
+const QUIZ=[
+  {
+    q:"RESINC's mission is to become the most _______ solar company in the industry.",
+    opts:["Profitable","Reputable","Popular","Affordable"],
+    c:1,
+    fb:"Not cheapest, not loudest, not biggest — most reputable. That word drives every decision from how leads are qualified to how systems are designed."
+  },
+  {
+    q:"You're speaking with a customer who qualifies on every criteria except their bill is $320/quarter. What do you do?",
+    opts:["Book it — they're a good fit on everything else","Ask them to call back when their bill is higher","Disqualify — minimum bill is $400 per quarter","Refer to a senior setter to decide"],
+    c:2,
+    fb:"Ethical selling protects everyone. Below $400/quarter, the ROI case is too weak to send a consultant. That's not rejection — it's doing right by the customer."
+  },
+  {
+    q:"Which core value is most directly linked to how you handle a customer pushing back on the phone?",
+    opts:["Personal Responsibility — own the outcome","Follow The System — trust the script","Present With Conviction — and Stay Coachable for how you respond to feedback after","Spread Positivity — keep the energy high"],
+    c:2,
+    fb:"Conviction keeps you steady when a customer challenges you. Coachability means you learn from every call that doesn't go to plan."
+  },
+];
+
+const CIRC=163.36;
+let qIdx=0;
+const qOk=[false,false,false];
+const qAns=[false,false,false];
+const qSel=[-1,-1,-1];
+const qFirstTry=[null,null,null]; // true = nailed it first try, false = needed a retry
+
+// ambient background motes
+(function seedMotes(){
+  const field=document.getElementById('bg-field');
+  for(let i=0;i<14;i++){
+    const m=document.createElement('div');
+    m.className='bg-mote';
+    m.style.left=(Math.random()*100)+'%';
+    m.style.top=(60+Math.random()*35)+'%';
+    m.style.animationDelay=(Math.random()*7)+'s';
+    m.style.animationDuration=(5+Math.random()*4)+'s';
+    field.appendChild(m);
+  }
+})();
+
+function updateCore(){
+  const solved=qOk.filter(Boolean).length;
+  const offset=CIRC-(CIRC*(solved/3));
+  document.getElementById('core-fill').style.strokeDashoffset=offset;
+}
+
+function updateMeter(){
+  const pct=Math.round((qOk.filter(Boolean).length/3)*100);
+  document.getElementById('charge-label').textContent=pct+'% CHARGED';
+  [0,1,2].forEach(i=>{
+    document.getElementById('seg'+i).style.width=qOk[i]?'100%':'0%';
+  });
+}
+
+function zapCore(){
+  const b=document.getElementById('core-bolt');
+  b.classList.remove('zap');void b.offsetWidth;b.classList.add('zap');
+}
+function dipCore(){
+  const b=document.getElementById('core-bolt');
+  b.classList.remove('dip');void b.offsetWidth;b.classList.add('dip');
+}
+function flickerBody(){
+  const body=document.getElementById('card-body');
+  body.classList.remove('flicker');void body.offsetWidth;body.classList.add('flicker');
+  setTimeout(()=>body.classList.remove('flicker'),460);
+}
+
+function spawnSparks(optEl){
+  for(let i=0;i<7;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    const angle=Math.random()*Math.PI*2;
+    const dist=26+Math.random()*30;
+    s.style.setProperty('--sx',(Math.cos(angle)*dist)+'px');
+    s.style.setProperty('--sy',(Math.sin(angle)*dist)+'px');
+    s.style.animationDelay=(Math.random()*.08)+'s';
+    optEl.appendChild(s);
+    setTimeout(()=>s.remove(),700);
+  }
+}
+
+function render(){
+  const body=document.getElementById('quiz-body');
+  if(qIdx>=QUIZ.length){showComplete();return;}
+  const q=QUIZ[qIdx];const a=qAns[qIdx];
+  body.innerHTML=`
+    <div class="q-num">QUESTION ${qIdx+1} OF ${QUIZ.length}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="q-opts">
+      ${q.opts.map((o,i)=>{
+        let cls='';
+        if(a){
+          if(qOk[qIdx]){ if(i===q.c)cls='correct'; else cls='disabled'; }
+          else { if(i===qSel[qIdx])cls='wrong'; }
+        }
+        const dot=(a&&qOk[qIdx]&&i===q.c)?'✓':(a&&!qOk[qIdx]&&i===qSel[qIdx])?'✗':'';
+        return `<div class="q-opt ${cls}" data-i="${i}" onclick="pick(${i})">
+          <div class="q-dot">${dot}</div>
+          <div class="q-opt-text">${o}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="q-feedback ${a?'show':''} ${a?(qOk[qIdx]?'ok':'bad'):''}">
+      ${a?(qOk[qIdx]?'⚡  ':'⚠️  ')+q.fb:''}
+    </div>
+    ${a&&!qOk[qIdx]?'<div class="q-retry show">Power dipped — select the correct answer to reconnect.</div>':''}
+  `;
+  if(a && qOk[qIdx]){
+    const el=body.querySelector(`.q-opt[data-i="${q.c}"]`);
+    if(el) spawnSparks(el);
+  }
+}
+
+function pick(i){
+  if(qAns[qIdx]&&qOk[qIdx])return;
+  const q=QUIZ[qIdx];qSel[qIdx]=i;
+  const ok=i===q.c;
+  if(qFirstTry[qIdx]===null) qFirstTry[qIdx]=ok;
+  if(ok){
+    qAns[qIdx]=true;qOk[qIdx]=true;
+    render();updateCore();updateMeter();zapCore();
+    setTimeout(()=>{
+      if(qIdx<QUIZ.length-1){qIdx++;render();}
+      else showComplete();
+    },1500);
+  } else {
+    qAns[qIdx]=true;render();dipCore();flickerBody();
+    setTimeout(()=>{qAns[qIdx]=false;render();},2000);
+  }
+}
+
+function showComplete(){
+  document.getElementById('quiz-body').innerHTML='';
+  document.getElementById('charge-meter').style.display='none';
+  document.getElementById('charge-label').style.display='none';
+  const firstTryCount=qFirstTry.filter(v=>v===true).length;
+  document.getElementById('cpl-score').textContent=firstTryCount+'/'+QUIZ.length;
+  const gradeEl=document.getElementById('cpl-grade');
+  if(firstTryCount===3){gradeEl.textContent='⚡ Clean Connection';}
+  else if(firstTryCount===2){gradeEl.textContent='🔋 Stable Charge';}
+  else{gradeEl.textContent='🔌 Reconnected';}
+  document.getElementById('cpl-rows').innerHTML=QUIZ.map((q,i)=>`
+    <div class="cpl-row ${qFirstTry[i]?'ok':'bad'}">
+      <span style="font-size:16px">${qFirstTry[i]?'⚡':'🔌'}</span>
+      <span>${q.q.substring(0,58)}…</span>
+    </div>`).join('');
+  document.getElementById('complete-state').classList.add('show');
+  document.getElementById('next-teaser').classList.add('show');
+}
+
+render();
+updateCore();
+updateMeter();
+</script>
+</body>
+</html>
