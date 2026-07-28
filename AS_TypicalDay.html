@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>A Typical Day — Hour by Hour | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--navy3:#0D4A5E;
+  --sky:#00AEEF;--sky2:#0090C4;--sky3:#00C4FF;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--light);color:var(--body);min-height:100vh;overflow-x:hidden;}
+
+/* ── PROGRESS BAR ── */
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:200;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--sky3));width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy);padding:0;position:relative;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.06) 1px,transparent 1px);background-size:48px 48px;}
+.hero-glow{position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.18) 0%,transparent 70%);pointer-events:none;}
+.hero-glow2{position:absolute;bottom:-60px;left:10%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.09) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:900px;margin:0 auto;padding:60px 28px 44px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(32px,5vw,52px);line-height:1.05;margin-bottom:10px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.55);font-size:14px;line-height:1.7;max-width:520px;margin-bottom:24px;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,.6);}
+
+/* ── LAYOUT ── */
+.section{padding:44px 0;}
+.inner{max-width:900px;margin:0 auto;padding:0 28px;}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--sky);text-transform:uppercase;margin-bottom:6px;}
+.section-title{font-family:var(--serif);font-size:clamp(24px,3.5vw,34px);color:var(--navy);margin-bottom:6px;}
+.s-bar{width:40px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:20px;}
+
+/* ── INTRO CARD ── */
+#intro-section{background:var(--navy);}
+.intro-card{max-width:900px;margin:0 auto;padding:22px 28px;display:flex;gap:16px;align-items:flex-start;background:rgba(0,174,239,.07);border-bottom:1px solid rgba(0,174,239,.15);}
+.intro-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+.intro-title{font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:5px;}
+.intro-text{font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.7;}
+.intro-text strong{color:#fff;}
+
+/* ── TIMELINE HEADER ── */
+.tl-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;padding:14px 18px;background:#fff;border-radius:12px;border:1.5px solid var(--line);box-shadow:var(--shadow);}
+.tl-header-left{display:flex;align-items:center;gap:10px;}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--sky);flex-shrink:0;}
+.tl-label{font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.06em;}
+.tl-progress-wrap{display:flex;align-items:center;gap:10px;}
+.tl-progress-text{font-size:11px;color:var(--muted);white-space:nowrap;}
+.tl-progress-bar{width:120px;height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.tl-progress-fill{height:100%;background:var(--sky);border-radius:3px;transition:width .4s;}
+
+/* ── TIMELINE TRACK ── */
+.tl-track-wrap{position:relative;}
+.tl-scroll{overflow-x:auto;padding-bottom:8px;}
+.tl-track{display:flex;gap:10px;padding:4px 0 8px;min-width:max-content;}
+
+/* ── TIMELINE BLOCK ── */
+.tl-block{
+  position:relative;width:110px;min-height:110px;
+  background:#fff;border-radius:14px;
+  border:1.5px solid var(--line);
+  padding:14px 12px 12px;
+  cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;
+  text-align:center;
+  transition:all .22s;
+  box-shadow:var(--shadow);
+  flex-shrink:0;
+}
+.tl-block:hover:not(.locked){border-color:var(--sky);transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.tl-block.locked{opacity:.55;cursor:not-allowed;background:var(--light);}
+.tl-block.active{border-color:var(--sky);background:var(--sky-lt);border-width:2px;}
+.tl-block.done{border-color:var(--green);background:var(--green-lt);}
+.tl-block.break-block{border-color:var(--gold);background:var(--gold-lt);}
+.tl-block.break-block.done{border-color:var(--green);background:var(--green-lt);}
+
+.tl-lock-icon{position:absolute;top:6px;right:8px;font-size:11px;opacity:.4;}
+.tl-node{width:36px;height:36px;border-radius:50%;background:var(--sky-lt);border:2px solid rgba(0,174,239,.2);display:flex;align-items:center;justify-content:center;margin-bottom:4px;flex-shrink:0;}
+.tl-block.done .tl-node{background:var(--green-lt);border-color:rgba(11,122,78,.2);}
+.tl-emoji{font-size:16px;line-height:1;}
+.tl-time{font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.06em;line-height:1.2;}
+.tl-block.done .tl-time{color:var(--green);}
+.tl-name{font-size:11px;font-weight:700;color:var(--navy);line-height:1.25;margin-top:2px;}
+.tl-tap{font-size:9.5px;color:var(--muted);margin-top:4px;line-height:1.3;}
+.tl-block.done .tl-tap{color:var(--green);}
+.tl-block.done .tl-tap::before{content:'✓ ';}
+
+/* ── EXPANDED PANEL ── */
+.tl-panels{margin-top:16px;}
+.tl-panel{display:none;background:var(--navy);border-radius:16px;padding:24px 26px;margin-bottom:12px;border-left:4px solid var(--sky);animation:slideIn .3s ease;}
+.tl-panel.visible{display:block;}
+.tl-panel.break-panel{border-left-color:var(--gold);}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.panel-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;}
+.panel-icon-wrap{font-size:28px;line-height:1;flex-shrink:0;margin-top:2px;}
+.panel-time-badge{display:inline-block;background:rgba(0,174,239,.15);border:1px solid rgba(0,174,239,.25);border-radius:20px;padding:3px 12px;font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;margin-bottom:6px;}
+.break-panel .panel-time-badge{background:rgba(212,148,10,.15);border-color:rgba(212,148,10,.25);color:var(--gold);}
+.panel-title{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.2;}
+.panel-title em{color:var(--sky);font-style:italic;}
+.break-panel .panel-title em{color:var(--gold);}
+.panel-body{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:600px){.panel-body{grid-template-columns:1fr;}}
+.panel-card{background:rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,.08);}
+.panel-card-label{font-size:9px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:7px;}
+.break-panel .panel-card-label{color:var(--gold);}
+.panel-card-text{font-size:13px;color:rgba(255,255,255,.78);line-height:1.65;}
+.panel-card-text strong{color:#fff;}
+.panel-tip{background:rgba(0,174,239,.1);border:1px solid rgba(0,174,239,.2);border-radius:10px;padding:13px 16px;margin-bottom:4px;}
+.break-panel .panel-tip{background:rgba(212,148,10,.1);border-color:rgba(212,148,10,.2);}
+.panel-tip-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--sky);margin-bottom:6px;}
+.break-panel .panel-tip-label{color:var(--gold);}
+.panel-tip-text{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.6;font-style:italic;}
+.panel-close{display:block;margin-top:14px;text-align:right;font-size:11px;color:rgba(255,255,255,.35);cursor:pointer;font-weight:600;letter-spacing:.06em;transition:color .2s;}
+.panel-close:hover{color:var(--sky);}
+
+/* ── SPRINT BADGE ── */
+.sprint-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.2);border-radius:6px;padding:3px 10px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.1em;margin-bottom:8px;}
+
+/* ── DONE BANNER ── */
+.tl-done-banner{display:none;background:linear-gradient(135deg,var(--green),#0A6040);border-radius:12px;padding:18px 22px;margin-top:20px;border:1px solid rgba(11,122,78,.3);text-align:center;animation:slideIn .4s ease;}
+.tl-done-banner.show{display:block;}
+.tl-done-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.tl-done-sub{font-size:12.5px;color:rgba(255,255,255,.7);}
+
+/* ── KEY RULES ── */
+.rules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:640px){.rules-grid{grid-template-columns:1fr;}}
+.rule-card{background:#fff;border-radius:14px;padding:20px 18px;border:1.5px solid var(--line);box-shadow:var(--shadow);transition:all .2s;border-top:3px solid var(--sky);}
+.rule-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.rule-num{font-size:28px;font-weight:700;font-family:var(--serif);color:var(--sky);margin-bottom:8px;line-height:1;}
+.rule-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.rule-text{font-size:12.5px;color:var(--muted);line-height:1.6;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:24px 26px;display:flex;gap:16px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-quote{font-size:22px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.8);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+/* ── COMPLETION ── */
+#completion{display:none;background:var(--navy2);padding:52px 28px;}
+.cpl-inner{max-width:560px;margin:0 auto;text-align:center;}
+.cpl-icon{font-size:52px;margin-bottom:14px;}
+.cpl-title{font-family:var(--serif);color:#fff;font-size:32px;margin-bottom:8px;}
+.cpl-title span{color:var(--sky);font-style:italic;}
+.cpl-sub{color:rgba(255,255,255,.55);font-size:13.5px;line-height:1.7;margin-bottom:22px;}
+.cpl-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:28px;}
+.cpl-chip{background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.25);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--sky);}
+
+.sep{height:1px;background:var(--line);max-width:900px;margin:0 auto;}
+
+/* ── SHIFT TOGGLE ── */
+.shift-toggle{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.shift-btn{
+  font-family:var(--font);font-size:11.5px;font-weight:700;
+  padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);
+  background:#fff;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.shift-btn:hover{border-color:var(--sky);color:var(--sky2);}
+.shift-btn.active{background:var(--sky);border-color:var(--sky);color:#fff;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · TYPICAL DAY</div>
+    <h1 class="hero-title">A Typical Day —<br><em>Sprint by Sprint</em></h1>
+    <p class="hero-sub">Your shift runs in three focused sprints. Each one has a purpose. Learn the rhythm and you'll never wonder what to do next.</p>
+    <div class="hero-meta">
+      <div class="hero-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        ~8 minutes
+      </div>
+      <div class="hero-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Click all blocks to unlock
+      </div>
+      <div class="hero-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        AEST · pick your shift below
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTRO CARD -->
+<div id="intro-section">
+  <div class="intro-card">
+    <div class="intro-icon">⚡</div>
+    <div>
+      <div class="intro-title">THE SPRINT STRUCTURE</div>
+      <div class="intro-text">Your day isn't one long block of calls — it's <strong>three focused sprints</strong> with reviews, a team meeting, and a hard finish at 3:30. Each sprint has a focus. Each review is a reset. Click every block below to understand what happens and why.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE SECTION -->
+<div class="section" style="padding-top:24px;">
+  <div class="inner">
+    <div class="section-label">ACTIVITY — CLICK ALL BLOCKS</div>
+    <div class="section-title">Your Shift Timeline</div>
+    <div class="s-bar"></div>
+
+    <div class="tl-header">
+      <div class="tl-header-left">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="shift-toggle" id="shift-toggle">
+            <button class="shift-btn active" data-shift="a" onclick="applyShift('a')">8:45am shift</button>
+            <button class="shift-btn" data-shift="b" onclick="applyShift('b')">9:15am shift</button>
+            <button class="shift-btn" data-shift="c" onclick="applyShift('c')">11:15am shift</button>
+          </div>
+          <div class="tl-label" id="tl-label">AEST · 8:45AM – 4:45PM · MON – SAT</div>
+        </div>
+      </div>
+      <div class="tl-progress-wrap">
+        <div class="tl-progress-text" id="tl-prog-text">0 of 9 explored</div>
+        <div class="tl-progress-bar"><div class="tl-progress-fill" id="tl-prog-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="tl-track-wrap">
+      <div class="tl-scroll">
+        <div class="tl-track" id="tl-track">
+
+          <!-- Block 0: Team Check-in -->
+          <div class="tl-block" id="blk-0" onclick="openBlock(0)" tabindex="0">
+            <div class="tl-node"><span class="tl-emoji">🌅</span></div>
+            <div class="tl-time" id="tt-0">7:30AM</div>
+            <div class="tl-name">Team Check-in</div>
+            <div class="tl-tap">tap to explore</div>
+          </div>
+
+          <!-- Block 1: Sprint 1 -->
+          <div class="tl-block locked" id="blk-1" onclick="openBlock(1)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">🔥</span></div>
+            <div class="tl-time" id="tt-1">7:50 – 10:00</div>
+            <div class="tl-name">Sprint 1</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+          <!-- Block 2: Break -->
+          <div class="tl-block locked break-block" id="blk-2" onclick="openBlock(2)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">☕</span></div>
+            <div class="tl-time" id="tt-2">10:00AM</div>
+            <div class="tl-name">15 min Break</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+          <!-- Block 3: Sprint 1 Review -->
+          <div class="tl-block locked" id="blk-3" onclick="openBlock(3)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">📊</span></div>
+            <div class="tl-time" id="tt-3">10:15AM</div>
+            <div class="tl-name">Sprint 1 Review</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+          <!-- Block 4: Sprint 2 -->
+          <div class="tl-block locked" id="blk-4" onclick="openBlock(4)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">💪</span></div>
+            <div class="tl-time" id="tt-4">10:30 – 12:30</div>
+            <div class="tl-name">Sprint 2</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+          <!-- Block 5: Lunch -->
+          <div class="tl-block locked break-block" id="blk-5" onclick="openBlock(5)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">🍽️</span></div>
+            <div class="tl-time" id="tt-5">12:30 – 1:00</div>
+            <div class="tl-name">Lunch</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+          <!-- Block 6: Sprint 2 Review -->
+          <div class="tl-block locked" id="blk-6" onclick="openBlock(6)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">🎯</span></div>
+            <div class="tl-time" id="tt-6">1:00 – 1:15</div>
+            <div class="tl-name">Sprint 2 Review</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+          <!-- Block 7: Sprint 3 -->
+          <div class="tl-block locked" id="blk-7" onclick="openBlock(7)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">🚀</span></div>
+            <div class="tl-time" id="tt-7">1:15 – 3:15</div>
+            <div class="tl-name">Sprint 3</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+          <!-- Block 8: Call Reviews + Wrap -->
+          <div class="tl-block locked" id="blk-8" onclick="openBlock(8)" tabindex="0">
+            <div class="tl-lock-icon">🔒</div>
+            <div class="tl-node"><span class="tl-emoji">🏁</span></div>
+            <div class="tl-time" id="tt-8">3:15 – 3:30</div>
+            <div class="tl-name">Call Reviews</div>
+            <div class="tl-tap">complete previous first</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Expanded Panels -->
+      <div class="tl-panels" id="tl-panels">
+
+        <!-- Panel 0: Team Check-in -->
+        <div class="tl-panel" id="panel-0">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">🌅</div>
+            <div>
+              <div class="panel-time-badge" id="pb-0">⏰ 8:45AM AEST</div>
+              <div class="panel-title">Team Check-in — <em>Start Together</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">Every day starts with a <strong>team check-in right at the start of your shift</strong>. Log in on time, dashboard open, ready to go. This is your daily alignment with Jordan and the team — energy, focus, any updates before the first sprint.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">The first 20 minutes set the tone for the whole day. <strong>Showing up ready right at your shift start is a habit that separates consistent performers from inconsistent ones.</strong> If you're late, WhatsApp your TL immediately.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">🏆 TOP PERFORMER TIP</div>
+            <div class="panel-tip-text">Have your CRM open and dialer loaded before your shift starts. Know how many new leads are in the queue before Jordan even asks. Walking in prepared is the first signal of a productive day.</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(0)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 1: Sprint 1 -->
+        <div class="tl-panel" id="panel-1">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">🔥</div>
+            <div>
+              <div class="panel-time-badge" id="pb-1">⏰ 7:50AM – 10:00AM</div>
+              <div class="panel-title">Sprint 1 — <em>New Leads & Priority Callbacks</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">Work <strong>new dialer leads</strong> and <strong>priority callbacks</strong> — your freshest, highest-value contacts. These are D2D reschedules loaded overnight. Work through the dialer as it pushes leads to you, and hit your priority CRM callbacks first.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text"><strong>Recency is everything.</strong> A lead that was knocked yesterday is warmer today than it will be tomorrow. Sprint 1 is your highest-energy window — it meets your highest-quality leads. Don't waste it on anything lower priority.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">⚡ THE LOGIC</div>
+            <div class="panel-tip-text">"New leads go first, every time. These customers had a face-to-face conversation recently — they're expecting a call. Your opener lands differently when it's fresh in their mind."</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(1)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 2: Break -->
+        <div class="tl-panel break-panel" id="panel-2">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">☕</div>
+            <div>
+              <div class="panel-time-badge" id="pb-2">⏰ 10:00AM — 15 MINUTES</div>
+              <div class="panel-title">Break — <em>Reset & Recharge</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">A hard 15-minute break after Sprint 1. Step away from the dialer completely. <strong>Hydrate, move, reset.</strong> Don't use this time to check CRM — it's a genuine break.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">Calling for 2 hours straight depletes your energy faster than you notice. <strong>A 15-minute reset makes Sprint 2 significantly more effective</strong> than if you pushed straight through. Performance is a marathon, not a sprint — except when it's literally a sprint.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">🧠 THE MINDSET</div>
+            <div class="panel-tip-text">The next customer on Sprint 2 deserves your A-game, not whatever's left after 2 hours straight. Protect this break — it's part of the system, not a reward.</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(2)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 3: Sprint 1 Review -->
+        <div class="tl-panel" id="panel-3">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">📊</div>
+            <div>
+              <div class="panel-time-badge" id="pb-3">⏰ 10:15AM</div>
+              <div class="panel-title">Sprint 1 Review — <em>Learn Before You Dial Again</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">Brief team check-in with Jordan. How did Sprint 1 go? <strong>Bookings, contact rate, anything that came up.</strong> This is a fast feedback loop — not a long debrief. What worked, what didn't, what to adjust for Sprint 2.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">The best setters don't wait for their monthly 1-1 to get feedback. <strong>They adjust every sprint.</strong> If your opener isn't landing, 10:15 is when you find out — not at the end of the day when it's too late to fix it.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">📅 COME PREPARED</div>
+            <div class="panel-tip-text">Know your numbers before the review. How many contacts? How many attempts? Any bookings? Jordan will ask — have the answer. The habit of tracking your own data is what separates good setters from great ones.</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(3)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 4: Sprint 2 -->
+        <div class="tl-panel" id="panel-4">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">💪</div>
+            <div>
+              <div class="panel-time-badge" id="pb-4">⏰ 10:30AM – 12:30PM</div>
+              <div class="panel-title">Sprint 2 — <em>Continue Lead Callbacks</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">Continue working <strong>newer lead callbacks</strong> from the dialer — the leads you've already attempted and need another touch. Keep the momentum from Sprint 1 going. If you set callbacks in Sprint 1, work them here.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">Most bookings don't happen on the first attempt. <strong>Sprint 2 is where persistence pays off.</strong> You've already warmed up your voice and your mindset — use that momentum to follow through on the leads you've already invested in.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">🎯 COACHING NOTE</div>
+            <div class="panel-tip-text">"If the customer can't book within 7 days, set a callback for yourself and let them know you'll follow up personally a few days before their requested time. We can't see availability more than 7 days out."</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(4)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 5: Lunch -->
+        <div class="tl-panel break-panel" id="panel-5">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">🍽️</div>
+            <div>
+              <div class="panel-time-badge" id="pb-5">⏰ 12:30PM – 1:00PM</div>
+              <div class="panel-title">Lunch — <em>30 Minutes, No Exceptions</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">A <strong>hard 30-minute lunch break</strong>. Dialer closed, CRM closed. Eat properly, step away from the screen, give your brain a genuine reset before the final push.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">Sprint 3 is the <strong>last push of the day</strong> — Jordan loads fresh leads and it's an intense final block. You need fuel for it. Setters who skip lunch notice the difference in their Sprint 3 energy within a few weeks.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">⏰ TIME IT</div>
+            <div class="panel-tip-text">Back at your desk by 1:00pm for the Sprint 2 review. Not 1:05. Not "just finishing my lunch." The team runs on time — and it starts with you.</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(5)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 6: Sprint 2 Review -->
+        <div class="tl-panel" id="panel-6">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">🎯</div>
+            <div>
+              <div class="panel-time-badge" id="pb-6">⏰ 1:00PM – 1:15PM</div>
+              <div class="panel-title">Sprint 2 Review — <em>Last Push Setup</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">Quick debrief on Sprint 2 + setup for Sprint 3. <strong>How's the day tracking?</strong> What's working? Jordan uses this moment to load new leads for Sprint 3 and set the focus for the final block.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">Sprint 3 is your final push — it deserves <strong>a clear target, not a vague "keep going."</strong> This 15 minutes makes sure you walk into the last block knowing exactly what you're aiming for.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">🔥 SET YOUR TARGET</div>
+            <div class="panel-tip-text">Before Sprint 3 starts, know your number. How many bookings do you have today? What would make today a great day? Set the target in your head and dial with that in mind.</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(6)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 7: Sprint 3 -->
+        <div class="tl-panel" id="panel-7">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">🚀</div>
+            <div>
+              <div class="panel-time-badge" id="pb-7">⏰ 1:15PM – 3:15PM</div>
+              <div class="panel-title">Sprint 3 — <em>The Final Push</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text">Jordan loads <strong>fresh leads for Sprint 3</strong>. Work new lead cycling, after-hours callbacks, and continue the dialer. This is the last concentrated calling block of the day — treat it like the first.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">Many setters fade in Sprint 3. The best ones don't. <strong>Afternoons catch people at home</strong> — families together, people more relaxed. After-hours callbacks can be your highest contact rate of the day if you show up with the same energy as Sprint 1.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">🧠 THE MINDSET SHIFT</div>
+            <div class="panel-tip-text">"Depending on contact % and lead volume, Jordan may direct you to switch to training data during Sprint 3. Follow the TL's direction — they're watching the numbers in real time and making the call that benefits the team."</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(7)">CLOSE ✕</span>
+        </div>
+
+        <!-- Panel 8: Call Reviews + Wrap -->
+        <div class="tl-panel" id="panel-8">
+          <div class="panel-top">
+            <div class="panel-icon-wrap">🏁</div>
+            <div>
+              <div class="panel-time-badge" id="pb-8">⏰ 3:15PM – 3:30PM</div>
+              <div class="panel-title">Call Reviews & Wrap — <em>Leave Nothing Behind</em></div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-card">
+              <div class="panel-card-label">WHAT HAPPENS</div>
+              <div class="panel-card-text"><strong>Individual call reviews</strong> — select your best or most interesting call from the day and send it to Jordan or the group chat for feedback. Then close the day: CRM notes updated, callbacks created, dialer dispositioned.</div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-label">WHY IT MATTERS</div>
+              <div class="panel-card-text">Call reviews are how you improve faster than anyone who doesn't do them. <strong>One call shared = one pattern identified.</strong> And a clean wrap means you walk in tomorrow knowing exactly where you stand — not spending 20 minutes catching up.</div>
+            </div>
+          </div>
+          <div class="panel-tip">
+            <div class="panel-tip-label">✅ THE END-OF-DAY CHECKLIST</div>
+            <div class="panel-tip-text">Call shared for review ✓ &nbsp;|&nbsp; CRM notes updated ✓ &nbsp;|&nbsp; Callbacks created ✓ &nbsp;|&nbsp; Dialer dispositioned ✓. Four things. Every. Single. Day. Finish at 3:30.</div>
+          </div>
+          <span class="panel-close" onclick="closePanel(8)">CLOSE ✕</span>
+        </div>
+
+      </div><!-- /tl-panels -->
+
+      <!-- Done Banner -->
+      <div class="tl-done-banner" id="tl-done-banner">
+        <div class="tl-done-title">✅ All blocks explored — great work!</div>
+        <div class="tl-done-sub">You now know the rhythm of your day. Scroll down to see the three rules that hold it together.</div>
+      </div>
+
+    </div><!-- /tl-track-wrap -->
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- KEY RULES -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="section-label">THE NON-NEGOTIABLES</div>
+    <div class="section-title">Three Rules That Hold It Together</div>
+    <div class="s-bar"></div>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-num">01</div>
+        <div class="rule-title">Be there at 7:30</div>
+        <div class="rule-text">Not 7:32. Not "just logging in." Dashboard open, dialer ready, energy on. The team check-in sets the tone — and your preparation before it sets yours.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">02</div>
+        <div class="rule-title">Follow the sprint order</div>
+        <div class="rule-text">New leads first, callbacks second, training data when directed. The order isn't arbitrary — it's designed to match your energy to the value of your leads. Ignore it and your results become unpredictable.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">03</div>
+        <div class="rule-title">Share a call. Every day.</div>
+        <div class="rule-text">One call sent to Jordan or the group chat at wrap-up. Not when you feel ready. Every single day. The setters who share calls improve faster than anyone. That's not a coincidence.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- NARRATION -->
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-quote">"</div>
+      <div class="narration-text">Three sprints. Three reviews. A hard finish at 3:30. <strong>This structure exists because it works.</strong> The setters who follow it know where they stand at every point in the day. The ones who don't spend their energy figuring out what to do next — instead of doing it.</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="cpl-inner">
+    <div class="cpl-icon">🎯</div>
+    <div class="cpl-title">Module <span>complete.</span></div>
+    <div class="cpl-sub">You know the rhythm of your shift. Now let's look at how your performance is tracked.</div>
+    <div class="cpl-chips">
+      <span class="cpl-chip">✓ 7:30am team check-in</span>
+      <span class="cpl-chip">✓ Three focused sprints</span>
+      <span class="cpl-chip">✓ Sprint reviews after each block</span>
+      <span class="cpl-chip">✓ Hard finish at 3:30</span>
+      <span class="cpl-chip">✓ Call review every day</span>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+const TOTAL=9;
+const seen=new Set();
+let activePanel=null;
+
+function openBlock(i){
+  const blk=document.getElementById('blk-'+i);
+  if(blk.classList.contains('locked')){
+    blk.style.animation='shake .35s ease';
+    setTimeout(()=>blk.style.animation='',400);
+    return;
+  }
+  if(activePanel===i){closePanel(i);return;}
+  if(activePanel!==null){
+    document.getElementById('panel-'+activePanel).classList.remove('visible');
+    document.getElementById('blk-'+activePanel).classList.remove('active');
+    document.getElementById('blk-'+activePanel).classList.add('done');
+  }
+  activePanel=i;
+  seen.add(i);
+  document.getElementById('panel-'+i).classList.add('visible');
+  document.getElementById('blk-'+i).classList.remove('locked');
+  document.getElementById('blk-'+i).classList.add('active');
+  const next=i+1;
+  if(next<TOTAL){
+    document.getElementById('blk-'+next).classList.remove('locked');
+    document.getElementById('blk-'+next).querySelector('.tl-tap').textContent='tap to explore';
+    const lockIcon=document.getElementById('blk-'+next).querySelector('.tl-lock-icon');
+    if(lockIcon) lockIcon.style.display='none';
+  }
+  setTimeout(()=>{document.getElementById('panel-'+i).scrollIntoView({behavior:'smooth',block:'nearest'});},100);
+  updateProgress();
+}
+
+function closePanel(i){
+  document.getElementById('panel-'+i).classList.remove('visible');
+  document.getElementById('blk-'+i).classList.remove('active');
+  document.getElementById('blk-'+i).classList.add('done');
+  activePanel=null;
+  updateProgress();
+}
+
+function updateProgress(){
+  const done=seen.size;
+  document.getElementById('tl-prog-text').textContent=done+' of '+TOTAL+' explored';
+  document.getElementById('tl-prog-fill').style.width=(done/TOTAL*100)+'%';
+  if(done===TOTAL){
+    for(let j=0;j<TOTAL;j++) document.getElementById('blk-'+j).classList.add('done');
+    document.getElementById('tl-done-banner').classList.add('show');
+    setTimeout(()=>{
+      document.getElementById('completion').style.display='block';
+      document.getElementById('prog-fill').style.width='100%';
+      document.getElementById('completion').scrollIntoView({behavior:'smooth',block:'start'});
+    },800);
+  }
+}
+
+const styleEl=document.createElement('style');
+styleEl.textContent='@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}';
+document.head.appendChild(styleEl);
+
+document.querySelectorAll('.tl-block').forEach((b,i)=>{
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openBlock(i);}});
+});
+
+// ── SHIFT TOGGLE ──
+const SHIFTS={
+  a:{header:'AEST · 8:45AM – 4:45PM · MON – SAT',
+     tl:['8:45AM','9:05 – 11:15','11:15AM','11:30AM','11:45 – 1:45','1:45 – 2:15','2:15 – 2:30','2:30 – 4:30','4:30 – 4:45'],
+     pb:['⏰ 8:45AM AEST','⏰ 9:05AM – 11:15AM','⏰ 11:15AM — 15 MINUTES','⏰ 11:30AM','⏰ 11:45AM – 1:45PM','⏰ 1:45PM – 2:15PM','⏰ 2:15PM – 2:30PM','⏰ 2:30PM – 4:30PM','⏰ 4:30PM – 4:45PM']},
+  b:{header:'AEST · 9:15AM – 5:15PM · MON – SAT',
+     tl:['9:15AM','9:35 – 11:45','11:45AM','12:00PM','12:15 – 2:15','2:15 – 2:45','2:45 – 3:00','3:00 – 5:00','5:00 – 5:15'],
+     pb:['⏰ 9:15AM AEST','⏰ 9:35AM – 11:45AM','⏰ 11:45AM — 15 MINUTES','⏰ 12:00PM','⏰ 12:15PM – 2:15PM','⏰ 2:15PM – 2:45PM','⏰ 2:45PM – 3:00PM','⏰ 3:00PM – 5:00PM','⏰ 5:00PM – 5:15PM']},
+  c:{header:'AEST · 11:15AM – 7:15PM · MON – SAT',
+     tl:['11:15AM','11:35 – 1:45','1:45PM','2:00PM','2:15 – 4:15','4:15 – 4:45','4:45 – 5:00','5:00 – 7:00','7:00 – 7:15'],
+     pb:['⏰ 11:15AM AEST','⏰ 11:35AM – 1:45PM','⏰ 1:45PM — 15 MINUTES','⏰ 2:00PM','⏰ 2:15PM – 4:15PM','⏰ 4:15PM – 4:45PM','⏰ 4:45PM – 5:00PM','⏰ 5:00PM – 7:00PM','⏰ 7:00PM – 7:15PM']}
+};
+function applyShift(id){
+  const s=SHIFTS[id];
+  document.getElementById('tl-label').textContent=s.header;
+  for(let i=0;i<9;i++){
+    document.getElementById('tt-'+i).textContent=s.tl[i];
+    document.getElementById('pb-'+i).textContent=s.pb[i];
+  }
+  document.querySelectorAll('.shift-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.shift===id));
+}
+</script>
+</body>
+</html>
