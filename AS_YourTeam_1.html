@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Who's in Your Team | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--navy3:#0D4A5E;
+  --sky:#00AEEF;--sky2:#0090C4;--sky3:#C8ECFA;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --purple:#6B4FBB;--purple-lt:#F0ECFC;
+  --orange:#D4620A;--orange-lt:#FEF3EB;
+  --red-flag:#B5251B;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--light);color:var(--body);overflow-x:hidden;}
+
+/* ── PROGRESS ── */
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:200;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{
+  background:var(--navy);padding:0;
+  position:relative;overflow:hidden;min-height:300px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);
+  background-size:52px 52px;
+}
+.hero-glow{position:absolute;top:-100px;right:-60px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.16) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:940px;margin:0 auto;padding:56px 28px 40px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(28px,4.5vw,48px);line-height:1.06;margin-bottom:10px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.55);font-size:14px;line-height:1.7;max-width:520px;margin-bottom:22px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);}
+
+/* ── SECTION ── */
+.section{padding:36px 28px;}
+.inner{max-width:940px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:26px;color:var(--navy);line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:20px;}
+.s-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+.sep{height:1px;background:var(--line);max-width:940px;margin:0 auto;}
+
+/* ── INTRO CALLOUT ── */
+.intro-card{background:var(--navy);border-radius:16px;padding:22px 26px;border-left:4px solid var(--sky);display:flex;align-items:flex-start;gap:14px;margin-bottom:0;}
+.intro-icon{width:38px;height:38px;border-radius:10px;background:rgba(0,174,239,.15);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.intro-title{font-size:12px;font-weight:700;color:var(--sky);margin-bottom:4px;letter-spacing:.06em;}
+.intro-text{font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;}
+.intro-text strong{color:#fff;}
+
+/* ── ORG CHART WRAPPER ── */
+.org-wrap{position:relative;}
+
+/* ── TL node (top centre) ── */
+.org-tl-row{display:flex;justify-content:center;margin-bottom:0;position:relative;z-index:2;}
+
+/* Connector lines */
+.org-connectors{position:relative;height:52px;max-width:800px;margin:0 auto;}
+.org-v-line{
+  position:absolute;left:50%;top:0;width:2px;height:24px;
+  background:var(--border);transform:translateX(-50%);
+}
+.org-h-line{
+  position:absolute;top:24px;height:2px;background:var(--border);
+}
+.org-drop-left{position:absolute;top:24px;width:2px;height:28px;background:var(--border);}
+.org-drop-right{position:absolute;top:24px;width:2px;height:28px;background:var(--border);}
+
+/* ── TEAM ROWS ── */
+.org-row{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-bottom:14px;}
+.org-row.cols-2{display:grid;grid-template-columns:1fr 1fr;max-width:700px;margin:0 auto 14px;}
+.org-row.cols-3{display:grid;grid-template-columns:1fr 1fr 1fr;max-width:940px;margin:0 auto 14px;}
+.org-row.cols-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;max-width:940px;margin:0 auto 14px;}
+@media(max-width:680px){
+  .org-row.cols-2,.org-row.cols-3,.org-row.cols-4{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:440px){
+  .org-row.cols-2,.org-row.cols-3,.org-row.cols-4{grid-template-columns:1fr;}
+}
+
+/* ── ROLE CARD ── */
+.role-card{
+  background:#fff;border-radius:14px;
+  border:1.5px solid var(--line);
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:all .22s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+  position:relative;
+}
+.role-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--card-color,var(--sky));
+  transition:height .2s;
+}
+.role-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--card-color,var(--sky));}
+.role-card.active{border-color:var(--card-color,var(--sky));box-shadow:0 0 0 3px rgba(0,174,239,.15),var(--shadow-lg);}
+.role-card.active::before{height:4px;}
+
+.rc-top{padding:16px 16px 12px;display:flex;align-items:center;gap:12px;}
+.rc-avatar{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+  background:var(--card-bg,var(--sky-lt));
+}
+.rc-name{font-size:13px;font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:2px;}
+.rc-role{font-size:10.5px;color:var(--muted);font-weight:500;}
+.rc-location{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:700;letter-spacing:.1em;
+  color:var(--card-color,var(--sky));
+  background:color-mix(in srgb,var(--card-color,var(--sky)) 10%,transparent);
+  border-radius:4px;padding:2px 7px;margin-top:4px;
+}
+.rc-tap{
+  padding:0 16px 12px;font-size:10px;color:var(--muted);
+  display:flex;align-items:center;gap:4px;font-weight:500;
+}
+.rc-tap::before{content:'↓';font-size:9px;opacity:.5;}
+
+/* ── DETAIL PANEL ── */
+.detail-wrap{
+  max-width:940px;margin:0 auto;
+  display:none;
+  animation:slideIn .28s ease;
+}
+.detail-wrap.visible{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.detail-panel{
+  background:var(--navy);border-radius:16px;
+  padding:24px 26px;
+  border:1.5px solid rgba(0,174,239,.15);
+  margin-bottom:14px;
+  position:relative;
+}
+.detail-panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:16px 16px 0 0;
+  background:var(--panel-color,var(--sky));
+}
+.dp-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;}
+.dp-avatar{
+  width:56px;height:56px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+  background:rgba(255,255,255,.07);
+}
+.dp-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.22);
+  border-radius:6px;padding:3px 10px;
+  font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.1em;
+  margin-bottom:6px;
+}
+.dp-name{font-family:var(--serif);font-size:22px;color:#fff;line-height:1.15;}
+.dp-name em{color:var(--sky);font-style:italic;}
+.dp-role{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px;font-weight:500;}
+
+.dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.dp-grid{grid-template-columns:1fr;}}
+
+.dp-card{background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,.07);}
+.dp-card-label{font-size:8.5px;font-weight:700;letter-spacing:.2em;color:var(--sky);margin-bottom:7px;opacity:.8;}
+.dp-card-text{font-size:12.5px;color:rgba(255,255,255,.78);line-height:1.65;}
+.dp-card-text strong{color:#fff;font-weight:600;}
+.dp-card-text ul{padding-left:14px;margin-top:5px;}
+.dp-card-text li{margin-bottom:3px;}
+
+.dp-contact{
+  margin-top:14px;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,174,239,.1);border:1px solid rgba(0,174,239,.2);
+  border-radius:10px;padding:12px 16px;
+}
+.dp-contact-icon{font-size:20px;flex-shrink:0;}
+.dp-contact-label{font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.14em;margin-bottom:3px;}
+.dp-contact-text{font-size:12.5px;color:rgba(255,255,255,.75);}
+
+.dp-flag{
+  margin-top:12px;
+  background:rgba(212,148,10,.1);border-left:3px solid var(--gold);
+  border-radius:0 8px 8px 0;padding:10px 14px;
+}
+.dp-flag-text{font-size:12px;color:rgba(255,255,255,.65);line-height:1.6;font-style:italic;}
+.dp-flag strong{color:var(--gold);font-style:normal;}
+
+.dp-close{
+  display:block;margin-top:14px;text-align:right;
+  font-size:11px;color:rgba(255,255,255,.3);cursor:pointer;
+  font-weight:600;letter-spacing:.06em;transition:color .2s;
+}
+.dp-close:hover{color:var(--sky);}
+
+/* ── SECTION DIVIDER LABEL ── */
+.org-section-label{
+  text-align:center;margin:10px auto 14px;
+  display:flex;align-items:center;gap:12px;max-width:600px;
+}
+.org-section-label span{
+  font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--muted);
+  white-space:nowrap;
+}
+.org-section-label::before,.org-section-label::after{
+  content:'';flex:1;height:1px;background:var(--line);
+}
+
+/* ── TL SPECIAL CARD (larger) ── */
+.role-card.tl-card{max-width:300px;margin:0 auto;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:24px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.78);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+/* ── RED FLAG CARD ── */
+.flag-card{
+  background:#fff;border-radius:14px;padding:18px 20px;
+  border:1.5px solid #F5D0CD;border-top:3px solid var(--red-flag);
+  box-shadow:var(--shadow);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.flag-card-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.flag-card-title{font-size:12px;font-weight:700;color:var(--red-flag);margin-bottom:4px;letter-spacing:.04em;}
+.rules-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:640px){.rules-3col{grid-template-columns:1fr;}}
+@media(max-width:800px) and (min-width:641px){.rules-3col{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · YOUR TEAM</div>
+    <h1 class="hero-title">Who's in Your Team &<br><em>Who to Go to for What</em></h1>
+    <p class="hero-sub">Before your first call, know your people. The worst time to figure out who to contact is when you're already mid-problem.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">👥 Click any card to learn more</div>
+      <div class="hero-pill">🇦🇺 Brisbane Office + Remote</div>
+      <div class="hero-pill">📋 No blocker — explore freely</div>
+    </div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<div class="section" style="padding-bottom:20px;">
+  <div class="inner">
+    <div class="intro-card">
+      <div class="intro-icon">🧭</div>
+      <div>
+        <div class="intro-title">HOW THIS WORKS</div>
+        <div class="intro-text">Click on any role card to see what that person does and exactly when — and how — to contact them. Some roles are pending confirmation from your TL — those are flagged clearly. <strong>Use this as your go-to reference in your first week.</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORG CHART SECTION -->
+<div class="section" style="padding-top:20px;">
+  <div class="inner">
+    <div class="s-label">YOUR TEAM STRUCTURE</div>
+    <div class="s-title">The Appointment Setter Org Chart</div>
+    <div class="s-bar"></div>
+
+    <!-- Detail panel (appears above cards) -->
+    <div class="detail-wrap" id="detail-wrap">
+      <div class="detail-panel" id="detail-panel" style="--panel-color:var(--sky);">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- TL (top) -->
+    <div class="org-section-label"><span>TEAM LEADERSHIP</span></div>
+    <div class="org-tl-row">
+      <div class="role-card tl-card" style="--card-color:var(--sky);--card-bg:var(--sky-lt);" onclick="showCard('tl')" id="card-tl">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Jordan Edwards</div>
+            <div class="rc-role">Team Leader — Appointment Setters</div>
+            <div class="rc-location">🇦🇺 BRISBANE OFFICE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see responsibilities</div>
+      </div>
+    </div>
+    <!-- Appointment Setters — Brisbane Office -->
+    <div class="org-section-label" style="margin-top:22px;"><span>APPOINTMENT SETTERS — BRISBANE OFFICE</span></div>
+    <div class="org-row" style="max-width:940px;">
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter1">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Christine Matol-Simpson</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🇦🇺 BRISBANE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter2">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Clancy Dunn</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🇦🇺 BRISBANE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter3">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Mariel Sorolla</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🇦🇺 BRISBANE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter4">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Chris Foulger</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🇦🇺 BRISBANE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter5">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Cherry Sitagata</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🇦🇺 BRISBANE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter6">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Keisha Nelson</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🇦🇺 BRISBANE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter7">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Brendon Lale-Seinafo</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🇦🇺 BRISBANE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+    </div>
+    <!-- Appointment Setters — Remote -->
+    <div class="org-section-label" style="margin-top:22px;"><span>APPOINTMENT SETTERS — REMOTE</span></div>
+    <div class="org-row" style="max-width:940px;">
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter8">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Tamara Biddulph</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🌐 REMOTE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+      <div class="role-card" style="--card-color:#6B4FBB;--card-bg:var(--purple-lt);" onclick="showCard('setter')" id="card-setter9">
+        <div class="rc-top">
+          <div class="rc-avatar">👤</div>
+          <div>
+            <div class="rc-name">Ashleigh Edwards</div>
+            <div class="rc-role">Appointment Setter</div>
+            <div class="rc-location">🌐 REMOTE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+    </div>
+
+    <!-- Support roles -->
+    <div class="org-section-label" style="margin-top:8px;"><span>SUPPORT & CONFIRMATION</span></div>
+    <div class="org-row cols-3" style="max-width:940px;">
+      <div class="role-card" style="--card-color:#0B7A4E;--card-bg:#E8F5EE;" onclick="showCard('cx')" id="card-cx">
+        <div class="rc-top">
+          <div class="rc-avatar">💬</div>
+          <div>
+            <div class="rc-name">Customer Experience</div>
+            <div class="rc-role">@customer experience</div>
+            <div class="rc-location">🇦🇺 AUSTRALIA</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see when to tag</div>
+      </div>
+      <div class="role-card" style="--card-color:var(--green);--card-bg:var(--green-lt);" onclick="showCard('confirmation')" id="card-confirmation">
+        <div class="rc-top">
+          <div class="rc-avatar">✅</div>
+          <div>
+            <div class="rc-name">Kaysie</div>
+            <div class="rc-role">Team Leader — Confirmation Team</div>
+            <div class="rc-location">🇦🇺 BRISBANE OFFICE</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see responsibilities</div>
+      </div>
+      <div class="role-card" style="--card-color:var(--gold);--card-bg:var(--gold-lt);" onclick="showCard('specialist')" id="card-specialist">
+        <div class="rc-top">
+          <div class="rc-avatar">☀️</div>
+          <div>
+            <div class="rc-name">RESINC Specialists</div>
+            <div class="rc-role">Solar Consultants</div>
+            <div class="rc-location">🇦🇺 AUSTRALIA</div>
+          </div>
+        </div>
+        <div class="rc-tap">Tap to see role</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- GOLDEN RULE SECTION -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">THE GOLDEN RULE</div>
+    <div class="s-title">One Rule. No Exceptions.</div>
+    <div class="s-bar"></div>
+    <div class="rules-3col">
+      <div style="background:var(--sky-bg);border-radius:14px;padding:20px 18px;border:1.5px solid var(--border);">
+        <div style="font-size:26px;margin-bottom:10px;">❓</div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;">Have a question about a lead?</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6;">Go to your <strong style="color:var(--navy);">TL (Jordan)</strong> first. Not your teammate. Not the confirmation team. Jordan.</div>
+      </div>
+      <div style="background:var(--sky-bg);border-radius:14px;padding:20px 18px;border:1.5px solid var(--border);">
+        <div style="font-size:26px;margin-bottom:10px;">📅</div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;">Issue with a booked appointment?</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6;">Contact <strong style="color:var(--navy);">Jordan</strong>. Wrong time, wrong rep, incorrect details — he handles it.</div>
+      </div>
+      <div style="background:var(--sky-bg);border-radius:14px;padding:20px 18px;border:1.5px solid var(--border);">
+        <div style="font-size:26px;margin-bottom:10px;">🚫</div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;">Contact RESINC Specialists?</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6;"><strong style="color:var(--navy);">You don't.</strong> Your job ends at the booking. The specialist takes it from there.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- COMMS PROTOCOL SECTION -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">COMMUNICATION PROTOCOL</div>
+    <div class="s-title">How to Get Help — In Order</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Follow this escalation path every time. Don't skip steps.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:680px;">
+
+      <div style="display:flex;align-items:center;gap:16px;background:var(--sky-bg);border-radius:12px;padding:16px 20px;border:1.5px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--sky);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;">1</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;">💬 Google Chat — DM Jordan directly</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">For most questions, a DM to Jordan is all you need. Use this first.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;background:var(--sky-bg);border-radius:12px;padding:16px 20px;border:1.5px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--navy3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;">2</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;">👥 Post in your team's Google Chat group</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">If your question is relevant to the whole team or you need group input. This is your main team space.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;background:#FEF8E6;border-radius:12px;padding:16px 20px;border:1.5px solid #F0D97A;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;">3</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;">📲 Call Jordan directly (mobile)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Urgent only. If you need an immediate answer and can't wait for a chat reply — call.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- WELCOME NOTE -->
+<div class="section">
+  <div class="inner">
+    <div style="background:var(--navy);border-radius:16px;padding:24px 26px;display:flex;gap:16px;align-items:flex-start;border:1.5px solid rgba(0,174,239,.15);">
+      <div style="font-size:32px;flex-shrink:0;">🎉</div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.18em;margin-bottom:6px;">YOUR FIRST DAY</div>
+        <div style="font-family:var(--serif);font-size:20px;color:#fff;margin-bottom:8px;">You'll be welcomed on <em style="color:var(--sky);">Zoom</em></div>
+        <div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;">New starters join training together and are welcomed in a team meeting on Zoom. You're not thrown in cold — your first shift starts with the team around you. Your TL will confirm the exact time and Zoom link before Day 1.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">Know who does what before your first call. <strong>The worst time to figure out who to contact is when you're mid-problem.</strong> Bookmark this page in your first week — it'll save you the awkward "who do I ask?" moment every new starter hits.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+const CARDS={
+  tl:{
+    emoji:'👤',
+    name:'Jordan Edwards',
+    role:'Team Leader — Appointment Setters',
+    location:'🇦🇺 Brisbane Office',
+    color:'var(--sky)',
+    what:'Manages the Appointment Setter team end-to-end. Responsible for coaching, performance reviews, lead quality oversight, roster management, and team escalations. Jordan is your first point of contact for anything work-related.',
+    when:'Any question, concern, absence, or training need — reach out directly. If in doubt, go to Jordan first.',
+    contact:'<strong>Step 1 — Google Chat DM Jordan directly.</strong> For most questions this is all you need.<br><br><strong>Step 2 — In person</strong> if you\'re in the Brisbane office, grab him directly.<br><br><strong>Step 3 — Call his mobile</strong> if it\'s urgent and you need an immediate answer.',
+    flag:null
+  },
+  setter:{
+    emoji:'👤',
+    name:'Appointment Setters',
+    role:'Appointment Setter',
+    location:'🇦🇺 Brisbane Office / Remote',
+    color:'#6B4FBB',
+    what:'Works the Appointment Setter lead queue — inbound branded/warm leads (customers who\'ve enquired in for a solar or battery system) and outbound re-engagement of old data, including D2D reschedules. Books appointments for RESINC Specialists and maintains CRM records.',
+    when:'Your teammates. Support each other — share what\'s working, flag what\'s not. This is a genuinely culture-driven team with a competitive streak, so lean into that energy. For anything beyond a quick teammate chat, go to <strong>Jordan</strong>.',
+    contact:'<strong>Team Google Chat</strong> — main team space and culture room. Keep it active and energetic.<br><br><strong>DM teammates directly</strong> for one-on-one work-related questions only.<br><br><strong>Jordan — Google Chat DM</strong> for day-to-day advice.<br><br><strong>Tag CX in Zoho CRM</strong> on next-day bookings.',
+    flag:null
+  },
+  cx:{
+    emoji:'💬',
+    name:'Customer Experience (CX)',
+    role:'@customer experience — Confirmation Team',
+    location:'🇦🇺 Australia',
+    color:'#0B7A4E',
+    what:'The CX team handles next-day appointment confirmations. When you book an appointment today for tomorrow, tag them in Zoho CRM so they can confirm it with the customer before the visit.',
+    when:'<strong>Tag CX in Zoho CRM any time you book a next-day appointment.</strong> This is the standard protocol — not Kaysie directly.<br><br>If you book it today for tomorrow, tag CX in the CRM.',
+    contact:'<strong>Zoho CRM — tag CX</strong> on every next-day booking. This is how they get notified.',
+    flag:null
+  },
+  confirmation:{
+    emoji:'✅',
+    name:'Kaysie',
+    role:'Team Leader — Confirmation Team',
+    location:'🇦🇺 Brisbane Office',
+    color:'var(--green)',
+    what:'Team Leader of the Confirmation Team. Oversees day-before confirmations for all appointments in the CRM calendar — calls booked customers to confirm timing, double-checks details, and flags any issues.',
+    when:'<strong>Tag CX in Zoho CRM on next-day bookings</strong> — not Kaysie directly. If you book today for tomorrow, tag CX in the CRM so the team can confirm it.<br><br>Kaysie is a last resort: only reach out directly if Jordan is unavailable and something is urgent.',
+    contact:'<strong>Zoho CRM — tag CX</strong> on next-day bookings.<br><br><strong>Google Chat and/or email</strong> only as a last resort if Jordan is unavailable and something is urgent.',
+    flag:null
+  },
+  specialist:{
+    emoji:'☀️',
+    name:'RESINC Specialists',
+    role:'Solar Consultants',
+    location:'🇦🇺 Australia',
+    color:'var(--gold)',
+    what:'Sit the in-home or virtual consultations you book. They\'re the face of RESINC with the customer — they educate, quote, and close. They rely entirely on your CRM notes and appointment quality to do their job well.',
+    when:'You don\'t contact them directly. Your job is to book a quality appointment and leave accurate CRM notes. The specialist takes it from there.',
+    contact:'No direct contact. If there\'s a specialist-related issue, escalate to your TL (Jordan).',
+    flag:null
+  }
+};
+
+let activeCard=null;
+
+function showCard(id){
+  const data=CARDS[id];
+  if(!data) return;
+
+  // Toggle off if same card
+  if(activeCard===id){
+    closeDetail();
+    return;
+  }
+
+  activeCard=id;
+
+  // Update all card active states
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('[id^="card-"]').forEach(c=>{
+    if(c.id==='card-'+id) c.classList.add('active');
+  });
+  // For the 9 appointment setter cards sharing one detail panel
+  if(id==='setter'){
+    for(let i=1;i<=9;i++){
+      const el=document.getElementById('card-setter'+i);
+      if(el) el.classList.add('active');
+    }
+  }
+
+  const panel=document.getElementById('detail-panel');
+  panel.style.setProperty('--panel-color',data.color);
+
+  panel.innerHTML=`
+    <div class="dp-top">
+      <div class="dp-avatar">${data.emoji}</div>
+      <div>
+        <div class="dp-badge">${data.location}</div>
+        <div class="dp-name">${data.name}</div>
+        <div class="dp-role">${data.role}</div>
+      </div>
+    </div>
+    <div class="dp-grid">
+      <div class="dp-card">
+        <div class="dp-card-label">WHAT THEY DO</div>
+        <div class="dp-card-text">${data.what}</div>
+      </div>
+      <div class="dp-card">
+        <div class="dp-card-label">WHEN TO CONTACT THEM</div>
+        <div class="dp-card-text">${data.when}</div>
+      </div>
+    </div>
+    <div class="dp-contact">
+      <div class="dp-contact-icon">💬</div>
+      <div>
+        <div class="dp-contact-label">HOW TO REACH THEM</div>
+        <div class="dp-contact-text">${data.contact}</div>
+      </div>
+    </div>
+    ${data.flag?`<div class="dp-flag"><div class="dp-flag-text"><strong>FLAG:</strong> ${data.flag}</div></div>`:''}
+    <span class="dp-close" onclick="closeDetail()">CLOSE ✕</span>
+  `;
+
+  const wrap=document.getElementById('detail-wrap');
+  wrap.classList.add('visible');
+
+  setTimeout(()=>{
+    wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },80);
+}
+
+function closeDetail(){
+  document.getElementById('detail-wrap').classList.remove('visible');
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('active'));
+  activeCard=null;
+}
+</script>
+</body>
+</html>
