@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Book or Don't Book — Swipe the Scenarios | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--green:#0B7A4E;--green-lt:#E3F5EC;
+  --red:#B5251B;--red-lt:#FDECEB;--gold:#D4940A;--gold-lt:#FEF8E6;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;--border:#C8DDE8;
+  --font:'DM Sans',system-ui,sans-serif;--serif:'DM Serif Display',Georgia,serif;
+}
+html,body{height:100%;}
+body{
+  font-family:var(--font);
+  background:linear-gradient(165deg,var(--navy) 0%,#0d4a5e 55%,var(--sky2) 130%);
+  min-height:100vh;color:var(--body);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px 16px;overflow-x:hidden;
+}
+.app{width:100%;max-width:460px;}
+
+/* HEADER */
+.hdr{text-align:center;margin-bottom:18px;color:#fff;}
+.hdr-eyebrow{font-size:11px;font-weight:700;letter-spacing:.22em;color:var(--sky);margin-bottom:6px;}
+.hdr h1{font-family:var(--serif);font-size:26px;line-height:1.15;margin-bottom:6px;}
+.hdr h1 em{color:var(--sky);font-style:italic;}
+.hdr p{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.5;max-width:360px;margin:0 auto;}
+
+/* PROGRESS DOTS */
+.dots{display:flex;justify-content:center;gap:6px;margin:16px 0 6px;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .25s;}
+.dot.active{background:var(--sky);transform:scale(1.3);}
+.dot.done-good{background:var(--green);}
+.dot.done-bad{background:var(--red);}
+
+/* STREAK */
+.streak-row{display:flex;justify-content:center;align-items:center;gap:6px;margin-bottom:14px;font-size:13px;font-weight:700;color:#fff;height:20px;}
+.streak-row .bolt{font-size:15px;filter:grayscale(1);opacity:.5;transition:all .2s;}
+.streak-row.hot .bolt{filter:grayscale(0);opacity:1;animation:pulse .6s ease infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
+
+/* CARD STACK */
+.stack{position:relative;height:420px;margin-bottom:14px;}
+.card{
+  position:absolute;inset:0;background:#fff;border-radius:22px;
+  box-shadow:0 20px 50px rgba(5,25,32,.35);
+  padding:26px 24px;display:flex;flex-direction:column;
+  cursor:grab;user-select:none;touch-action:none;
+  transition:transform .35s cubic-bezier(.2,.8,.3,1), opacity .35s ease;
+  will-change:transform;
+}
+.card:active{cursor:grabbing;}
+.card.dragging{transition:none;}
+.card .draft-badge{
+  position:absolute;top:16px;right:16px;background:var(--gold-lt);color:#8a6200;
+  font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:20px;
+}
+.card .confirmed-badge{
+  position:absolute;top:16px;right:16px;background:var(--green-lt);color:#0A4425;
+  font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:20px;
+}
+.card-emoji{font-size:38px;margin-bottom:10px;}
+.card-num{font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--sky2);margin-bottom:4px;}
+.card-title{font-family:var(--serif);font-size:21px;color:var(--navy);line-height:1.2;margin-bottom:10px;}
+.card-body{font-size:14px;color:var(--body);line-height:1.6;flex:1;}
+.card-body strong{color:var(--navy);}
+.card-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;font-style:italic;}
+
+.stamp{
+  position:absolute;top:38px;padding:8px 18px;border-radius:10px;
+  font-family:var(--serif);font-size:26px;font-weight:700;
+  border:4px solid; opacity:0; transition:opacity .1s;
+  transform:rotate(-18deg);pointer-events:none;letter-spacing:.02em;
+}
+.stamp.book{left:24px;color:var(--green);border-color:var(--green);background:rgba(11,122,78,.08);}
+.stamp.callback{right:24px;color:var(--red);border-color:var(--red);background:rgba(181,37,27,.08);transform:rotate(18deg);}
+
+/* RESULT FLASH (after release) */
+.result-flash{
+  position:absolute;inset:0;border-radius:22px;display:none;
+  align-items:center;justify-content:center;flex-direction:column;gap:10px;
+  text-align:center;padding:30px;color:#fff;z-index:20;
+}
+.result-flash.show{display:flex;}
+.result-flash.good{background:linear-gradient(160deg,var(--green) 0%,#054027 100%);}
+.result-flash.bad{background:linear-gradient(160deg,var(--red) 0%,#5a1410 100%);}
+.result-flash .rf-icon{font-size:40px;}
+.result-flash .rf-title{font-family:var(--serif);font-size:22px;}
+.result-flash .rf-text{font-size:13px;line-height:1.6;opacity:.9;}
+.result-flash .rf-next{
+  margin-top:6px;background:#fff;color:var(--navy);border:none;
+  border-radius:10px;padding:11px 24px;font-family:var(--font);font-weight:700;
+  font-size:13.5px;cursor:pointer;
+}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:14px;margin-top:2px;}
+.act-btn{
+  flex:1;border:none;border-radius:16px;padding:16px 10px;
+  font-family:var(--font);font-weight:700;font-size:14px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:all .15s;box-shadow:0 6px 18px rgba(0,0,0,.15);
+  color:#fff;
+}
+.act-btn:hover{transform:translateY(-2px);}
+.act-btn:active{transform:translateY(0);}
+.act-btn.callback-btn{background:linear-gradient(135deg,#c73a2e,var(--red));}
+.act-btn.book-btn{background:linear-gradient(135deg,#0f9d64,var(--green));}
+.act-btn .ab-emoji{font-size:20px;}
+.act-btn:disabled{opacity:.4;pointer-events:none;}
+
+/* END SCREEN */
+.end-card{
+  background:#fff;border-radius:22px;padding:32px 26px;
+  box-shadow:0 20px 50px rgba(5,25,32,.35);text-align:center;position:relative;overflow:hidden;
+}
+.end-icon{font-size:52px;margin-bottom:6px;}
+.end-score{font-family:var(--serif);font-size:42px;color:var(--navy);}
+.end-sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.end-review{display:flex;flex-direction:column;gap:7px;text-align:left;margin-bottom:20px;}
+.end-review-item{
+  display:flex;align-items:flex-start;gap:9px;font-size:12.5px;
+  background:var(--light);border-radius:10px;padding:9px 12px;line-height:1.4;
+}
+.end-review-item .mark{font-size:14px;}
+.end-review-item .draft-tag{font-size:9px;font-weight:700;color:#8a6200;background:var(--gold-lt);padding:1px 7px;border-radius:8px;margin-left:6px;white-space:nowrap;}
+.end-note{
+  background:var(--sky-lt);border-radius:10px;padding:12px 14px;
+  font-size:12px;color:var(--sky2);line-height:1.6;margin-bottom:18px;text-align:left;
+}
+.retry-btn{
+  background:var(--sky);color:#fff;border:none;border-radius:12px;
+  padding:14px 30px;font-family:var(--font);font-weight:700;font-size:14.5px;cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,174,239,.4);
+}
+.confetti-piece{position:absolute;top:-8%;font-size:18px;animation:fall linear forwards;pointer-events:none;}
+@keyframes fall{to{transform:translateY(520px) rotate(340deg);opacity:0;}}
+@media(max-width:420px){.stack{height:460px;}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const CARDS = [
+  {
+    emoji:"🏗️", title:"Roof Extension — Not Yet",
+    body:"Customer's <strong>adding a second level</strong> to the house. They've got a confirmed completion date... but it's <strong>4 months</strong> away.",
+    correct:"callback",
+    explain:"Even with a confirmed date, it needs to land within 3 months. Set a callback and follow up closer to completion.",
+    status:"confirmed"
+  },
+  {
+    emoji:"✅", title:"Roof Restoration — Ready",
+    body:"Full re-sheet, and the customer's <strong>certain</strong> it'll be done in <strong>6 weeks</strong>. Confirmed date, well within the window.",
+    correct:"book",
+    explain:"Confirmed completion date + within 3 months = book it. This is exactly what the criteria are looking for.",
+    status:"confirmed"
+  },
+  {
+    emoji:"🧱", title:"New Build — Missing a Piece",
+    body:"Roof's up, framing's done, looking great. But the <strong>meter box isn't in yet</strong>.",
+    correct:"callback",
+    explain:"Both the roof AND the meter box need to be installed first — that's what lets the install team run conduits inside the walls before they close up. Callback for once the meter box is in.",
+    status:"confirmed"
+  },
+  {
+    emoji:"🏠", title:"New Build — All Set",
+    body:"Roof's on, meter box is installed, and the house is nearly move-in ready.",
+    correct:"book",
+    explain:"Both boxes ticked — roof and meter box installed. This one's ready to go.",
+    status:"confirmed"
+  },
+  {
+    emoji:"🔋", title:"Battery-Only Enquiry",
+    body:"Already has solar panels installed. Just wants a <strong>battery added</strong> — no new panels.",
+    correct:"callback",
+    explain:"Battery-only enquiries fall outside the standard Appointment Setter process — flag it as Not Qualified rather than booking a standard appointment.",
+    status:"confirmed"
+  },
+  {
+    emoji:"🏘️", title:"Tenant, Not Owner",
+    body:"Renting for 2 years, <strong>very keen</strong> to go ahead today. But the property owner lives interstate and isn't part of the call.",
+    correct:"callback",
+    explain:"Draft guidance: book only when the owner is on the call or has clearly consented — a tenant can't authorise permanent roof work. Confirm this policy with Jordan before treating it as final.",
+    status:"draft"
+  },
+  {
+    emoji:"🏢", title:"Strata Apartment",
+    body:"Third-floor unit, <strong>shared roof</strong>. Body corporate hasn't been asked yet.",
+    correct:"callback",
+    explain:"Draft guidance: shared-roof properties usually need body corporate sign-off first. Callback until that's confirmed — but check this is the real policy with Jordan.",
+    status:"draft"
+  },
+  {
+    emoji:"📝", title:"Settlement Pending",
+    body:"Contract's signed on the new place, but <strong>settlement is 3 weeks away</strong>. The previous owner is still the legal owner.",
+    correct:"callback",
+    explain:"Draft guidance: until settlement completes, the customer can't authorise permanent work on a property they don't legally own yet. Callback for just after settlement — confirm with Jordan.",
+    status:"draft"
+  },
+];
+
+let idx = 0, score = 0, streak = 0, bestStreak = 0;
+const answers = [];
+const app = document.getElementById("app");
+
+function renderShell(){
+  app.innerHTML = `
+    <div class="hdr">
+      <div class="hdr-eyebrow">⚡ APPOINTMENT SETTER · EDGE CASES</div>
+      <h1>Book It — or <em>Callback?</em></h1>
+      <p>Swipe right to book, left for a callback. Or just tap the buttons. Trust your gut, then check the answer.</p>
+    </div>
+    <div class="dots" id="dots"></div>
+    <div class="streak-row" id="streakRow"><span class="bolt">⚡</span><span id="streakText">0 streak</span></div>
+    <div class="stack" id="stack">
+      <div class="result-flash" id="sharedFlash"></div>
+    </div>
+    <div class="btn-row" id="btnRow">
+      <button class="act-btn callback-btn" id="btnCallback"><span class="ab-emoji">📅</span>Callback</button>
+      <button class="act-btn book-btn" id="btnBook"><span class="ab-emoji">✅</span>Book It</button>
+    </div>
+  `;
+  renderDots();
+  renderStack();
+  document.getElementById("btnCallback").onclick = () => decide("callback");
+  document.getElementById("btnBook").onclick = () => decide("book");
+}
+
+function renderDots(){
+  const dots = document.getElementById("dots");
+  if(!dots) return;
+  dots.innerHTML = CARDS.map((c,i)=>{
+    let cls = "dot";
+    if(i === idx) cls += " active";
+    else if(answers[i]) cls += answers[i].correct ? " done-good" : " done-bad";
+    return `<div class="${cls}"></div>`;
+  }).join("");
+}
+
+function renderStack(){
+  const stack = document.getElementById("stack");
+  stack.innerHTML = '<div class="result-flash" id="sharedFlash"></div>';
+  const visible = CARDS.slice(idx, idx+3);
+  visible.forEach((c, vi) => {
+    const realIdx = idx + vi;
+    const card = document.createElement("div");
+    card.className = "card";
+    const depth = vi;
+    card.style.transform = `translateY(${depth*8}px) scale(${1 - depth*0.035})`;
+    card.style.zIndex = 10 - vi;
+    card.style.opacity = depth === 2 ? 0.5 : 1;
+    card.innerHTML = `
+      <span class="${c.status==='draft' ? 'draft-badge' : 'confirmed-badge'}">${c.status==='draft' ? 'DRAFT' : 'CONFIRMED'}</span>
+      <div class="card-num">SCENARIO ${realIdx+1} OF ${CARDS.length}</div>
+      <div class="card-emoji">${c.emoji}</div>
+      <div class="card-title">${c.title}</div>
+      <div class="card-body">${c.body}</div>
+      <div class="card-hint">${vi===0 ? '← drag or tap a button →' : ''}</div>
+      <div class="stamp book">BOOK IT</div>
+      <div class="stamp callback">CALLBACK</div>
+    `;
+    if(vi === 0) attachDrag(card, realIdx);
+    stack.appendChild(card);
+  });
+  document.getElementById("streakText").textContent = streak + " streak";
+  document.getElementById("streakRow").className = "streak-row" + (streak >= 2 ? " hot" : "");
+}
+
+function attachDrag(card, cardIdx){
+  let startX=0, startY=0, dx=0, dragging=false;
+  const bookStamp = card.querySelector(".stamp.book");
+  const callbackStamp = card.querySelector(".stamp.callback");
+
+  function pointerDown(e){
+    dragging = true;
+    card.classList.add("dragging");
+    const p = e.touches ? e.touches[0] : e;
+    startX = p.clientX; startY = p.clientY;
+  }
+  function pointerMove(e){
+    if(!dragging) return;
+    const p = e.touches ? e.touches[0] : e;
+    dx = p.clientX - startX;
+    const dy = (p.clientY - startY) * 0.4;
+    const rot = dx * 0.06;
+    card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+    const strength = Math.min(Math.abs(dx)/100, 1);
+    if(dx > 0){ bookStamp.style.opacity = strength; callbackStamp.style.opacity = 0; }
+    else { callbackStamp.style.opacity = strength; bookStamp.style.opacity = 0; }
+  }
+  function pointerUp(){
+    if(!dragging) return;
+    dragging = false;
+    card.classList.remove("dragging");
+    if(Math.abs(dx) > 100){
+      decide(dx > 0 ? "book" : "callback");
+    } else {
+      card.style.transform = "translateY(0px) scale(1)";
+      bookStamp.style.opacity = 0; callbackStamp.style.opacity = 0;
+    }
+    dx = 0;
+  }
+  card.addEventListener("mousedown", pointerDown);
+  window.addEventListener("mousemove", pointerMove);
+  window.addEventListener("mouseup", pointerUp);
+  card.addEventListener("touchstart", pointerDown, {passive:true});
+  card.addEventListener("touchmove", pointerMove, {passive:true});
+  card.addEventListener("touchend", pointerUp);
+}
+
+function decide(choice){
+  if(idx >= CARDS.length) return;
+  document.getElementById("btnRow").querySelectorAll(".act-btn").forEach(b=>b.disabled=true);
+  const c = CARDS[idx];
+  const correct = choice === c.correct;
+  answers.push({title:c.title, correct, status:c.status});
+  if(correct){ score++; streak++; bestStreak = Math.max(bestStreak, streak); }
+  else{ streak = 0; }
+
+  const cardEl = document.querySelector("#stack .card");
+  if(cardEl){
+    const flyX = choice === "book" ? 700 : -700;
+    cardEl.style.transition = "transform .4s ease";
+    cardEl.style.transform = `translate(${flyX}px, -40px) rotate(${choice==="book"?25:-25}deg)`;
+    const stamp = cardEl.querySelector(choice === "book" ? ".stamp.book" : ".stamp.callback");
+    if(stamp) stamp.style.opacity = 1;
+
+    setTimeout(()=>{
+      const flash = document.getElementById("sharedFlash");
+      if(flash){
+        flash.className = "result-flash show " + (correct ? "good" : "bad");
+        flash.innerHTML = `
+          <div class="rf-icon">${correct ? "✅" : "❌"}</div>
+          <div class="rf-title">${correct ? "Nice one" : "Not quite"}</div>
+          <div class="rf-text">${c.explain}</div>
+          <button class="rf-next" onclick="nextCard()">${idx === CARDS.length-1 ? "See results" : "Next scenario"}</button>
+        `;
+      }
+    }, 380);
+  }
+}
+
+function nextCard(){
+  idx++;
+  document.getElementById("btnRow").querySelectorAll(".act-btn").forEach(b=>b.disabled=false);
+  if(idx >= CARDS.length){ renderEnd(); return; }
+  renderDots();
+  renderStack();
+}
+
+function renderEnd(){
+  const pct = Math.round((score/CARDS.length)*100);
+  const reviewHtml = answers.map(a => `
+    <div class="end-review-item">
+      <span class="mark">${a.correct ? "✅" : "⚠️"}</span>
+      <span>${a.title}${a.status==='draft' ? '<span class="draft-tag">DRAFT</span>' : ''}</span>
+    </div>
+  `).join("");
+
+  app.innerHTML = `
+    <div class="hdr">
+      <div class="hdr-eyebrow">⚡ APPOINTMENT SETTER · EDGE CASES</div>
+    </div>
+    <div class="end-card" id="endCard">
+      <div class="end-icon">🏆</div>
+      <div class="end-score">${score}/${CARDS.length}</div>
+      <div class="end-sub">${pct}% — best streak ${bestStreak} in a row</div>
+      <div class="end-review">${reviewHtml}</div>
+      <div class="end-note">📌 Three of these are marked <strong>DRAFT</strong> — they're sensible guesses, not confirmed policy. Get Jordan's sign-off before treating them as final.</div>
+      <button class="retry-btn" onclick="restart()">Swipe again</button>
+    </div>
+  `;
+  const confettiHost = document.getElementById("endCard");
+  const emojis = ["📅","✅","⚡","🏆"];
+  for(let i=0;i<20;i++){
+    const s = document.createElement("span");
+    s.className = "confetti-piece";
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100+"%";
+    s.style.animationDuration = (2+Math.random()*1.4)+"s";
+    s.style.animationDelay = (Math.random()*0.5)+"s";
+    confettiHost.appendChild(s);
+  }
+}
+
+function restart(){
+  idx = 0; score = 0; streak = 0; bestStreak = 0; answers.length = 0;
+  renderShell();
+}
+
+renderShell();
+</script>
+</body>
+</html>
