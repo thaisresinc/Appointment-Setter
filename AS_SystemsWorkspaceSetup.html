@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systems & Workspace Setup — Appointment Setter</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Century Gothic','Trebuchet MS',Arial,sans-serif;background:#0A3542;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* HEADER */
+#hdr{background:#0A3542;border-bottom:3px solid #00AEEF;padding:8px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo-w{color:#fff;font-size:17px;font-weight:700;letter-spacing:.08em;}
+.logo-s{color:#00AEEF;font-size:7px;letter-spacing:.2em;display:block;margin-top:1px;}
+.hdr-r{text-align:right;}
+.hdr-tag{color:#00AEEF;font-size:8.5px;letter-spacing:.18em;font-weight:600;}
+.hdr-mod{color:#fff;font-size:12px;font-weight:700;margin-top:2px;}
+
+/* PROGRESS */
+#prog-bar{background:#071f28;height:4px;flex-shrink:0;}
+#prog-fill{height:100%;background:#00AEEF;transition:width .4s ease;width:0%;}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;overflow-x:hidden;background:#fff;}
+#content::-webkit-scrollbar{width:5px;}
+#content::-webkit-scrollbar-track{background:#f0f7fb;}
+#content::-webkit-scrollbar-thumb{background:#c8dfe9;border-radius:3px;}
+
+.view{display:none;}
+.view.active{display:block;}
+
+/* ══ WELCOME ══ */
+#v-welcome{background:#0A3542;min-height:100%;display:none;grid-template-columns:1fr 1fr;gap:0;}
+#v-welcome.active{display:grid;}
+.wlc-left{padding:36px 28px 28px 32px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(0,174,239,.15);}
+.wlc-tag{color:#00AEEF;font-size:9px;letter-spacing:.24em;font-weight:700;margin-bottom:18px;}
+.wlc-title{color:#fff;font-size:38px;font-weight:700;line-height:1.12;margin-bottom:12px;}
+.wlc-title span{color:#00AEEF;display:block;}
+.wlc-sub{color:#9BBFCC;font-size:13.5px;line-height:1.65;margin-bottom:24px;}
+.wlc-note{color:#5A8899;font-size:11px;margin-top:8px;font-style:italic;}
+.wlc-right{padding:28px 28px 28px 24px;display:flex;flex-direction:column;justify-content:center;gap:10px;background:rgba(0,0,0,.12);}
+.wlc-right-label{color:#00AEEF;font-size:8.5px;letter-spacing:.22em;font-weight:700;margin-bottom:2px;}
+.mod-card{background:rgba(255,255,255,.07);border:1px solid rgba(0,174,239,.18);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px;transition:background .18s,border-color .18s;cursor:pointer;}
+.mod-card:hover{background:rgba(255,255,255,.11);border-color:rgba(0,174,239,.38);}
+.mod-n{font-size:26px;font-weight:700;line-height:1;flex-shrink:0;width:30px;text-align:center;}
+.mod-divider{width:1px;height:32px;background:rgba(255,255,255,.12);flex-shrink:0;}
+.mod-lbl{font-size:7.5px;font-weight:700;letter-spacing:.18em;margin-bottom:2px;}
+.mod-name{font-size:12.5px;color:#fff;font-weight:600;}
+.mod-meta{font-size:10px;color:#7AAABB;margin-top:2px;}
+
+/* ══ MODULE ══ */
+#v-module{background:#fff;min-height:100%;}
+.crm-bar{background:#0A3542;padding:7px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1A4A5A;}
+.crm-bar-txt{color:#7AAABB;font-size:10.5px;}
+.crm-btn{background:#00AEEF;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:10.5px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:background .18s;}
+.crm-btn:hover{background:#0090C4;}
+
+.mod-hero{padding:16px 24px 12px;border-bottom:1px solid #E0EEF4;display:flex;align-items:flex-start;gap:14px;}
+.hero-num{font-size:52px;font-weight:700;line-height:1;flex-shrink:0;opacity:.17;}
+.hero-pill{display:inline-block;padding:3px 10px;border-radius:5px;font-size:8px;font-weight:700;letter-spacing:1.5px;color:#fff;margin-bottom:5px;}
+.hero-title{font-size:22px;font-weight:700;color:#0A3542;line-height:1.2;}
+.hero-sub{font-size:12px;color:#607080;margin-top:3px;font-style:italic;}
+
+.tab-bar{display:flex;border-bottom:2px solid #E0EEF4;background:#F8FCFE;flex-shrink:0;}
+.tab{padding:8px 16px;font-size:11px;font-weight:600;color:#607080;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .18s;user-select:none;}
+.tab:hover{color:#0A3542;}
+.tab.active{color:#0A3542;border-bottom-color:var(--accent);}
+
+.panel{display:none;padding:16px 24px 14px;}
+.panel.active{display:block;}
+
+/* VIDEO — smaller */
+.video-wrap{
+  position:relative;
+  width:55%;
+  min-width:260px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#000;
+  margin-bottom:12px;
+  aspect-ratio:16/9;
+  box-shadow:0 4px 18px rgba(10,53,66,.15);
+}
+.video-wrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;}
+.video-note{background:#E8F6FD;border-left:4px solid #00AEEF;border-radius:0 8px 8px 0;padding:9px 14px;font-size:11.5px;color:#0A3542;line-height:1.5;margin-bottom:14px;}
+
+/* NOTICE BOXES */
+.notice{border-radius:0 8px 8px 0;padding:9px 13px;font-size:11.5px;line-height:1.55;display:flex;gap:9px;align-items:flex-start;margin-bottom:12px;}
+.ni{flex-shrink:0;font-size:14px;margin-top:1px;}
+.notice.info{border-left:4px solid #00AEEF;background:#E8F6FD;color:#0A3542;}
+.notice.tip{border-left:4px solid #E87C2B;background:#FFF8EE;color:#5A3000;}
+.notice.warn{border-left:4px solid #CC0000;background:#FFF0F0;color:#880000;}
+.notice.where{border-left:4px solid #007A8A;background:#E8F8FC;color:#0A3542;}
+.notice.green{border-left:4px solid #1A8A5A;background:#E6F5EE;color:#0A3542;}
+
+/* TL FLAG */
+.tl-flag{background:#FFF0F0;border-left:4px solid #CC0000;border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;}
+.tl-lbl{font-size:8px;font-weight:700;color:#CC0000;letter-spacing:.15em;margin-bottom:3px;}
+.tl-txt{font-size:11.5px;color:#CC0000;line-height:1.55;}
+
+/* STEPS */
+.steps-label{font-size:8.5px;font-weight:700;letter-spacing:.2em;color:var(--accent);margin-bottom:10px;}
+.step{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;margin-bottom:6px;border-radius:9px;border:1.5px solid #E0EEF4;background:#fff;cursor:pointer;transition:all .18s;user-select:none;}
+.step:hover{border-color:var(--accent);background:var(--accent-lt);}
+.step.done{border-color:var(--accent);background:var(--accent-lt);}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid #C5DCE8;background:#fff;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.step.done .chk{border-color:var(--accent);background:var(--accent);}
+.tick{color:#fff;font-size:12px;font-weight:700;opacity:0;transform:scale(.5);transition:all .18s;}
+.step.done .tick{opacity:1;transform:scale(1);}
+.step-txt{font-size:12.5px;color:#231F20;line-height:1.5;flex:1;padding-top:1px;}
+.step.done .step-txt{color:#3A7090;}
+.step-txt code{background:#E0EEF4;border-radius:3px;padding:1px 5px;font-size:11px;font-family:'Courier New',monospace;}
+
+/* SCREENSHOTS */
+.ss-grid{display:flex;flex-direction:column;gap:16px;}
+.ss-cap{font-size:10.5px;font-weight:700;color:#0A3542;margin-bottom:6px;}
+.ss-img{border-radius:9px;border:1.5px solid #E0EEF4;box-shadow:0 2px 10px rgba(10,53,66,.08);display:block;}
+.ss-img.small{width:240px;}.ss-img.medium{width:480px;}
+
+/* SECTION DIVIDER */
+.sdiv{display:flex;align-items:center;gap:10px;margin:18px 0 12px;}
+.sdiv-line{flex:1;height:1px;background:#E0EEF4;}
+.sdiv-lbl{font-size:8.5px;font-weight:700;letter-spacing:.2em;color:var(--accent);white-space:nowrap;}
+
+/* SCREEN GRID */
+.screen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.screen-card{border-radius:12px;padding:16px 18px;}
+
+/* MOD PROGRESS */
+.mod-prog{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid #E0EEF4;}
+.prog-txt{font-size:11px;color:#607080;}
+.prog-txt strong{color:#0A3542;}
+.done-badge{font-size:10px;font-weight:700;letter-spacing:.1em;display:none;}
+.done-badge.show{display:block;}
+
+/* ══ COMPLETE ══ */
+#v-complete{background:#0A3542;min-height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;}
+#v-complete.active{display:flex;}
+.cpl-icon{font-size:52px;margin-bottom:14px;}
+.cpl-title{color:#fff;font-size:30px;font-weight:700;margin-bottom:6px;}
+.cpl-title span{color:#00AEEF;}
+.cpl-sub{color:#7AAABB;font-size:14px;line-height:1.6;max-width:420px;margin-bottom:28px;}
+.cpl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;max-width:640px;}
+.cpl-card{background:rgba(255,255,255,.07);border-radius:11px;padding:14px 16px;text-align:left;border:1px solid rgba(255,255,255,.1);}
+.cpl-card.done{border-color:var(--accent);}
+.cpl-lbl{font-size:8px;font-weight:700;letter-spacing:.18em;margin-bottom:3px;}
+.cpl-name{font-size:12px;color:#fff;font-weight:600;}
+.cpl-chk{font-size:10px;margin-top:3px;color:#7AAABB;}
+.cpl-card.done .cpl-chk{color:var(--accent);}
+
+/* ══ NAV ══ */
+#nav{background:#fff;border-top:1px solid #E0EEF4;padding:10px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.dots{display:flex;gap:6px;align-items:center;}
+.dot{width:7px;height:7px;border-radius:50%;background:#C5DCE8;transition:all .2s;}
+.dot.active{background:#00AEEF;transform:scale(1.3);}
+.dot.done-d{background:#00AEEF;opacity:.45;}
+.btn{border:none;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:9px 20px;transition:all .18s;letter-spacing:.04em;}
+.btn-p{background:#00AEEF;color:#fff;}
+.btn-p:hover{background:#0090C4;}
+.btn-p:disabled{background:#C5DCE8;color:#8AAFBF;cursor:not-allowed;}
+.btn-g{background:transparent;color:#607080;border:1.5px solid #C5DCE8;}
+.btn-g:hover{border-color:#00AEEF;color:#0A3542;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="hdr">
+  <div><span class="logo-w">RESINC</span><span class="logo-s">SOLAR & BATTERIES</span></div>
+  <div class="hdr-r"><div class="hdr-tag" id="hdr-tag">APPOINTMENT SETTER</div><div class="hdr-mod" id="hdr-mod">Systems Setup</div></div>
+</div>
+<div id="prog-bar"><div id="prog-fill"></div></div>
+
+<div id="content">
+
+  <!-- WELCOME -->
+  <div id="v-welcome" class="view active">
+    <div class="wlc-left">
+      <div class="wlc-tag">APPOINTMENT SETTER</div>
+      <div class="wlc-title">Systems &amp;<span>Workspace Setup</span></div>
+      <div class="wlc-sub">Nine sections covering your physical workspace, communication channels, and Zoho CRM setup. Tick off every step as you go — Next unlocks when each section is complete.</div>
+      <p class="wlc-note">Use the cards on the right to jump to any section, or click Start below.</p>
+    </div>
+    <div class="wlc-right">
+      <div class="wlc-right-label">9 SECTIONS — WORK THROUGH IN ORDER</div>
+      <div id="wlc-grid"></div>
+    </div>
+  </div>
+
+  <!-- MODULE -->
+  <div id="v-module" class="view">
+    <div class="crm-bar">
+      <span class="crm-bar-txt">Need to open Zoho CRM?</span>
+      <a class="crm-btn" href="https://crm.zoho.com/crm/org633626367/tab/Home/begin" target="_blank">Open Zoho CRM ↗</a>
+    </div>
+    <div class="mod-hero">
+      <div class="hero-num" id="h-num">1</div>
+      <div>
+        <div class="hero-pill" id="h-pill">SECTION 1</div>
+        <div class="hero-title" id="h-title">Dual Screen Setup</div>
+        <div class="hero-sub" id="h-sub"></div>
+      </div>
+    </div>
+    <div class="tab-bar" id="tab-bar"></div>
+    <div id="panels"></div>
+    <div class="mod-prog">
+      <span class="prog-txt"><strong id="done-n">0</strong> of <strong id="tot-n">0</strong> steps done</span>
+      <span class="done-badge" id="done-badge">✓ SECTION COMPLETE</span>
+    </div>
+  </div>
+
+  <!-- COMPLETE -->
+  <div id="v-complete" class="view">
+    <div class="cpl-icon">✅</div>
+    <div class="cpl-title">All set up.<br><span>You're ready.</span></div>
+    <div class="cpl-sub">Workspace configured. Systems connected. Zoho ready to go. You're set for your first shift.</div>
+    <div class="cpl-grid" id="cpl-grid"></div>
+  </div>
+
+</div>
+
+<div id="nav">
+  <button class="btn btn-g" id="btn-back" onclick="goBack()" style="display:none">← Back</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn btn-p" id="btn-next" onclick="goNext()">Start →</button>
+</div>
+
+</div>
+<script>
+const MODS = [
+  {
+    id:'screens', num:'1', label:'Dual Screen Setup', tag:'WORKSPACE',
+    accent:'#00AEEF', accentLt:'#EAF7FF',
+    sub:'Set up both screens before your first call.',
+    tabs:[
+      { id:'steps', icon:'☑', label:'Checklist', type:'steps',
+        items:[
+          'Set up <strong>Screen 1</strong> with the Dialler open and always visible',
+          'Set up <strong>Screen 2</strong> with Zoho CRM open alongside',
+        ],
+        extra:`<div class="screen-grid">
+          <div class="screen-card" style="background:#0A3542;">
+            <div style="color:#00AEEF;font-size:8.5px;letter-spacing:.2em;font-weight:700;margin-bottom:5px;">SCREEN 1</div>
+            <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:4px;">Dialler</div>
+            <div style="color:#7AAABB;font-size:11.5px;line-height:1.5;">Always visible while on a call — never minimise or cover it.</div>
+          </div>
+          <div class="screen-card" style="background:#E8F6FD;border:1.5px solid #C8DFE9;">
+            <div style="color:#007A8A;font-size:8.5px;letter-spacing:.2em;font-weight:700;margin-bottom:5px;">SCREEN 2</div>
+            <div style="color:#0A3542;font-size:15px;font-weight:700;margin-bottom:4px;">Zoho CRM</div>
+            <div style="color:#5A7080;font-size:11.5px;line-height:1.5;">Open alongside so you can pull up lead info in real time.</div>
+          </div>
+        </div>
+        `,
+      },
+    ]
+  },
+  {
+    id:'chrome', num:'2', label:'Chrome Setup', tag:'WORKSPACE',
+    accent:'#00AEEF', accentLt:'#EAF7FF',
+    sub:'Configure Chrome before your first session.',
+    tabs:[
+      { id:'steps', icon:'☑', label:'Checklist', type:'steps',
+        items:[
+          'Zoom Chrome to <strong>80–90%</strong> — better visibility on the dialler and calendar',
+          'Pin your tabs: <strong>Dialler · Zoho CRM · Calendar · Zoho Learn</strong>',
+        ],
+        extra:`
+        <div class="notice tip"><span class="ni">💡</span><span>To zoom: <strong>Ctrl + –</strong> (Windows) or <strong>⌘ + –</strong> (Mac). Check % in the address bar.</span></div>`,
+      },
+    ]
+  },
+  {
+    id:'audio', num:'3', label:'Audio / Headset', tag:'WORKSPACE',
+    accent:'#00AEEF', accentLt:'#EAF7FF',
+    sub:'Test your audio before your very first call.',
+    tabs:[
+      { id:'steps', icon:'☑', label:'Checklist', type:'steps',
+        items:[
+          'Use a <strong>headset</strong> — not phone speakers or laptop mic',
+          '<strong>Test your audio</strong> before your very first call — not during it',
+        ],
+        extra:``,
+      },
+    ]
+  },
+  {
+    id:'chat', num:'4', label:'Google Chat', tag:'COMMUNICATION',
+    accent:'#1A8A5A', accentLt:'#E6F5EE',
+    sub:'Primary communication channel for the team.',
+    tabs:[
+      { id:'info', icon:'ℹ️', label:'Overview', type:'info',
+        extra:`
+        <div style="font-size:12.5px;color:#231F20;line-height:1.7;margin-bottom:14px;">
+          Google Chat is your <strong>primary communication channel</strong> at RESINC. All day-to-day questions, updates, and team comms go through here — not email, not WhatsApp (unless urgent).
+        </div>
+        <div style="background:#F0FAF4;border-radius:10px;padding:14px 16px;margin-bottom:12px;border:1px solid #C2E8D4;">
+          <div style="font-size:8.5px;font-weight:700;letter-spacing:.18em;color:#1A8A5A;margin-bottom:8px;">SPACE TO JOIN ON DAY 1</div>
+          <div style="font-size:15px;font-weight:700;color:#0A3542;margin-bottom:3px;">Appointment Setters</div>
+          <div style="font-size:12px;color:#3A6050;">Your TL will add you to this space on your first day.</div>
+        </div>
+        <div style="background:#F8FCFE;border-radius:10px;padding:14px 16px;border:1px solid #C8DFE9;">
+          <div style="font-size:8.5px;font-weight:700;letter-spacing:.18em;color:#007A8A;margin-bottom:10px;">COMMUNICATION PROTOCOL DURING YOUR SHIFT</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="background:#1A8A5A;color:#fff;border-radius:5px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;">1</div>
+              <div style="font-size:12.5px;color:#231F20;line-height:1.5;"><strong>DM Jordan on Google Chat</strong> — your first point of contact for any question or issue during the shift.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="background:#1A8A5A;color:#fff;border-radius:5px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;">2</div>
+              <div style="font-size:12.5px;color:#231F20;line-height:1.5;"><strong>Post in your team's Google Chat space</strong> — for general questions the whole team can help with.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="background:#E87C2B;color:#fff;border-radius:5px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;">3</div>
+              <div style="font-size:12.5px;color:#231F20;line-height:1.5;"><strong>Call your TL directly (mobile)</strong> — for urgent matters only. Use sparingly.</div>
+            </div>
+          </div>
+        </div>`,
+      },
+      { id:'steps', icon:'☑', label:'Checklist', type:'steps',
+        items:[
+          'Open <strong>Google Chat</strong> and confirm you have access',
+          'Confirm you have been added to your team\'s <strong>Google Chat space</strong> by your TL',
+          'Send a quick intro message in the team space — say hi to the team 👋',
+          'Save Jordan\'s contact for quick DM access during your shift',
+        ],
+      },
+    ]
+  },
+  {
+    id:'access', num:'5', label:'Systems Access', tag:'COMMUNICATION',
+    accent:'#1A8A5A', accentLt:'#E6F5EE',
+    sub:'Confirm access to all systems on Day 1.',
+    tabs:[
+      { id:'steps', icon:'☑', label:'Checklist', type:'steps',
+        items:[
+          '<strong>Google Workspace</strong> — Gmail · Drive · Calendar · Chat',
+          '<strong>Zoho One</strong> — CRM · Learn · People',
+          '<strong>Dialer.io</strong> — outbound calls — your primary tool on the phones',
+        ],
+        extra:`<div style="margin-top:12px;background:#E8F6FD;border-left:4px solid #007A8A;border-radius:0 8px 8px 0;padding:10px 14px;font-size:11.5px;color:#0A3542;line-height:1.55;"><strong>📧 IT Support:</strong> <a href="mailto:itsupport@resinc.com.au" style="color:#007A8A;font-weight:700;">itsupport@resinc.com.au</a><br><em style="font-size:11px;">Always CC your line manager. Managers: submit on behalf of your team where possible.</em></div>`,
+      },
+    ]
+  },
+  {
+    id:'profile', num:'6', label:'Profile Picture', tag:'ZOHO SETUP',
+    accent:'#007A8A', accentLt:'#E0F5F7',
+    sub:'Your picture appears on every CRM comment and note.',
+    tabs:[
+      { id:'video', icon:'▶', label:'Video', type:'video',
+        src:'change_picture_compressed.mp4',
+        note:'Watch the screen recording, then tick off each step in the Steps tab.' },
+      { id:'steps', icon:'☑', label:'Steps', type:'steps',
+        items:[
+          'Click the <strong>Settings icon (cog)</strong> — top-right corner of Zoho',
+          'Under <strong>General</strong>, click <strong>Personal Settings</strong>',
+          'Click your <strong>profile icon</strong>',
+          'Select <strong>Change Profile Picture</strong>',
+          'Choose a clear, professional photo — good lighting, plain background',
+        ],
+        tip:'Same photo you\'d use on LinkedIn works perfectly.' },
+      { id:'screenshots', icon:'📸', label:'Screenshots', type:'screenshots',
+        items:[
+          { cap:'Step 1 — Settings icon (cog)', file:'settings_cog.png', size:'small' },
+          { cap:'Step 2 — Personal Settings', file:'personal_settings.png', size:'small' },
+        ]}
+    ]
+  },
+  {
+    id:'timezone', num:'7', label:'Time Zone', tag:'ZOHO SETUP',
+    accent:'#1A8A5A', accentLt:'#E6F5EE',
+    sub:'RESINC runs on NSW time — your Zoho must match.',
+    tabs:[
+      { id:'steps', icon:'☑', label:'Steps', type:'steps',
+        items:[
+          'Click the <strong>Settings icon (cog)</strong> — top-right corner of Zoho',
+          'Click <strong>Personal Settings</strong>',
+          'Scroll down to <strong>Locale Information</strong>',
+          'Set time zone: <strong>Australian Eastern Standard Time (New South Wales) — Australia/Sydney</strong>',
+          'Click <strong>Save</strong>',
+        ],
+        extra:`<div class="notice green"><span class="ni">🕐</span><span>Wrong time zone = wrong calendar times for every meeting and deadline.</span></div>`,
+        tip:'Also check your laptop: System Settings → Date & Time → Australia/Sydney.' },
+      { id:'screenshots', icon:'📸', label:'Screenshots', type:'screenshots',
+        items:[
+          { cap:'Step 1 — Settings cog', file:'settings_cog.png', size:'small' },
+          { cap:'Step 2 — Personal Settings', file:'personal_settings.png', size:'small' },
+          { cap:'Steps 3 & 4 — Locale Information — match this exactly', file:'timezone_locale.png', size:'medium' },
+        ]}
+    ]
+  },
+  {
+    id:'email', num:'8', label:'Email Sync', tag:'ZOHO SETUP',
+    accent:'#007A8A', accentLt:'#E0F5F7',
+    sub:'Every email to a customer auto-syncs to their CRM profile.',
+    tabs:[
+      { id:'video', icon:'▶', label:'Video', type:'video',
+        src:'email_sync_compressed.mp4',
+        note:'Watch the full setup walkthrough, then tick off each step in the Steps tab.' },
+      { id:'steps', icon:'☑', label:'Steps', type:'steps',
+        items:[
+          'Click the <strong>Settings icon</strong> — top-right corner',
+          'Scroll to <strong>Channels</strong> → click <strong>Email</strong>',
+          '<strong>Email Configuration</strong> → click the <strong>Email</strong> tab',
+          'Click <strong>Get Started</strong>',
+          'Select <strong>Gmail</strong>',
+          'Choose <strong>IMAP OAuth</strong> → click <strong>Configure</strong>',
+          'Sharing → <strong>Public — Shared with Everyone</strong>',
+          'Domain → type <code>*exclude*</code> in the first field · <code>resinc.com.au</code> in the second field',
+          'Click <strong>Update</strong> — you\'re connected ✓',
+        ],
+        where:'Sent emails appear under the customer\'s <strong>Emails tab</strong> — visible in your view and under All IMAP Shared Users.',
+        tip:'After setup, open any customer record and check the Emails tab to confirm sync is working.' },
+    ]
+  },
+  {
+    id:'homepage', num:'9', label:'CRM Home Page', tag:'ZOHO SETUP',
+    accent:'#E87C2B', accentLt:'#FFF3EA',
+    sub:'See your tasks at a glance every shift.',
+    tabs:[
+      { id:'steps', icon:'☑', label:'Steps', type:'steps',
+        items:[
+          'Click the <strong>three dots (…)</strong> — top-right corner of the home screen',
+          'Click <strong>Add Component</strong>',
+          '<strong>Custom View</strong> → choose the <strong>Tasks</strong> module',
+          'Type <strong>"my"</strong> to filter to your personal views',
+          'Add: <strong>My Today\'s Tasks · My Overdue Tasks · My Tomorrow\'s Tasks · My Next 7 Days + Overdue Tasks</strong>',
+          'Click <strong>Save</strong>',
+          'Drag components to re-order them however suits you',
+        ],
+        extra:`<div class="notice warn"><span class="ni">⚠️</span><span>Always choose the <strong>"My"</strong> versions — shows YOUR tasks only, not your whole team\'s.</span></div>`,
+        tip:'Once set up, drag your most urgent tasks to the top.' },
+      { id:'screenshots', icon:'📸', label:'Screenshots', type:'screenshots',
+        items:[
+          { cap:'Step 1 — Three dots (…) menu', file:'home_dots_menu.png', size:'small' },
+          { cap:'Steps 2–5 — Custom View → Tasks → "my" → add four components', file:'home_customize.png', size:'medium' },
+          { cap:'Final result — your home page should look like this', file:'home_final.png', size:'medium' },
+        ]}
+    ]
+  },
+];
+
+const S={view:'welcome',mi:0,tab:{},checked:{}};
+
+function init(){
+  // Welcome grid
+  const g=document.getElementById('wlc-grid');
+  const TAG_COL = {'WORKSPACE':'#00AEEF','COMMUNICATION':'#1A8A5A','ZOHO SETUP':'#E87C2B'};
+  g.innerHTML=MODS.map((m,idx)=>{
+    const col = TAG_COL[m.tag] || m.accent;
+    const stepCount = (m.tabs.find(t=>t.type==='steps')?.items.length||0);
+    return `
+    <div class="mod-card" onclick="S.view='module';S.mi=${idx};render();">
+      <div class="mod-n" style="color:${col}">${m.num}</div>
+      <div class="mod-divider"></div>
+      <div>
+        <div class="mod-lbl" style="color:${col}">${m.tag}</div>
+        <div class="mod-name">${m.label}</div>
+        <div class="mod-meta">${stepCount} steps${m.tabs.find(t=>t.type==='video')?'  ·  video':''}${m.tabs.find(t=>t.type==='screenshots')?'  ·  screenshots':''}</div>
+      </div>
+    </div>`;}).join('');
+  // Dots: welcome + 9 mods + complete
+  const dots=document.getElementById('dots');
+  dots.innerHTML=Array.from({length:MODS.length+2},(_,i)=>`<div class="dot" id="d${i}"></div>`).join('');
+  render();
+}
+
+function render(){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+S.view).classList.add('active');
+
+  // Progress
+  const total=MODS.reduce((a,m)=>{const st=m.tabs.find(t=>t.type==='steps');return a+(st?st.items.length:0);},0);
+  const done=Object.keys(S.checked).filter(k=>S.checked[k]).length;
+  const pct=S.view==='complete'?100:Math.round(done/total*90);
+  document.getElementById('prog-fill').style.width=pct+'%';
+
+  // Dots
+  const di=S.view==='welcome'?0:S.view==='complete'?MODS.length+1:1+S.mi;
+  document.querySelectorAll('.dot').forEach((d,i)=>{
+    d.classList.toggle('active',i===di);
+    d.classList.toggle('done-d',i<di);
+  });
+
+  document.getElementById('btn-back').style.display=S.view==='welcome'?'none':'block';
+
+  if(S.view==='welcome') renderWelcome();
+  if(S.view==='module')  renderModule();
+  if(S.view==='complete') renderComplete();
+}
+
+function renderWelcome(){
+  document.getElementById('btn-next').textContent='Start →';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('hdr-tag').textContent='APPOINTMENT SETTER';
+  document.getElementById('hdr-mod').textContent='Systems Setup';
+}
+
+function renderModule(){
+  const m=MODS[S.mi];
+  document.getElementById('hdr-tag').textContent=m.tag;
+  document.getElementById('hdr-mod').textContent=m.label;
+  document.getElementById('h-num').textContent=m.num;
+  document.getElementById('h-num').style.color=m.accent;
+  const pill=document.getElementById('h-pill');
+  pill.textContent=`SECTION ${m.num}`;
+  pill.style.background=m.accent;
+  document.getElementById('h-title').textContent=m.label;
+  document.getElementById('h-sub').textContent=m.sub;
+
+  if(!S.tab[m.id]) S.tab[m.id]=m.tabs[0].id;
+  const cur=S.tab[m.id];
+
+  document.getElementById('tab-bar').innerHTML=m.tabs.map(t=>
+    `<div class="tab ${t.id===cur?'active':''}" style="--accent:${m.accent}" onclick="switchTab('${t.id}')">${t.icon} ${t.label}</div>`
+  ).join('');
+
+  document.getElementById('panels').innerHTML=m.tabs.map(t=>
+    `<div class="panel ${t.id===cur?'active':''}" id="panel-${t.id}" style="--accent:${m.accent};--accent-lt:${m.accentLt}">${buildPanel(m,t)}</div>`
+  ).join('');
+
+  updateModProg(m);
+  updateNextBtn(m);
+}
+
+function buildPanel(m,t){
+  if(t.type==='info') return t.extra||'';
+  if(t.type==='video') return `
+    <div class="video-wrap"><video controls preload="metadata" playsinline><source src="${t.src}" type="video/mp4"></video></div>
+    <div class="video-note">💡  ${t.note}</div>`;
+
+  if(t.type==='steps'){
+    const extra=t.extra||'';
+    const rows=t.items.map((txt,i)=>{
+      const sid=`${m.id}-${i}`;
+      const done=!!S.checked[sid];
+      return `<div class="step ${done?'done':''}" onclick="toggleStep('${sid}','${m.id}')" data-sid="${sid}">
+        <div class="chk"><span class="tick">✓</span></div>
+        <div class="step-txt">${txt}</div>
+      </div>`;
+    }).join('');
+    const where=t.where?`<div class="where" style="background:#E8F8FC;border-left:4px solid #007A8A;border-radius:0 8px 8px 0;padding:10px 14px;font-size:11.5px;color:#0A3542;line-height:1.55;margin-top:12px;">📬  <strong>Where emails appear —</strong> ${t.where}</div>`:'';
+    const tip=t.tip?`<div class="notice tip" style="margin-top:12px;"><span class="ni">💡</span><span>${t.tip}</span></div>`:'';
+    return `${extra}<div class="steps-label">COMPLETE EACH STEP</div>${rows}${where}${tip}`;
+  }
+
+  if(t.type==='screenshots'){
+    const imgs=t.items.map(img=>`
+      <div>
+        <div class="ss-cap">${img.cap}</div>
+        <img class="ss-img ${img.size}" src="${img.file}" loading="lazy">
+      </div>`).join('');
+    return `<div class="ss-grid">${imgs}</div>`;
+  }
+  return '';
+}
+
+function switchTab(tid){
+  const m=MODS[S.mi];
+  S.tab[m.id]=tid;
+  // Re-render the tab bar and panels cleanly
+  document.getElementById('tab-bar').innerHTML=m.tabs.map(t=>
+    `<div class="tab ${t.id===tid?'active':''}" style="--accent:${m.accent}" onclick="switchTab('${t.id}')">${t.icon} ${t.label}</div>`
+  ).join('');
+  document.getElementById('panels').innerHTML=m.tabs.map(t=>
+    `<div class="panel ${t.id===tid?'active':''}" id="panel-${t.id}" style="--accent:${m.accent};--accent-lt:${m.accentLt}">${buildPanel(m,t)}</div>`
+  ).join('');
+}
+
+function toggleStep(sid,mid){
+  S.checked[sid]=!S.checked[sid];
+  const el=document.querySelector(`[data-sid="${sid}"]`);
+  if(el) el.classList.toggle('done',!!S.checked[sid]);
+  const m=MODS.find(x=>x.id===mid);
+  updateModProg(m);
+  updateNextBtn(m);
+  // overall progress
+  const total=MODS.reduce((a,m)=>{const st=m.tabs.find(t=>t.type==='steps');return a+(st?st.items.length:0);},0);
+  const done=Object.keys(S.checked).filter(k=>S.checked[k]).length;
+  document.getElementById('prog-fill').style.width=Math.round(done/total*90)+'%';
+}
+
+function updateModProg(m){
+  const st=m.tabs.find(t=>t.type==='steps'&&t.items&&t.items.length>0);
+  if(!st) return;
+  const total=st.items.length;
+  const done=st.items.filter((_,i)=>!!S.checked[`${m.id}-${i}`]).length;
+  document.getElementById('done-n').textContent=done;
+  document.getElementById('tot-n').textContent=total;
+  const badge=document.getElementById('done-badge');
+  badge.classList.toggle('show',done===total);
+  badge.style.color=m.accent;
+}
+
+function updateNextBtn(m){
+  if(S.view!=='module') return;
+  const st=m.tabs.find(t=>t.type==='steps'&&t.items&&t.items.length>0);
+  const allDone=!st||st.items.every((_,i)=>!!S.checked[`${m.id}-${i}`]);
+  const btn=document.getElementById('btn-next');
+  btn.disabled=!allDone;
+  btn.textContent=S.mi===MODS.length-1?'Finish ✓':'Next →';
+}
+
+function renderComplete(){
+  document.getElementById('hdr-tag').textContent='APPOINTMENT SETTER';
+  document.getElementById('hdr-mod').textContent='All Done!';
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('btn-back').style.display='none';
+  document.getElementById('prog-fill').style.width='100%';
+  const TAG_COLOURS = {
+    'WORKSPACE': '#00AEEF',
+    'COMMUNICATION': '#1A8A5A',
+    'ZOHO SETUP': '#E87C2B',
+  };
+  document.getElementById('cpl-grid').innerHTML=MODS.map(m=>{
+    const st=m.tabs.find(t=>t.type==='steps');
+    const done=!st||st.items.every((_,i)=>!!S.checked[`${m.id}-${i}`]);
+    const col = TAG_COLOURS[m.tag] || m.accent;
+    return `<div class="cpl-card ${done?'done':''}" style="--accent:${col}">
+      <div class="cpl-lbl" style="color:${col}">${m.tag}</div>
+      <div class="cpl-name">${m.label}</div>
+      <div class="cpl-chk">${done?'✓ Complete':'— Incomplete'}</div>
+    </div>`;
+  }).join('');
+}
+
+function goNext(){
+  if(S.view==='welcome'){S.view='module';S.mi=0;}
+  else if(S.view==='module'){
+    if(S.mi<MODS.length-1){S.mi++;document.getElementById('content').scrollTop=0;}
+    else S.view='complete';
+  }
+  render();
+}
+function goBack(){
+  if(S.view==='module'&&S.mi>0){S.mi--;document.getElementById('content').scrollTop=0;}
+  else if(S.view==='module') S.view='welcome';
+  else if(S.view==='complete'){S.view='module';S.mi=MODS.length-1;}
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
