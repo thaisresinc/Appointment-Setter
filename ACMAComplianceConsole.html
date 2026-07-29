@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Compliance Console | RESINC</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--navy3:#04141B;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-dim:rgba(0,174,239,.14);
+  --green:#22C58B;--green-dim:rgba(34,197,139,.14);
+  --red:#F76B62;--red-dim:rgba(247,107,98,.14);
+  --gold:#E3A93E;--gold-dim:rgba(227,169,62,.14);
+  --ink:#EAF3F7;--muted:#7E97A2;--faint:#3C5661;
+  --font:'DM Sans',system-ui,sans-serif;--serif:'DM Serif Display',Georgia,serif;--mono:'DM Mono','SF Mono',monospace;
+}
+html,body{background:var(--navy3);color:var(--ink);font-family:var(--font);}
+body{overflow-x:hidden;}
+.console{max-width:640px;margin:0 auto;padding:0 0 60px;}
+::selection{background:var(--sky);color:#fff;}
+
+/* STATUS RAIL */
+.rail{position:sticky;top:0;z-index:50;background:rgba(4,20,27,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:0;}
+.rail-item{display:flex;align-items:center;gap:8px;padding:0 16px;position:relative;}
+.rail-dot{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.05);border:1.5px solid var(--faint);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .4s ease;flex-shrink:0;}
+.rail-dot.lit{background:var(--green-dim);border-color:var(--green);box-shadow:0 0 14px rgba(34,197,139,.35);}
+.rail-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--muted);white-space:nowrap;transition:color .4s;}
+.rail-item.on .rail-label{color:var(--green);}
+.rail-line{width:26px;height:1.5px;background:var(--faint);}
+
+/* HERO */
+.hero{padding:56px 24px 40px;text-align:center;position:relative;overflow:hidden;}
+.hero-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(rgba(0,174,239,.16),transparent 70%);top:-160px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.hero-eyebrow{color:var(--sky);font-size:10px;font-weight:700;letter-spacing:.24em;margin-bottom:16px;position:relative;}
+.hero-title{font-family:var(--serif);font-size:clamp(30px,7vw,44px);line-height:1.12;margin-bottom:14px;position:relative;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:var(--muted);font-size:14.5px;line-height:1.7;max-width:420px;margin:0 auto;position:relative;}
+
+/* SECTION SHELL */
+.sec{padding:8px 20px 52px;}
+.sec-head{margin-bottom:22px;}
+.sec-eyebrow{display:flex;align-items:center;gap:9px;color:var(--sky);font-size:10px;font-weight:700;letter-spacing:.18em;margin-bottom:10px;}
+.sec-eyebrow .num{width:20px;height:20px;border-radius:6px;background:var(--sky-dim);display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--mono);}
+.sec-title{font-family:var(--serif);font-size:24px;margin-bottom:8px;}
+.sec-sub{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:440px;}
+.panel{background:var(--navy2);border-radius:20px;border:1px solid rgba(255,255,255,.06);padding:26px 22px;}
+
+/* ===== CLOCK WIDGET ===== */
+.clock-wrap{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.clock-face{position:relative;width:220px;height:220px;touch-action:none;cursor:grab;}
+.clock-face:active{cursor:grabbing;}
+.clock-tick{stroke:var(--faint);stroke-width:2;}
+.clock-tick.major{stroke:var(--muted);stroke-width:3;}
+.clock-num{fill:var(--muted);font-family:var(--mono);font-size:12px;text-anchor:middle;dominant-baseline:middle;}
+.clock-hand{stroke:var(--sky);stroke-width:5;stroke-linecap:round;transition:transform .05s linear;}
+.clock-hand.snapped{transition:transform .25s cubic-bezier(.34,1.4,.64,1);}
+.clock-center{fill:var(--sky);}
+.clock-face:hover .clock-hand{stroke:#fff;}
+.digital-time-row{display:flex;align-items:center;gap:12px;}
+.digital-time{font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:.02em;}
+.ampm-toggle{display:flex;gap:4px;background:rgba(255,255,255,.05);border-radius:8px;padding:3px;}
+.ampm-btn{background:transparent;border:none;color:var(--muted);font-family:var(--font);font-size:11px;font-weight:700;padding:6px 10px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.ampm-btn.active{background:var(--sky);color:#fff;}
+.day-pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.day-pill{background:rgba(255,255,255,.05);border:1.5px solid var(--faint);color:var(--muted);border-radius:9px;padding:8px 4px;font-family:var(--font);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .18s;width:44px;text-align:center;}
+.day-pill:hover{border-color:var(--sky);color:var(--ink);}
+.day-pill.active{background:var(--sky);border-color:var(--sky);color:#fff;}
+.verdict-band{margin-top:6px;border-radius:14px;padding:16px 18px;font-size:13.5px;line-height:1.6;font-weight:600;text-align:center;transition:all .3s ease;}
+.verdict-band.legal{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,139,.3);}
+.verdict-band.illegal{background:var(--red-dim);color:var(--red);border:1px solid rgba(247,107,98,.3);}
+.verdict-band.idle{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--faint);font-weight:500;}
+
+/* ===== SCRUB QUEUE ===== */
+.queue{display:flex;flex-direction:column;gap:10px;}
+.q-row{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;transition:all .3s;}
+.q-row.pass{border-color:rgba(34,197,139,.35);background:var(--green-dim);}
+.q-row.fail{border-color:rgba(247,107,98,.35);background:var(--red-dim);}
+.q-info{flex:1;min-width:150px;}
+.q-name{font-weight:700;font-size:14px;}
+.q-meta{font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-top:2px;}
+.q-source{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.06);color:var(--muted);margin-top:5px;}
+.q-action{flex-shrink:0;}
+.scrub-btn{background:var(--sky);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.scrub-btn:hover:not(:disabled){background:var(--sky2);}
+.scrub-btn:disabled{opacity:.5;cursor:default;}
+.scrub-btn.scanning{background:rgba(255,255,255,.08);color:var(--muted);}
+.q-result{font-size:11.5px;font-weight:700;min-width:150px;text-align:right;}
+.q-result.pass-text{color:var(--green);}
+.q-result.fail-text{color:var(--red);}
+.q-reason{width:100%;font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);}
+.scrub-summary{margin-top:16px;text-align:center;font-size:13px;color:var(--muted);min-height:20px;}
+.scrub-summary strong{color:var(--ink);}
+
+/* ===== LIVE CALL HUD ===== */
+.phone{background:var(--navy3);border-radius:28px;border:1px solid rgba(255,255,255,.08);padding:26px 22px 22px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.call-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.call-status{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--muted);}
+.call-timer{font-family:var(--mono);font-size:14px;color:var(--ink);}
+.call-avatar-wrap{display:flex;flex-direction:column;align-items:center;padding:14px 0 18px;}
+.call-avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--sky2));display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:30px;color:#fff;margin-bottom:12px;position:relative;}
+.call-avatar::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(0,174,239,.35);animation:pulsering 2s ease-out infinite;}
+@keyframes pulsering{0%{transform:scale(.9);opacity:1;}100%{transform:scale(1.35);opacity:0;}}
+.call-name{font-weight:700;font-size:15px;}
+.call-sub{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.waveform{display:flex;align-items:center;justify-content:center;gap:3px;height:28px;margin-top:14px;}
+.wf-bar{width:3px;background:var(--sky);border-radius:2px;opacity:.5;}
+.waveform.live .wf-bar{animation:wf 1s ease-in-out infinite;}
+@keyframes wf{0%,100%{height:6px;opacity:.4;}50%{height:24px;opacity:1;}}
+.start-call-btn{display:block;margin:6px auto 0;background:var(--green);color:#04140C;border:none;border-radius:12px;padding:13px 30px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;}
+.start-call-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(34,197,139,.3);}
+.start-call-btn.hide{display:none;}
+
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;margin:18px 0 6px;}
+.gauge-label{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--muted);margin-top:8px;}
+.gauge-val{font-family:var(--serif);font-size:15px;color:var(--sky);margin-top:2px;}
+
+.toast-zone{min-height:150px;position:relative;margin-top:6px;}
+.decision-toast{background:var(--navy2);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px 18px;transform:translateY(24px);opacity:0;transition:all .35s cubic-bezier(.34,1.1,.64,1);}
+.decision-toast.show{transform:translateY(0);opacity:1;}
+.decision-toast.shake{animation:toastshake .4s ease;}
+@keyframes toastshake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.toast-line{font-size:9.5px;font-weight:700;color:var(--sky);letter-spacing:.1em;margin-bottom:8px;}
+.toast-quote{font-size:13.5px;font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:14px;background:rgba(255,255,255,.03);border-left:3px solid var(--sky);padding:9px 12px;border-radius:0 8px 8px 0;}
+.toast-opts{display:flex;flex-direction:column;gap:8px;}
+.toast-opt{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);color:var(--ink);border-radius:10px;padding:11px 13px;font-family:var(--font);font-size:12.5px;text-align:left;cursor:pointer;transition:all .15s;line-height:1.45;}
+.toast-opt:hover:not(:disabled){border-color:var(--sky);background:var(--sky-dim);}
+.toast-opt.good{border-color:var(--green);background:var(--green-dim);}
+.toast-opt.bad{border-color:var(--red);background:var(--red-dim);}
+.toast-opt:disabled{cursor:default;}
+.toast-fb{font-size:12px;line-height:1.55;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);}
+.toast-fb.good-fb{color:var(--green);}
+.toast-fb.bad-fb{color:var(--red);}
+.call-ended{text-align:center;padding:10px 0 4px;display:none;}
+.call-ended.show{display:block;}
+.call-ended-title{font-family:var(--serif);font-size:19px;margin-bottom:6px;}
+.call-ended-sub{font-size:12.5px;color:var(--muted);}
+
+/* ===== RECEIPT ===== */
+.receipt-wrap{display:none;padding:8px 20px 70px;}
+.receipt-wrap.show{display:block;animation:fadeUp .5s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.receipt{background:#F4F1E9;color:#1A2A20;border-radius:4px;padding:0;max-width:340px;margin:0 auto;font-family:var(--mono);position:relative;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+.receipt-inner{padding:28px 24px 20px;}
+.receipt-zigzag{height:12px;width:100%;background:
+  linear-gradient(135deg,#F4F1E9 50%,transparent 50%) 0 0/14px 12px repeat-x,
+  linear-gradient(-135deg,#F4F1E9 50%,transparent 50%) 0 0/14px 12px repeat-x;
+  background-color:var(--navy3);}
+.receipt-zigzag.top{transform:rotate(180deg);}
+.r-title{font-family:var(--serif);font-size:19px;text-align:center;margin-bottom:2px;color:#1A2A20;}
+.r-sub{text-align:center;font-size:10px;color:#6B6355;letter-spacing:.08em;margin-bottom:18px;}
+.r-dash{border-top:1.5px dashed #C9C2AE;margin:14px 0;}
+.r-row{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:7px;gap:10px;}
+.r-row .k{color:#6B6355;}
+.r-row .v{font-weight:700;text-align:right;}
+.r-row .v.ok{color:#0B7A4E;}
+.r-row .v.bad{color:#B5251B;}
+.r-grade{text-align:center;margin:16px 0 6px;}
+.r-grade-big{font-family:var(--serif);font-size:44px;line-height:1;color:#1A2A20;}
+.r-grade-lbl{font-size:9.5px;letter-spacing:.14em;color:#6B6355;margin-top:2px;}
+.r-foot{text-align:center;font-size:10px;color:#8A8271;margin-top:16px;line-height:1.6;}
+.rerun-btn{display:block;margin:26px auto 0;background:var(--navy2);color:var(--ink);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 26px;font-family:var(--font);font-size:13.5px;font-weight:700;cursor:pointer;transition:all .18s;}
+.rerun-btn:hover{background:var(--navy);}
+
+@media(max-width:420px){.clock-face{width:190px;height:190px;}.day-pill{width:38px;font-size:10.5px;}}
+</style>
+</head>
+<body>
+
+<div class="rail" id="rail">
+  <div class="rail-item" id="rail-1"><div class="rail-dot" id="dot-1">⏰</div><div class="rail-label">TIMING</div></div>
+  <div class="rail-line"></div>
+  <div class="rail-item" id="rail-2"><div class="rail-dot" id="dot-2">🔍</div><div class="rail-label">CONSENT</div></div>
+  <div class="rail-line"></div>
+  <div class="rail-item" id="rail-3"><div class="rail-dot" id="dot-3">📞</div><div class="rail-label">LIVE CALL</div></div>
+</div>
+
+<div class="console">
+
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-eyebrow">THE COMPLIANCE CONSOLE</div>
+    <div class="hero-title">Before you dial, <em>run the checks.</em></div>
+    <div class="hero-sub">Three things every RESINC caller checks before and during a call. Work through the console below — just like the real thing.</div>
+  </div>
+
+  <!-- ============ CHECK 1: TIMING ============ -->
+  <div class="sec" id="sec-clock">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">01</span> TIMING CHECK</div>
+      <div class="sec-title">Is it even legal to call right now?</div>
+      <div class="sec-sub">Drag the hand around the clock, pick a day, and watch the verdict update. This is the actual rule — not an approximation.</div>
+    </div>
+    <div class="panel">
+      <div class="clock-wrap">
+        <svg class="clock-face" id="clock-face" viewBox="0 0 220 220">
+          <circle cx="110" cy="110" r="100" fill="rgba(255,255,255,.03)" stroke="var(--faint)" stroke-width="1.5"></circle>
+          <g id="clock-ticks"></g>
+          <g id="clock-nums"></g>
+          <line id="clock-hand" class="clock-hand snapped" x1="110" y1="110" x2="110" y2="42"></line>
+          <circle class="clock-center" cx="110" cy="110" r="7"></circle>
+        </svg>
+        <div class="digital-time-row">
+          <div class="digital-time" id="digital-time">--:--</div>
+          <div class="ampm-toggle" id="ampm-toggle">
+            <button class="ampm-btn active" data-p="AM">AM</button>
+            <button class="ampm-btn" data-p="PM">PM</button>
+          </div>
+        </div>
+        <div class="day-pills" id="day-pills"></div>
+        <div class="verdict-band idle" id="clock-verdict">Pick a day and drag the hand to check a time.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CHECK 2: CONSENT / SCRUB ============ -->
+  <div class="sec" id="sec-scrub">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">02</span> CONSENT CHECK</div>
+      <div class="sec-title">Scrub today's queue</div>
+      <div class="sec-sub">Five leads, ready to call. Run each one against the Do Not Call Register before you dial — exactly like you would in a real shift.</div>
+    </div>
+    <div class="panel">
+      <div class="queue" id="queue"></div>
+      <div class="scrub-summary" id="scrub-summary"></div>
+    </div>
+  </div>
+
+  <!-- ============ CHECK 3: LIVE CALL ============ -->
+  <div class="sec" id="sec-call">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">03</span> LIVE CALL</div>
+      <div class="sec-title">Now take the call</div>
+      <div class="sec-sub">Timing and consent are clear — the phone's ringing. Handle what comes up, in real time.</div>
+    </div>
+    <div class="panel phone">
+      <div class="call-topbar">
+        <div class="call-status" id="call-status">READY TO DIAL</div>
+        <div class="call-timer" id="call-timer">00:00</div>
+      </div>
+      <div class="call-avatar-wrap">
+        <div class="call-avatar">P</div>
+        <div class="call-name">Priya M.</div>
+        <div class="call-sub">Online enquiry · solar assessment</div>
+        <div class="waveform" id="waveform"></div>
+      </div>
+      <button class="start-call-btn" id="start-call-btn" onclick="startCall()">☎️ Start the call</button>
+
+      <div id="in-call-content" style="display:none;">
+        <div class="gauge-wrap">
+          <svg width="120" height="70" viewBox="0 0 120 70">
+            <path d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round"></path>
+            <path id="gauge-arc" d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="var(--sky)" stroke-width="10" stroke-linecap="round" stroke-dasharray="173" stroke-dashoffset="173"></path>
+          </svg>
+          <div class="gauge-label">COMPLIANCE METER</div>
+          <div class="gauge-val" id="gauge-val">0%</div>
+        </div>
+        <div class="toast-zone" id="toast-zone"></div>
+        <div class="call-ended" id="call-ended">
+          <div class="call-ended-title">☑️ Call ended</div>
+          <div class="call-ended-sub" id="call-ended-sub"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ RECEIPT ============ -->
+<div class="receipt-wrap" id="receipt-wrap">
+  <div class="receipt">
+    <div class="receipt-zigzag top"></div>
+    <div class="receipt-inner">
+      <div class="r-title">RESINC CALL LOG</div>
+      <div class="r-sub" id="r-datetime">—</div>
+      <div class="r-dash"></div>
+      <div class="r-row"><span class="k">Timing check</span><span class="v" id="r-timing">—</span></div>
+      <div class="r-row"><span class="k">Consent scrub</span><span class="v" id="r-scrub">—</span></div>
+      <div class="r-row"><span class="k">Live call score</span><span class="v" id="r-callscore">—</span></div>
+      <div class="r-row"><span class="k">Corrections needed</span><span class="v" id="r-mistakes">—</span></div>
+      <div class="r-dash"></div>
+      <div class="r-grade">
+        <div class="r-grade-big" id="r-grade">—</div>
+        <div class="r-grade-lbl" id="r-grade-lbl">OVERALL</div>
+      </div>
+      <div class="r-foot">Even if someone dials on your behalf, you're still<br>responsible. Every call, every time.</div>
+    </div>
+    <div class="receipt-zigzag"></div>
+  </div>
+  <button class="rerun-btn" onclick="resetAll()">↻ Run another call</button>
+</div>
+
+<script>
+/* ========================================================================
+   CHECK 1 — CLOCK
+======================================================================== */
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let selectedDay = null;
+let hour24 = null;
+let isPM = false;
+let dragging = false;
+
+const clockFace = document.getElementById('clock-face');
+const clockHand = document.getElementById('clock-hand');
+const digitalTime = document.getElementById('digital-time');
+const verdictBand = document.getElementById('clock-verdict');
+const dayPillsEl = document.getElementById('day-pills');
+
+// Build tick marks + numbers
+const ticksG = document.getElementById('clock-ticks');
+const numsG = document.getElementById('clock-nums');
+for (let i = 0; i < 60; i++) {
+  const ang = (i / 60) * 2 * Math.PI;
+  const isMajor = i % 5 === 0;
+  const rOuter = 100, rInner = isMajor ? 88 : 94;
+  const x1 = 110 + rOuter * Math.sin(ang), y1 = 110 - rOuter * Math.cos(ang);
+  const x2 = 110 + rInner * Math.sin(ang), y2 = 110 - rInner * Math.cos(ang);
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+  line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+  line.setAttribute('class', 'clock-tick' + (isMajor ? ' major' : ''));
+  ticksG.appendChild(line);
+}
+for (let h = 1; h <= 12; h++) {
+  const ang = (h / 12) * 2 * Math.PI;
+  const r = 76;
+  const x = 110 + r * Math.sin(ang), y = 110 - r * Math.cos(ang);
+  const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t.setAttribute('x', x); t.setAttribute('y', y);
+  t.setAttribute('class', 'clock-num');
+  t.textContent = h;
+  numsG.appendChild(t);
+}
+
+// Day pills
+DAYS.forEach((d) => {
+  const b = document.createElement('button');
+  b.className = 'day-pill';
+  b.textContent = d;
+  b.onclick = () => { selectedDay = d; renderDayPills(); evaluateClock(); };
+  b.dataset.day = d;
+  dayPillsEl.appendChild(b);
+});
+function renderDayPills(){
+  dayPillsEl.querySelectorAll('.day-pill').forEach(b => b.classList.toggle('active', b.dataset.day === selectedDay));
+}
+
+function setHandAngle(hour12, minuteFrac, snapped){
+  const totalHourFrac = (hour12 % 12) + (minuteFrac || 0);
+  const deg = totalHourFrac * 30;
+  clockHand.classList.toggle('snapped', !!snapped);
+  clockHand.setAttribute('transform', 'rotate(' + deg + ' 110 110)');
+}
+
+function angleFromPointer(clientX, clientY){
+  const rect = clockFace.getBoundingClientRect();
+  const scale = 220 / rect.width;
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = clientX - cx, dy = clientY - cy;
+  let rad = Math.atan2(dx, -dy);
+  if (rad < 0) rad += 2 * Math.PI;
+  return rad; // 0 at 12, clockwise
+}
+
+function pointerToHour(clientX, clientY){
+  const rad = angleFromPointer(clientX, clientY);
+  const hourFloat = (rad / (2 * Math.PI)) * 12; // 0..12 continuous
+  return hourFloat;
+}
+
+function handlePointerMove(clientX, clientY){
+  const hourFloat = pointerToHour(clientX, clientY);
+  const deg = hourFloat * 30;
+  clockHand.classList.remove('snapped');
+  clockHand.setAttribute('transform', 'rotate(' + deg + ' 110 110)');
+  const snappedHour = Math.round(hourFloat) % 12;
+  updateDigital(snappedHour);
+}
+
+function updateDigital(hour12raw){
+  const hour12 = hour12raw === 0 ? 12 : hour12raw;
+  hour24 = isPM ? (hour12 === 12 ? 12 : hour12 + 12) : (hour12 === 12 ? 0 : hour12);
+  digitalTime.textContent = String(hour12).padStart(2,'0') + ':00 ' + (isPM ? 'PM' : 'AM');
+}
+
+function finishDrag(){
+  if (hour24 === null) return;
+  const hour12disp = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  setHandAngle(hour12disp, 0, true);
+  evaluateClock();
+}
+
+clockFace.addEventListener('pointerdown', (e) => {
+  dragging = true;
+  clockFace.setPointerCapture(e.pointerId);
+  handlePointerMove(e.clientX, e.clientY);
+});
+clockFace.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  handlePointerMove(e.clientX, e.clientY);
+});
+window.addEventListener('pointerup', () => {
+  if (dragging) { dragging = false; finishDrag(); }
+});
+
+// AM/PM: dedicated toggle buttons (kept separate from the clock face so it
+// never conflicts with dragging the hand)
+document.querySelectorAll('.ampm-btn').forEach((b) => {
+  b.addEventListener('click', () => {
+    isPM = b.dataset.p === 'PM';
+    document.querySelectorAll('.ampm-btn').forEach((x) => x.classList.toggle('active', x === b));
+    if (hour24 !== null) {
+      const hour12disp = hour24 % 12 === 0 ? 12 : hour24 % 12;
+      updateDigital(hour12disp);
+      evaluateClock();
+    }
+  });
+});
+
+function evaluateClock(){
+  if (selectedDay === null || hour24 === null) return;
+  let legal, reason;
+  if (selectedDay === 'Sun') {
+    legal = false;
+    reason = '\uD83D\uDEAB NOT LEGAL \u2014 telemarketing calls are never permitted on Sundays.';
+  } else if (selectedDay === 'Sat') {
+    legal = hour24 >= 9 && hour24 < 17;
+    reason = legal
+      ? '\u2705 LEGAL \u2014 within the Saturday window (9am\u20135pm).'
+      : '\uD83D\uDEAB NOT LEGAL \u2014 Saturdays only permit calls 9am\u20135pm.';
+  } else {
+    legal = hour24 >= 9 && hour24 < 20;
+    reason = legal
+      ? '\u2705 LEGAL \u2014 within the weekday window (9am\u20138pm).'
+      : '\uD83D\uDEAB NOT LEGAL \u2014 weekdays only permit calls 9am\u20138pm.';
+  }
+  verdictBand.textContent = reason;
+  verdictBand.className = 'verdict-band ' + (legal ? 'legal' : 'illegal');
+  litRail(1);
+}
+
+/* ========================================================================
+   CHECK 2 — CONSENT / SCRUB QUEUE
+======================================================================== */
+const LEADS = [
+  { id: 'l1', name: 'David Chen', phone: '04•• ••• 218', source: 'WEB ENQUIRY', fail: false,
+    reason: 'Clear \u2014 submitted an online enquiry directly. Safe to call.' },
+  { id: 'l2', name: 'Amara Osei', phone: '04•• ••• 552', source: 'PURCHASED LIST \u2014 LEADCO', fail: true,
+    reason: 'Flagged \u2014 found on the Do Not Call Register. This number was on a purchased list that hadn\u2019t been washed. Do not call \u2014 escalate to your Team Leader.' },
+  { id: 'l3', name: 'Marcus Webb', phone: '04•• ••• 970', source: 'REFERRAL', fail: false,
+    reason: 'Clear \u2014 referred by an existing customer. Safe to call.' },
+  { id: 'l4', name: 'Grace Nguyen', phone: '04•• ••• 341', source: 'AD RESPONSE', fail: false,
+    reason: 'Clear \u2014 responded to an ad campaign directly. Safe to call.' },
+  { id: 'l5', name: 'Peter Illingworth', phone: '04•• ••• 665', source: 'PURCHASED LIST \u2014 SOLARDATA', fail: true,
+    reason: 'Flagged \u2014 found on the Do Not Call Register. Always check purchased lists before dialling, even if the provider claims they\u2019re washed. Do not call \u2014 escalate.' },
+];
+let scrubbedCount = 0;
+const queueEl = document.getElementById('queue');
+LEADS.forEach((lead) => {
+  const row = document.createElement('div');
+  row.className = 'q-row';
+  row.id = 'row-' + lead.id;
+  row.innerHTML =
+    '<div class="q-info">' +
+      '<div class="q-name">' + lead.name + '</div>' +
+      '<div class="q-meta">' + lead.phone + '</div>' +
+      '<span class="q-source">' + lead.source + '</span>' +
+    '</div>' +
+    '<div class="q-action"><button class="scrub-btn" id="btn-' + lead.id + '">Run DNC Check</button></div>' +
+    '<div class="q-result" id="result-' + lead.id + '"></div>';
+  queueEl.appendChild(row);
+  document.getElementById('btn-' + lead.id).addEventListener('click', () => runScrub(lead));
+});
+
+function runScrub(lead){
+  const btn = document.getElementById('btn-' + lead.id);
+  const row = document.getElementById('row-' + lead.id);
+  const resultEl = document.getElementById('result-' + lead.id);
+  btn.disabled = true;
+  btn.classList.add('scanning');
+  btn.textContent = 'Checking\u2026';
+  setTimeout(() => {
+    btn.textContent = 'Checked';
+    btn.classList.remove('scanning');
+    row.classList.add(lead.fail ? 'fail' : 'pass');
+    resultEl.innerHTML = '<span class="' + (lead.fail ? 'fail-text' : 'pass-text') + '">' +
+      (lead.fail ? '\u274C FLAGGED' : '\u2713 CLEAR') + '</span>' +
+      '<div class="q-reason">' + lead.reason + '</div>';
+    scrubbedCount++;
+    updateScrubSummary();
+  }, 650 + Math.random() * 300);
+}
+
+function updateScrubSummary(){
+  const el = document.getElementById('scrub-summary');
+  const flagged = LEADS.filter(l => l.fail).length;
+  if (scrubbedCount < LEADS.length) {
+    el.textContent = scrubbedCount + ' of ' + LEADS.length + ' checked\u2026';
+  } else {
+    el.innerHTML = 'All ' + LEADS.length + ' checked \u2014 <strong>' + flagged + ' flagged, ' + (LEADS.length - flagged) + ' clear.</strong> Never call a flagged number.';
+    litRail(2);
+  }
+}
+
+/* ========================================================================
+   CHECK 3 — LIVE CALL
+======================================================================== */
+const DECISIONS = [
+  {
+    line: '\u201cHello?\u201d',
+    prompt: 'THE CALL CONNECTS \u2014 HOW DO YOU OPEN?',
+    opts: [
+      { text: '\u201cHi Priya, quick one for you \u2014 you free tomorrow at 10?\u201d', good: false,
+        fb: 'Too fast \u2014 even on an expected call, you must identify yourself and RESINC, and explain why you\u2019re calling, before anything else.' },
+      { text: '\u201cHi, is this Priya? This is Jordan from RESINC Solar & Batteries, just confirming the solar assessment you enquired about.\u201d', good: true,
+        fb: 'Name, company, purpose \u2014 all covered before anything else. Exactly what the Industry Standard requires.' },
+      { text: '\u201cHi Priya, got a minute?\u201d', good: false,
+        fb: 'Doesn\u2019t identify RESINC or the purpose of the call \u2014 required every time, no matter how expected the call is.' },
+    ],
+  },
+  {
+    line: '\u201cActually, can you take me off your calling list? I don\u2019t want to be contacted anymore.\u201d',
+    prompt: 'SHE ASKS TO STOP \u2014 HOW DO YOU RESPOND?',
+    opts: [
+      { text: '\u201cOf course \u2014 I\u2019ll note that now and end the call. Thanks for letting me know.\u201d', good: true,
+        fb: 'Respect the request immediately \u2014 no pushback, log it, end the call.' },
+      { text: '\u201cAre you sure? The assessment is free and there\u2019s a rebate involved\u2026\u201d', good: false,
+        fb: 'Once someone asks to stop being contacted, that request must be honoured immediately \u2014 no further pitching.' },
+      { text: '\u201cNo worries, I\u2019ll pass you to my Team Leader to explain the rebate first.\u201d', good: false,
+        fb: 'The request was to stop being contacted \u2014 transferring the call ignores that. It should end straight away.' },
+    ],
+  },
+  {
+    line: '\u201cWait, actually I\u2019m not sure I even remember signing up for this. Can you check?\u201d',
+    prompt: 'SHE DOUBTS HER CONSENT \u2014 HOW DO YOU RESPOND?',
+    opts: [
+      { text: '\u201cNo stress \u2014 I\u2019ll flag this with my Team Leader to double-check where the enquiry came from, and get back to you properly.\u201d', good: true,
+        fb: 'Genuine uncertainty about consent or source gets escalated \u2014 never guessed at or brushed past.' },
+      { text: '\u201cIt\u2019s fine, we get leads from lots of places \u2014 I\u2019ll just continue with the assessment questions.\u201d', good: false,
+        fb: 'Uncertainty about how consent was obtained should always be escalated, not brushed past.' },
+      { text: '\u201cYou must have just forgotten \u2014 let\u2019s go ahead and lock in the booking.\u201d', good: false,
+        fb: 'Assuming consent when the customer expresses doubt is exactly what the rules require you to check, not assume.' },
+    ],
+  },
+];
+
+let callSeconds = 0, callTimerInt = null, decisionIdx = 0, gaugeValue = 0, mistakeCount = 0;
+const GAUGE_CIRC = 173;
+
+function startCall(){
+  document.getElementById('start-call-btn').classList.add('hide');
+  document.getElementById('call-status').textContent = 'ON CALL';
+  document.getElementById('waveform').classList.add('live');
+  buildWaveformBars();
+  document.getElementById('in-call-content').style.display = 'block';
+  callTimerInt = setInterval(() => {
+    callSeconds++;
+    const m = String(Math.floor(callSeconds / 60)).padStart(2,'0');
+    const s = String(callSeconds % 60).padStart(2,'0');
+    document.getElementById('call-timer').textContent = m + ':' + s;
+  }, 1000);
+  setTimeout(() => showDecision(0), 900);
+}
+
+function buildWaveformBars(){
+  const wf = document.getElementById('waveform');
+  wf.innerHTML = '';
+  for (let i = 0; i < 14; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'wf-bar';
+    bar.style.animationDelay = (Math.random() * 0.9) + 's';
+    wf.appendChild(bar);
+  }
+}
+
+function showDecision(i){
+  decisionIdx = i;
+  const d = DECISIONS[i];
+  const zone = document.getElementById('toast-zone');
+  const optsHtml = d.opts.map((o, oi) =>
+    '<button class="toast-opt" data-oi="' + oi + '">' + o.text + '</button>'
+  ).join('');
+  zone.innerHTML =
+    '<div class="decision-toast" id="toast-current">' +
+      '<div class="toast-line">' + d.prompt + '</div>' +
+      '<div class="toast-quote">' + d.line + '</div>' +
+      '<div class="toast-opts" id="toast-opts">' + optsHtml + '</div>' +
+      '<div id="toast-fb"></div>' +
+    '</div>';
+  requestAnimationFrame(() => document.getElementById('toast-current').classList.add('show'));
+  document.querySelectorAll('#toast-opts .toast-opt').forEach((btn) => {
+    btn.addEventListener('click', () => pickOption(d, parseInt(btn.dataset.oi, 10)));
+  });
+}
+
+function pickOption(d, oi){
+  const opt = d.opts[oi];
+  const toast = document.getElementById('toast-current');
+  const buttons = document.querySelectorAll('#toast-opts .toast-opt');
+  const fbEl = document.getElementById('toast-fb');
+  if (opt.good) {
+    buttons.forEach((b, i) => { b.disabled = true; if (i === oi) b.classList.add('good'); });
+    fbEl.innerHTML = '<div class="toast-fb good-fb">\u2705 ' + opt.fb + '</div>';
+    bumpGauge();
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        if (decisionIdx < DECISIONS.length - 1) {
+          showDecision(decisionIdx + 1);
+        } else {
+          endCall();
+        }
+      }, 350);
+    }, 1400);
+  } else {
+    mistakeCount++;
+    buttons.forEach((b, i) => { if (i === oi) b.classList.add('bad'); });
+    fbEl.innerHTML = '<div class="toast-fb bad-fb">' + opt.fb + '</div>';
+    toast.classList.add('shake');
+    setTimeout(() => toast.classList.remove('shake'), 400);
+  }
+}
+
+function bumpGauge(){
+  gaugeValue = Math.min(100, gaugeValue + 100 / DECISIONS.length);
+  const offset = GAUGE_CIRC - (gaugeValue / 100) * GAUGE_CIRC;
+  document.getElementById('gauge-arc').style.strokeDashoffset = offset;
+  document.getElementById('gauge-val').textContent = Math.round(gaugeValue) + '%';
+}
+
+function endCall(){
+  clearInterval(callTimerInt);
+  document.getElementById('call-status').textContent = 'CALL ENDED';
+  document.getElementById('waveform').classList.remove('live');
+  document.getElementById('toast-zone').innerHTML = '';
+  const endedEl = document.getElementById('call-ended');
+  endedEl.classList.add('show');
+  const mins = String(Math.floor(callSeconds/60)).padStart(2,'0');
+  const secs = String(callSeconds%60).padStart(2,'0');
+  document.getElementById('call-ended-sub').textContent =
+    'Duration ' + mins + ':' + secs + ' \u2014 ' + (mistakeCount === 0 ? 'clean run, no corrections needed.' : mistakeCount + ' correction' + (mistakeCount>1?'s':'') + ' along the way.');
+  litRail(3);
+  setTimeout(showReceipt, 900);
+}
+
+/* ========================================================================
+   RAIL + RECEIPT
+======================================================================== */
+function litRail(n){
+  const dot = document.getElementById('dot-' + n);
+  const item = document.getElementById('rail-' + n);
+  if (dot && !dot.classList.contains('lit')) {
+    dot.classList.add('lit');
+    item.classList.add('on');
+  }
+}
+
+function showReceipt(){
+  const now = new Date();
+  document.getElementById('r-datetime').textContent = now.toLocaleDateString('en-AU', { weekday:'long', day:'numeric', month:'short' }) + ' \u00b7 ' + now.toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
+
+  const timingOk = document.getElementById('clock-verdict').classList.contains('legal');
+  const rTiming = document.getElementById('r-timing');
+  rTiming.textContent = timingOk ? 'LEGAL' : 'NOT LEGAL';
+  rTiming.className = 'v ' + (timingOk ? 'ok' : 'bad');
+
+  const flagged = LEADS.filter(l => l.fail).length;
+  const rScrub = document.getElementById('r-scrub');
+  rScrub.textContent = (LEADS.length - flagged) + '/' + LEADS.length + ' clean';
+  rScrub.className = 'v ok';
+
+  const callPct = Math.round(gaugeValue);
+  const rCall = document.getElementById('r-callscore');
+  rCall.textContent = callPct + '% compliant';
+  rCall.className = 'v ' + (callPct === 100 ? 'ok' : (callPct >= 66 ? 'ok' : 'bad'));
+
+  const rMistakes = document.getElementById('r-mistakes');
+  rMistakes.textContent = mistakeCount;
+  rMistakes.className = 'v ' + (mistakeCount === 0 ? 'ok' : 'bad');
+
+  let grade = 'D';
+  if (timingOk && flagged === 2 && callPct === 100 && mistakeCount === 0) grade = 'S';
+  else if (callPct === 100 && mistakeCount <= 1) grade = 'A';
+  else if (callPct >= 66) grade = 'B';
+  else if (callPct >= 33) grade = 'C';
+  document.getElementById('r-grade').textContent = grade;
+
+  document.getElementById('receipt-wrap').classList.add('show');
+  document.getElementById('receipt-wrap').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function resetAll(){
+  location.reload();
+}
+</script>
+</body>
+</html>
