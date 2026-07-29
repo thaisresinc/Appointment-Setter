@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>How You'll Be Managed | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 3px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--light);color:var(--body);min-height:100vh;overflow-x:hidden;}
+
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:200;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00C4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy);padding:0;position:relative;overflow:hidden;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.06) 1px,transparent 1px);background-size:48px 48px;}
+.hero-glow{position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:900px;margin:0 auto;padding:52px 28px 40px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(28px,4.5vw,46px);line-height:1.05;margin-bottom:10px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.52);font-size:14px;line-height:1.7;max-width:500px;margin-bottom:22px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,.55);}
+
+/* ── LAYOUT ── */
+.section{padding:40px 0;}
+.inner{max-width:900px;margin:0 auto;padding:0 28px;}
+.s-label{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--sky);text-transform:uppercase;margin-bottom:6px;}
+.s-title{font-family:var(--serif);font-size:clamp(22px,3vw,30px);color:var(--navy);margin-bottom:6px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:20px;}
+.sep{height:1px;background:var(--line);max-width:900px;margin:0 auto;}
+
+/* ── 1-1 SECTION ── */
+.one-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:14px;}
+.one-head{background:var(--navy);padding:18px 22px;display:flex;align-items:center;gap:14px;}
+.one-head-icon{font-size:24px;flex-shrink:0;}
+.one-head-label{font-size:9.5px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:3px;}
+.one-head-title{font-size:16px;font-weight:700;color:#fff;}
+.one-body{padding:20px 22px;}
+.one-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.one-item{background:var(--light);border-radius:10px;padding:14px 16px;}
+.one-item-label{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-bottom:5px;}
+.one-item-text{font-size:13px;color:var(--body);line-height:1.6;}
+.one-item-text strong{color:var(--navy);}
+.agenda-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.agenda-item{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.55;}
+.agenda-item::before{content:'→';color:var(--sky);font-weight:700;flex-shrink:0;margin-top:1px;}
+.agenda-item strong{color:var(--navy);}
+
+/* ── CADENCE GRID ── */
+.cadence-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:0;}
+.cadence-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:18px 16px;box-shadow:var(--shadow);border-top:3px solid var(--sky);}
+.cadence-card.green{border-top-color:var(--green);}
+.cadence-card.gold{border-top-color:var(--gold);}
+.cad-icon{font-size:22px;margin-bottom:10px;}
+.cad-freq{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-bottom:4px;}
+.cadence-card.green .cad-freq{color:var(--green);}
+.cadence-card.gold .cad-freq{color:var(--gold);}
+.cad-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.cad-text{font-size:12.5px;color:var(--muted);line-height:1.6;}
+.cad-time{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;background:var(--sky-lt);color:var(--sky2);border-radius:20px;padding:3px 10px;}
+.cadence-card.green .cad-time{background:var(--green-lt);color:var(--green);}
+.cadence-card.gold .cad-time{background:var(--gold-lt);color:var(--gold);}
+
+/* ── CALL REVIEW ── */
+.review-box{background:var(--navy);border-radius:14px;padding:22px 24px;margin-bottom:14px;}
+.review-label{font-size:9.5px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:10px;}
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.review-item{background:rgba(255,255,255,.06);border:1px solid rgba(0,174,239,.15);border-radius:10px;padding:14px 14px;}
+.review-item-icon{font-size:18px;margin-bottom:6px;}
+.review-item-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px;}
+.review-item-text{font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.5;}
+
+/* ── SUPPORT CARDS ── */
+.support-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.support-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:18px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start;}
+.support-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+.support-label{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-bottom:4px;}
+.support-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px;}
+.support-text{font-size:12.5px;color:var(--muted);line-height:1.6;}
+.support-text strong{color:var(--navy);}
+.support-tag{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:20px;}
+.tag-sky{background:var(--sky-lt);color:var(--sky2);}
+.tag-gold{background:var(--gold-lt);color:var(--gold);}
+
+/* ── PREPARE BOX ── */
+.prepare-box{background:var(--sky-bg);border:1.5px solid var(--border);border-left:4px solid var(--sky);border-radius:0 12px 12px 0;padding:16px 20px;margin-top:14px;display:flex;gap:14px;align-items:flex-start;}
+.prepare-icon{font-size:20px;flex-shrink:0;}
+.prepare-label{font-size:9.5px;font-weight:700;letter-spacing:.14em;color:var(--sky);margin-bottom:4px;}
+.prepare-text{font-size:13px;color:var(--navy);line-height:1.65;}
+.prepare-text strong{font-weight:700;}
+
+/* ── NARRATION ── */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:16px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:24px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.78);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+/* ── COMPLETION ── */
+#completion{display:none;background:var(--navy2);padding:48px 28px;}
+.cpl-inner{max-width:520px;margin:0 auto;text-align:center;}
+.cpl-icon{font-size:48px;margin-bottom:12px;}
+.cpl-title{font-family:var(--serif);color:#fff;font-size:28px;margin-bottom:8px;}
+.cpl-title span{color:var(--sky);font-style:italic;}
+.cpl-sub{color:rgba(255,255,255,.5);font-size:13px;line-height:1.7;margin-bottom:20px;}
+.cpl-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.cpl-chip{background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.25);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--sky);}
+
+@media(max-width:640px){
+  .one-row{grid-template-columns:1fr;}
+  .cadence-grid{grid-template-columns:1fr;}
+  .review-grid{grid-template-columns:1fr;}
+  .support-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · MANAGEMENT</div>
+    <h1 class="hero-title">How You'll<br><em>Be Managed</em></h1>
+    <p class="hero-sub">Formal 1-1s, daily check-ins, call reviews, and how to get support mid-shift. This is how growth happens here.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">📅 Monthly 1-1s</div>
+      <div class="hero-pill">🎤 15-min pitch practice daily</div>
+      <div class="hero-pill">☎️ 3 daily check-ins</div>
+      <div class="hero-pill">🎙️ 3 call reviews/week</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 1 — MONTHLY 1-1s -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">Section 1</div>
+    <div class="s-title">Monthly 1-1s</div>
+    <div class="s-bar"></div>
+
+    <div class="one-card">
+      <div class="one-head">
+        <div class="one-head-icon">📊</div>
+        <div>
+          <div class="one-head-label">FORMAL REVIEW</div>
+          <div class="one-head-title">Monthly — 1 hour blocked off</div>
+        </div>
+      </div>
+      <div class="one-body">
+        <div class="one-row">
+          <div class="one-item">
+            <div class="one-item-label">FORMAT</div>
+            <div class="one-item-text">One hour, one-on-one with Jordan. Scheduled monthly. Bring your calls and your questions.</div>
+          </div>
+          <div class="one-item">
+            <div class="one-item-label">FIRST 30 DAYS</div>
+            <div class="one-item-text">Focus is on <strong>enthusiasm and willingness to learn</strong>. After 30 days, Jordan reviews the data and plans your development from there.</div>
+          </div>
+        </div>
+        <div class="one-item-label" style="margin-bottom:10px;">AGENDA — EVERY 1-1</div>
+        <ul class="agenda-list">
+          <li class="agenda-item"><span><strong>Last month's stats</strong> — reviewed together against targets</span></li>
+          <li class="agenda-item"><span><strong>What's going well</strong> — named and acknowledged</span></li>
+          <li class="agenda-item"><span><strong>Focus areas</strong> — where to improve and how</span></li>
+          <li class="agenda-item"><span><strong>Plan and set targets</strong> for the month ahead</span></li>
+          <li class="agenda-item"><span><strong>Agreed actions sent in writing</strong> via email — keeps accountability clear</span></li>
+          <li class="agenda-item"><span>Your chance to <strong>raise concerns or ask for feedback</strong> on anything</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 2 — TEAM MEETINGS & CHECK-INS -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="s-label">Section 2</div>
+    <div class="s-title">Team Meetings & Check-ins</div>
+    <div class="s-bar"></div>
+    <div style="background:var(--gold-lt);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:10px 16px;font-size:12px;color:#7a5c00;line-height:1.6;margin-bottom:16px;">📌 <strong>Note:</strong> your team runs on staggered shifts (8:45am / 9:15am / 11:15am). Exact meeting timing needs Jordan's confirmation — shown here relative to shift start.</div>
+    <div class="cadence-grid">
+
+      <div class="cadence-card">
+        <div class="cad-icon">📋</div>
+        <div class="cad-freq">Weekly</div>
+        <div class="cad-title">Weekly Summary</div>
+        <div class="cad-text">Review the week's results and set targets for the week ahead. Full team. Come with your numbers.</div>
+        <div class="cad-time">Mondays · start of shift · 30 mins</div>
+      </div>
+
+      <div class="cadence-card">
+        <div class="cad-icon">🎤</div>
+        <div class="cad-freq">Daily</div>
+        <div class="cad-title">Morning Pitch Practice</div>
+        <div class="cad-text">15 minutes of pitch practice before your first call — sharpening your opener and delivery while it's still quiet, before you're live with a real customer.</div>
+        <div class="cad-time">Every morning · 15 mins · before first call</div>
+      </div>
+
+      <div class="cadence-card green">
+        <div class="cad-icon">⚡</div>
+        <div class="cad-freq">Daily — 3×</div>
+        <div class="cad-title">Daily Check-ins</div>
+        <div class="cad-text">Sprint reviews, roleplays, call reviews, updates, and focus areas. Short, sharp, and purposeful.</div>
+        <div class="cad-time green">Start of shift · mid-shift · pre-close</div>
+      </div>
+
+      <div class="cadence-card gold">
+        <div class="cad-icon">🎙️</div>
+        <div class="cad-freq">Regular</div>
+        <div class="cad-title">Call Reviews</div>
+        <div class="cad-text">3 calls reviewed per session — listened as a team. Feedback shared individually and live. Recordings stored on the dialler.</div>
+        <div class="cad-time gold">As part of daily check-ins</div>
+      </div>
+
+    </div>
+
+    <div class="review-box" style="margin-top:14px;">
+      <div class="review-label">🎙️ HOW CALL REVIEWS WORK</div>
+      <div class="review-grid">
+        <div class="review-item">
+          <div class="review-item-icon">👥</div>
+          <div class="review-item-title">Team listens together</div>
+          <div class="review-item-text">3 calls played to the whole team. Everyone hears, everyone learns.</div>
+        </div>
+        <div class="review-item">
+          <div class="review-item-icon">💬</div>
+          <div class="review-item-title">Feedback — group & individual</div>
+          <div class="review-item-text">Group discussion on the call, plus individual feedback from Jordan via DM or Zoom.</div>
+        </div>
+        <div class="review-item">
+          <div class="review-item-icon">📞</div>
+          <div class="review-item-title">Live feedback too</div>
+          <div class="review-item-text">Especially at the start — Jordan jumps on live calls to coach in real time.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prepare-box">
+      <div class="prepare-icon">✅</div>
+      <div>
+        <div class="prepare-label">YOUR RESPONSIBILITY</div>
+        <div class="prepare-text"><strong>Have calls ready for review.</strong> Don't wait to be asked — share proactively with your TL. The setters who share calls improve the fastest. Make it a daily habit, not a reaction.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- SECTION 3 — SUPPORT DURING A SHIFT -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">Section 3</div>
+    <div class="s-title">Support During a Shift</div>
+    <div class="s-bar"></div>
+    <div class="support-grid">
+
+      <div class="support-card">
+        <div class="support-icon">💬</div>
+        <div>
+          <div class="support-label">PRIMARY CHANNEL</div>
+          <div class="support-title">Google Chat</div>
+          <div class="support-text">For questions, live feedback, and anything that comes up mid-shift. Post in the group — <strong>your teammates can help too.</strong> Don't suffer in silence between calls.</div>
+          <span class="support-tag tag-sky">💬 Google Chat — group or DM</span>
+        </div>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">📲</div>
+        <div>
+          <div class="support-label">URGENT ONLY</div>
+          <div class="support-title">Direct Call</div>
+          <div class="support-text">For genuinely urgent situations that can't wait for a Chat message. <strong>Reserve this for when it's actually urgent</strong> — not every question.</div>
+          <span class="support-tag tag-gold">📞 Call Jordan directly (mobile)</span>
+        </div>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">🎯</div>
+        <div>
+          <div class="support-label">LIVE CALL FEEDBACK</div>
+          <div class="support-title">Real-time coaching</div>
+          <div class="support-text">Post in the Google Chat group during a live call if you need help. Teammates and Jordan can feed you language in real time — <strong>use the team around you.</strong></div>
+          <span class="support-tag tag-sky">💬 Google Chat group</span>
+        </div>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">⬆️</div>
+        <div>
+          <div class="support-label">ESCALATION</div>
+          <div class="support-title">When Jordan needs to escalate</div>
+          <div class="support-text">If something is outside Jordan's remit, he'll escalate to senior management via <strong>Zoho tag, chat, or email.</strong> You don't need to go above Jordan directly.</div>
+          <span class="support-tag tag-sky">Jordan → Zoho tag / email</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- NARRATION -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text">The feedback structure here is more than most teams get. <strong>Monthly 1-1s, daily check-ins, live call coaching.</strong> The only way it doesn't work is if you don't bring anything to it. Come prepared, share proactively, and use the team around you.</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="cpl-inner">
+    <div class="cpl-icon">🏆</div>
+    <div class="cpl-title">Module <span>complete.</span></div>
+    <div class="cpl-sub">You know how you'll be developed, reviewed, and supported. Now you're ready for the phones.</div>
+    <div class="cpl-chips">
+      <span class="cpl-chip">✓ Monthly 1-1s</span>
+      <span class="cpl-chip">✓ 15-min pitch practice every morning</span>
+      <span class="cpl-chip">✓ 3 daily check-ins</span>
+      <span class="cpl-chip">✓ Call reviews — share proactively</span>
+      <span class="cpl-chip">✓ Support via Google Chat</span>
+      <span class="cpl-chip">✓ Urgent → call Jordan directly</span>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+  if(p>90 && document.getElementById('completion').style.display==='none'){
+    document.getElementById('completion').style.display='block';
+  }
+});
+</script>
+</body>
+</html>
