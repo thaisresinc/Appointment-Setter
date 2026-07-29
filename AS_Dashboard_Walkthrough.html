@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard & Performance Tracker | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:300;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy2);padding:0;position:relative;overflow:hidden;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid rgba(0,174,239,.12);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-glow{position:absolute;top:-100px;right:-60px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:1000px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:16px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,46px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:520px;margin-bottom:20px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);}
+
+/* ── SECTION ── */
+.section{padding:36px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
+.inner{max-width:1000px;margin:0 auto;}
+.s-label{font-size:9px;letter-spacing:.26em;font-weight:700;color:var(--sky);margin-bottom:8px;}
+.s-title{font-family:var(--serif);font-size:24px;color:#fff;line-height:1.2;margin-bottom:4px;}
+.s-bar{width:36px;height:3px;background:var(--sky);border-radius:2px;margin-bottom:20px;}
+.s-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:20px;}
+
+/* ══════════════════════════════════════════
+   SIMULATED DASHBOARD UI
+══════════════════════════════════════════ */
+.sim-browser{
+  background:#1A2D38;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(0,174,239,.15);
+  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(0,174,239,.08);
+}
+.sim-browser-bar{
+  background:#0F2028;padding:10px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.sim-dots{display:flex;gap:5px;}
+.sim-dot{width:10px;height:10px;border-radius:50%;}
+.sim-dot.r{background:#FF5F57;}
+.sim-dot.y{background:#FEBC2E;}
+.sim-dot.g{background:#28C840;}
+.sim-url{
+  flex:1;background:rgba(255,255,255,.06);border-radius:6px;
+  padding:5px 12px;font-family:var(--mono);font-size:10px;
+  color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.06);
+}
+.sim-live{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#28C840;}
+.sim-live-dot{width:6px;height:6px;border-radius:50%;background:#28C840;animation:blink 1.5s infinite;}
+
+/* Dashboard inner */
+.sim-dash{padding:16px;}
+.sim-dash-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;flex-wrap:wrap;gap:8px;
+}
+.sim-dash-title{font-size:13px;font-weight:700;color:#fff;}
+.sim-dash-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:1px;}
+.sim-tabs{display:flex;gap:6px;}
+.sim-tab{
+  padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .18s;border:1px solid transparent;
+}
+.sim-tab.active{background:var(--sky);color:var(--navy);border-color:var(--sky);}
+.sim-tab:not(.active){background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);}
+.sim-tab:hover:not(.active){background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);}
+
+/* Filter row */
+.sim-filter-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.sim-filter-label{font-size:10px;color:rgba(255,255,255,.35);}
+.sim-filter-select{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+  border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);
+  cursor:pointer;display:flex;align-items:center;gap:5px;
+}
+.sim-filter-select.selected{border-color:var(--sky);color:var(--sky);}
+.sim-refresh{
+  margin-left:auto;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.2);
+  border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--sky);
+  cursor:pointer;display:flex;align-items:center;gap:5px;
+  transition:all .18s;
+}
+.sim-refresh:hover{background:rgba(0,174,239,.2);}
+
+/* Weekly KPI cards */
+.sim-kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+@media(max-width:700px){.sim-kpi-row{grid-template-columns:repeat(3,1fr);}}
+.sim-kpi{
+  background:rgba(255,255,255,.05);border-radius:8px;padding:10px 10px;
+  border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.sim-kpi.highlighted{border-color:var(--sky);background:rgba(0,174,239,.1);box-shadow:0 0 0 2px rgba(0,174,239,.2);}
+.sim-kpi.pulsing{animation:pulse-border 1.5s ease infinite;}
+@keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(0,174,239,.4);}50%{box-shadow:0 0 0 4px rgba(0,174,239,.15);}}
+.sim-kpi-label{font-size:8.5px;color:rgba(255,255,255,.35);margin-bottom:4px;font-weight:600;letter-spacing:.06em;}
+.sim-kpi-val{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff;line-height:1;}
+.sim-kpi-vs{font-size:9px;margin-top:3px;font-weight:600;}
+.sim-kpi-vs.up{color:#28C840;}
+.sim-kpi-vs.down{color:#FF5F57;}
+.sim-kpi-vs.neutral{color:rgba(255,255,255,.3);}
+
+/* Daily monitor grid */
+.sim-daily{display:none;}
+.sim-daily.visible{display:block;}
+.sim-weekly{display:block;}
+.sim-weekly.hidden{display:none;}
+
+.sim-rep-card{background:rgba(255,255,255,.04);border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,.06);margin-bottom:8px;}
+.sim-rep-name{font-size:11px;font-weight:700;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.sim-rep-name span{font-size:9px;color:rgba(255,255,255,.3);font-weight:400;}
+.sim-day-row{display:grid;grid-template-columns:60px repeat(5,1fr);gap:4px;align-items:center;}
+.sim-day-header{display:grid;grid-template-columns:60px repeat(5,1fr);gap:4px;margin-bottom:4px;}
+.sim-day-col-label{font-size:8.5px;color:rgba(255,255,255,.25);text-align:center;font-weight:600;}
+.sim-day-metric-label{font-size:9px;color:rgba(255,255,255,.3);font-weight:600;}
+.sim-day-cell{
+  text-align:center;border-radius:5px;padding:4px 2px;
+  font-size:10px;font-weight:700;
+}
+.sim-day-cell.green{background:rgba(40,200,64,.15);color:#28C840;}
+.sim-day-cell.red{background:rgba(255,95,87,.15);color:#FF5F57;}
+.sim-day-cell.neutral{background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);}
+
+/* Highlight banner */
+.sim-highlight{background:rgba(11,122,78,.15);border-left:3px solid #28C840;padding:9px 12px;font-size:11.5px;font-weight:600;color:#fff;border-radius:0 6px 6px 0;margin-bottom:12px;}
+
+/* Leaderboard table */
+.sim-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-bottom:12px;}
+.sim-table th{text-align:right;color:rgba(255,255,255,.35);font-weight:600;padding:6px 8px;font-size:9px;letter-spacing:.05em;}
+.sim-table th:first-child{text-align:left;}
+.sim-table td{text-align:right;padding:7px 8px;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.05);}
+.sim-table td:first-child{text-align:left;font-weight:700;color:#fff;}
+.sim-table .cell-pill{padding:2px 7px;border-radius:5px;font-weight:700;}
+.sim-table .cell-pill.green{background:rgba(40,200,64,.15);color:#28C840;}
+.sim-table .cell-pill.gold{background:rgba(212,148,10,.18);color:#F0B84E;}
+.sim-table .cell-pill.red{background:rgba(255,95,87,.15);color:#FF5F57;}
+
+/* Hourly bars + gauge */
+.sim-bottom-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;}
+@media(max-width:600px){.sim-bottom-grid{grid-template-columns:1fr;}}
+.sim-mini-card{background:rgba(255,255,255,.04);border-radius:10px;padding:12px 14px;border:1px solid rgba(255,255,255,.06);}
+.sim-mini-label{font-size:8.5px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.08em;margin-bottom:8px;}
+.sim-hbars{display:flex;align-items:flex-end;gap:3px;height:44px;margin-bottom:4px;}
+.sim-hbar{flex:1;background:var(--sky);border-radius:2px 2px 0 0;min-height:2px;}
+.sim-gauge-track{height:14px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden;margin:8px 0 6px;}
+.sim-gauge-fill{height:100%;background:linear-gradient(90deg,#28C840,var(--sky));border-radius:5px;}
+.sim-gauge-labels{display:flex;justify-content:space-between;font-size:9.5px;color:rgba(255,255,255,.4);}
+.sim-gauge-labels b{color:#fff;}
+
+/* ══════════════════════════════════════════
+   TOOLTIP / HIGHLIGHT SYSTEM
+══════════════════════════════════════════ */
+.tour-step{
+  background:#0F2028;border-radius:14px;padding:20px 22px;
+  border:1px solid rgba(0,174,239,.2);
+  display:none;
+  animation:fadeUp .3s ease;
+  margin-top:14px;
+  position:relative;
+}
+.tour-step::before{
+  content:'';position:absolute;top:-7px;left:28px;
+  width:12px;height:12px;background:#0F2028;
+  border-left:1px solid rgba(0,174,239,.2);border-top:1px solid rgba(0,174,239,.2);
+  transform:rotate(45deg);
+}
+.tour-step.visible{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.tour-step-num{font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--sky);margin-bottom:6px;}
+.tour-step-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.tour-step-text{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.65;}
+.tour-step-text strong{color:#fff;}
+.tour-nav{display:flex;gap:8px;margin-top:14px;align-items:center;}
+.tour-btn{
+  padding:8px 18px;border-radius:8px;border:none;
+  font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;
+  transition:all .18s;
+}
+.tour-btn.primary{background:var(--sky);color:var(--navy);}
+.tour-btn.primary:hover{background:var(--sky2);}
+.tour-btn.secondary{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1);}
+.tour-btn.secondary:hover{background:rgba(255,255,255,.12);}
+.tour-progress{font-size:10px;color:rgba(255,255,255,.25);margin-left:auto;}
+
+/* ══════════════════════════════════════════
+   METRIC GLOSSARY
+══════════════════════════════════════════ */
+.glossary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:640px){.glossary-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:400px){.glossary-grid{grid-template-columns:1fr;}}
+.glos-card{
+  background:rgba(255,255,255,.04);border-radius:10px;padding:12px 14px;
+  border:1px solid rgba(255,255,255,.06);cursor:pointer;
+  transition:all .18s;
+}
+.glos-card:hover{border-color:rgba(0,174,239,.3);background:rgba(0,174,239,.06);}
+.glos-card.open{border-color:var(--sky);background:rgba(0,174,239,.08);}
+.glos-name{font-size:11.5px;font-weight:700;color:#fff;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;}
+.glos-name span{font-size:10px;color:rgba(255,255,255,.2);transition:transform .2s;}
+.glos-card.open .glos-name span{transform:rotate(180deg);}
+.glos-short{font-size:10.5px;color:rgba(255,255,255,.35);line-height:1.4;}
+.glos-detail{display:none;font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
+.glos-card.open .glos-detail{display:block;}
+.glos-tip{font-size:10.5px;color:var(--sky);margin-top:6px;font-style:italic;}
+
+/* ══════════════════════════════════════════
+   DAILY HABITS
+══════════════════════════════════════════ */
+.habits-list{display:flex;flex-direction:column;gap:10px;}
+.habit{
+  display:flex;gap:14px;align-items:flex-start;
+  background:rgba(255,255,255,.04);border-radius:12px;padding:16px 18px;
+  border:1px solid rgba(255,255,255,.06);cursor:pointer;
+  transition:all .2s;user-select:none;
+}
+.habit:hover{border-color:rgba(0,174,239,.2);background:rgba(0,174,239,.05);}
+.habit.done{border-color:rgba(40,200,64,.25);background:rgba(40,200,64,.06);}
+.habit-check{
+  width:24px;height:24px;border-radius:6px;flex-shrink:0;
+  border:2px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  transition:all .18s;margin-top:1px;
+}
+.habit.done .habit-check{background:#28C840;border-color:#28C840;}
+.habit-step{font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.14em;margin-bottom:3px;}
+.habit-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.habit.done .habit-title{color:rgba(255,255,255,.5);}
+.habit-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;}
+
+/* ══════════════════════════════════════════
+   NARRATION + COMPLETION
+══════════════════════════════════════════ */
+.narration{background:var(--navy);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--sky);}
+.narration-q{font-size:26px;color:var(--sky);line-height:1;flex-shrink:0;margin-top:-4px;}
+.narration-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic;}
+.narration-text strong{color:#fff;font-style:normal;}
+
+.live-link{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(0,174,239,.1);border:1.5px solid rgba(0,174,239,.3);
+  border-radius:12px;padding:14px 20px;margin-top:16px;
+  text-decoration:none;transition:all .2s;
+}
+.live-link:hover{background:rgba(0,174,239,.18);border-color:var(--sky);}
+.live-link-dot{width:8px;height:8px;border-radius:50%;background:#28C840;animation:blink 1.5s infinite;flex-shrink:0;}
+.live-link-text{font-size:13px;font-weight:700;color:#fff;}
+.live-link-url{font-size:10.5px;color:rgba(255,255,255,.4);font-family:var(--mono);margin-top:1px;}
+.live-link-arrow{font-size:14px;color:var(--sky);margin-left:4px;}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · DASHBOARD</div>
+    <h1 class="hero-title">Dashboard &<br><em>Performance Tracker</em></h1>
+    <p class="hero-sub">Your live performance hub. Before you touch the real thing, walk through it here — so when you open it on shift, you already know exactly what you're looking at.</p>
+    <div class="hero-pills">
+      <div class="hero-pill">🖥️ Simulated walkthrough</div>
+      <div class="hero-pill">📊 Every metric explained</div>
+      <div class="hero-pill">✅ 5 daily habits</div>
+    </div>
+  </div>
+</section>
+
+<!-- GUIDED TOUR -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">STEP 1 — GUIDED TOUR</div>
+    <div class="s-title">Walk Through the Dashboard</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Click the highlighted elements as prompted. The tour takes 3 minutes.</div>
+
+    <!-- Simulated Browser -->
+    <div class="sim-browser">
+      <div class="sim-browser-bar">
+        <div class="sim-dots"><div class="sim-dot r"></div><div class="sim-dot y"></div><div class="sim-dot g"></div></div>
+        <div class="sim-url">192.168.200.135:8080</div>
+        <div class="sim-live"><div class="sim-live-dot"></div>LIVE</div>
+      </div>
+
+      <div class="sim-dash">
+        <!-- Header -->
+        <div class="sim-dash-header">
+          <div>
+            <div class="sim-dash-title">Appointment Setter — Today</div>
+            <div class="sim-dash-sub">Wednesday 29 July 2026 · Updated just now</div>
+          </div>
+          <div class="sim-refresh" onclick="simulateRefresh()">↺ Refresh</div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="sim-kpi-row">
+          <div class="sim-kpi" id="skpi-0"><div class="sim-kpi-label">DIALS</div><div class="sim-kpi-val">1,495</div><div class="sim-kpi-vs up">target 1,440 ✓</div></div>
+          <div class="sim-kpi" id="skpi-1"><div class="sim-kpi-label">BOOKINGS</div><div class="sim-kpi-val">43</div><div class="sim-kpi-vs up">target 40 ✓</div></div>
+          <div class="sim-kpi" id="skpi-2"><div class="sim-kpi-label">DIALS/BOOKING</div><div class="sim-kpi-val">35</div><div class="sim-kpi-vs up">under 36 ✓</div></div>
+          <div class="sim-kpi" id="skpi-3"><div class="sim-kpi-label">CONTACT RATE</div><div class="sim-kpi-val">11.6%</div><div class="sim-kpi-vs neutral">8.6m avg call</div></div>
+          <div class="sim-kpi" id="skpi-4"><div class="sim-kpi-label">MANUAL VS PRED.</div><div class="sim-kpi-val" style="font-size:15px;">38 vs 1,457</div><div class="sim-kpi-vs neutral">38× busier</div></div>
+        </div>
+
+        <div class="sim-highlight" id="skpi-highlight">43 bookings, ahead of the 40 target, at 35 dials per booking.</div>
+
+        <!-- Leaderboard -->
+        <table class="sim-table" id="skpi-table">
+          <thead><tr><th>AGENT</th><th>DIALS</th><th>CONTACT</th><th>BOOKED</th><th>D/BKG</th></tr></thead>
+          <tbody>
+            <tr><td>Chris F.</td><td>205</td><td>14.1%</td><td><span class="cell-pill green">8</span></td><td><span class="cell-pill green">26</span></td></tr>
+            <tr><td>Christine M.</td><td>220</td><td>9.5%</td><td><span class="cell-pill green">5</span></td><td><span class="cell-pill gold">44</span></td></tr>
+            <tr><td>Mariel S.</td><td>195</td><td>11.0%</td><td><span class="cell-pill green">6</span></td><td><span class="cell-pill gold">33</span></td></tr>
+            <tr><td>Cherry S.</td><td>180</td><td>10.8%</td><td><span class="cell-pill green">5</span></td><td><span class="cell-pill green">36</span></td></tr>
+            <tr><td>Keisha N.</td><td>210</td><td>8.9%</td><td><span class="cell-pill gold">4</span></td><td><span class="cell-pill red">53</span></td></tr>
+          </tbody>
+        </table>
+
+        <!-- Hourly + gauge -->
+        <div class="sim-bottom-grid">
+          <div class="sim-mini-card">
+            <div class="sim-mini-label">HOURLY DIALS</div>
+            <div class="sim-hbars" id="sim-hbars"></div>
+          </div>
+          <div class="sim-mini-card">
+            <div class="sim-mini-label">PACE VS TARGET</div>
+            <div class="sim-gauge-track"><div class="sim-gauge-fill" style="width:72%"></div></div>
+            <div class="sim-gauge-labels"><span>Now <b>43</b></span><span>Target <b>40</b></span></div>
+          </div>
+        </div>
+
+      </div><!-- /sim-dash -->
+    </div><!-- /sim-browser -->
+
+    <!-- Tour steps -->
+    <div class="tour-step" id="tour-0" style="display:block;">
+      <div class="tour-step-num">TOUR STEP 1 OF 6</div>
+      <div class="tour-step-title">Welcome to your dashboard</div>
+      <div class="tour-step-text">This is what you'll open at the start of every single shift. The green <strong>LIVE</strong> indicator in the top right means the data is real-time — it updates as calls happen. Click <strong>↺ Refresh</strong> at any time to pull the latest numbers.</div>
+      <div class="tour-nav">
+        <button class="tour-btn primary" onclick="tourNext(1)">Got it — what are the KPI cards? →</button>
+        <span class="tour-progress">1 / 6</span>
+      </div>
+    </div>
+    <div class="tour-step" id="tour-1">
+      <div class="tour-step-num">TOUR STEP 2 OF 6</div>
+      <div class="tour-step-title">The 5 team KPI cards</div>
+      <div class="tour-step-text"><strong>Dials, Bookings, Dials/Booking, Contact Rate,</strong> and <strong>Manual vs Predictive</strong> — team totals for the day, each checked against a target. "Beat it ✓" in green means the team is ahead. Watch the banner underneath too — it plain-English summarises where the team stands right now.</div>
+      <div class="tour-nav">
+        <button class="tour-btn secondary" onclick="tourBack(0)">← Back</button>
+        <button class="tour-btn primary" onclick="tourNext(2)">Show me the leaderboard →</button>
+        <span class="tour-progress">2 / 6</span>
+      </div>
+    </div>
+    <div class="tour-step" id="tour-2">
+      <div class="tour-step-num">TOUR STEP 3 OF 6</div>
+      <div class="tour-step-title">Reading the leaderboard colours</div>
+      <div class="tour-step-text">Every agent gets their own row. <strong>Booked</strong> and <strong>Dials/Booking</strong> are colour coded: <span style="color:#28C840;font-weight:600;">green means you're hitting target</span>, <span style="color:#F0B84E;font-weight:600;">gold means you're borderline</span>, and <span style="color:#FF5F57;font-weight:600;">red means it needs attention</span>. A high Dials/Booking number (like 53) means you're burning a lot of dials for each booking — that's the one to watch.</div>
+      <div class="tour-nav">
+        <button class="tour-btn secondary" onclick="tourBack(1)">← Back</button>
+        <button class="tour-btn primary" onclick="tourNext(3)">What about the chart? →</button>
+        <span class="tour-progress">3 / 6</span>
+      </div>
+    </div>
+    <div class="tour-step" id="tour-3">
+      <div class="tour-step-num">TOUR STEP 4 OF 6</div>
+      <div class="tour-step-title">Hourly Dials & Pace vs Target</div>
+      <div class="tour-step-text">The <strong>Hourly Dials</strong> chart shows your activity shape across the day — useful for spotting a slow patch before it costs you the afternoon. <strong>Pace vs Target</strong> is a simple gauge: where you are right now against where the team needs to land by end of day. If the bar isn't filling in by early afternoon, that's your signal to pick up the pace.</div>
+      <div class="tour-nav">
+        <button class="tour-btn secondary" onclick="tourBack(2)">← Back</button>
+        <button class="tour-btn primary" onclick="tourNext(4)">One more thing →</button>
+        <span class="tour-progress">4 / 6</span>
+      </div>
+    </div>
+    <div class="tour-step" id="tour-4">
+      <div class="tour-step-num">TOUR STEP 5 OF 6</div>
+      <div class="tour-step-title">Manual vs Predictive — know which mode you're in</div>
+      <div class="tour-step-text">You'll dial in two modes: <strong>Manual</strong> (you click to dial one lead at a time — usually reschedules and warm follow-ups) and <strong>Predictive</strong> (the dialer auto-dials through the queue). The card shows how many of each you've done. If Manual is unusually high, check you're not sitting on a queue that should be running predictive.</div>
+      <div class="tour-nav">
+        <button class="tour-btn secondary" onclick="tourBack(3)">← Back</button>
+        <button class="tour-btn primary" onclick="tourNext(5)">One more thing →</button>
+        <span class="tour-progress">5 / 6</span>
+      </div>
+    </div>
+    <div class="tour-step" id="tour-5">
+      <div class="tour-step-num">TOUR STEP 6 OF 6 — COMPLETE</div>
+      <div class="tour-step-title">Your dashboard is a mirror ✓</div>
+      <div class="tour-step-text">What you put in is exactly what it shows back. A weak Dials/Booking number or a red Booked cell always trace back to the same thing — <strong>something upstream needs attention.</strong> The data doesn't lie, and it doesn't judge. It just shows you where to focus. Use it every single day — not just when things are going wrong.<br><br>Scroll down to explore every metric in detail.</div>
+      <div class="tour-nav">
+        <button class="tour-btn secondary" onclick="tourBack(4)">← Back</button>
+        <button class="tour-btn primary" onclick="completeTour()">Tour complete — explore metrics ✓</button>
+        <span class="tour-progress">6 / 6</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- METRIC GLOSSARY -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">STEP 2 — EVERY METRIC EXPLAINED</div>
+    <div class="s-title">What Each Number Reveals</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Click any metric to see what it measures, why it matters, and what to do if it drops.</div>
+    <div class="glossary-grid" id="glossary-grid"></div>
+  </div>
+</div>
+
+<!-- DAILY HABITS -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">STEP 3 — HOW TO USE IT</div>
+    <div class="s-title">5 Daily Habits</div>
+    <div class="s-bar"></div>
+    <div class="s-sub">Tick each habit as you learn it. These are the behaviours that separate people who manage their performance from people who react to it.</div>
+    <div class="habits-list" id="habits-list"></div>
+  </div>
+</div>
+
+<!-- MILESTONES TEASER -->
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div style="background:var(--navy);border-radius:14px;padding:22px 24px;display:flex;gap:16px;align-items:center;">
+      <div style="font-size:28px;flex-shrink:0;">🗓️</div>
+      <div style="flex:1;">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:4px;">UP NEXT IN THIS MODULE</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:18px;color:#fff;margin-bottom:4px;">30 / 60 / 90 Day Milestones</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;">What good looks like at each checkpoint — with weekly self-check questions. Covered in the next module.</div>
+      </div>
+      <div style="font-size:22px;color:rgba(255,255,255,.2);flex-shrink:0;">→</div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- LIVE LINK -->
+<div class="section">
+  <div class="inner">
+    <div class="s-label">THE REAL THING</div>
+    <div class="s-title">Open Your Live Dashboards</div>
+    <div class="s-bar"></div>
+    <div class="narration">
+      <div class="narration-q">"</div>
+      <div class="narration-text"><strong>Open the dashboard before your first call every single morning.</strong> That's the one habit that separates people who manage their performance from people who react to it.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:18px;">
+
+      <!-- Live Team Dashboard -->
+      <a class="live-link" href="http://192.168.200.135:8080/" target="_blank">
+        <div class="live-link-dot"></div>
+        <div>
+          <div class="live-link-text">Appointment Setter — Today (Live Team Dashboard)</div>
+          <div class="live-link-url">192.168.200.135:8080 — office network only</div>
+        </div>
+        <div class="live-link-arrow">↗</div>
+      </a>
+
+      <!-- Shark Tank board -->
+      <a class="live-link" href="https://resincconnectorboard.netlify.app/" target="_blank">
+        <div class="live-link-dot" style="background:#00AEEF;"></div>
+        <div>
+          <div class="live-link-text">RESINC Setters — Shark Tank</div>
+          <div class="live-link-url">resincconnectorboard.netlify.app — team floor board</div>
+        </div>
+        <div class="live-link-arrow">↗</div>
+      </a>
+
+      <!-- Individual Dash -->
+      <div class="live-link" style="opacity:.6;cursor:default;border-style:dashed;">
+        <div class="live-link-dot" style="background:#a0b4bf;"></div>
+        <div>
+          <div class="live-link-text">Your Individual Dashboard</div>
+          <div class="live-link-url">Link shared by Jordan via Google Chat DM — check with your TL</div>
+        </div>
+        <div class="live-link-arrow" style="color:#a0b4bf;">⏳</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+// ── TOUR ──
+let currentTour=0;
+function tourNext(n){
+  document.getElementById('tour-'+(n-1)).classList.remove('visible');
+  document.getElementById('tour-'+(n-1)).style.display='none';
+  document.getElementById('tour-'+n).classList.add('visible');
+  document.getElementById('tour-'+n).style.display='block';
+  currentTour=n;
+  // highlight relevant KPIs
+  document.querySelectorAll('.sim-kpi').forEach(k=>k.classList.remove('highlighted','pulsing'));
+  if(n===4){document.querySelectorAll('.sim-kpi').forEach((k,i)=>{if(i<=4)k.classList.add('highlighted');});}
+}
+function tourBack(n){
+  document.getElementById('tour-'+(n+1)).classList.remove('visible');
+  document.getElementById('tour-'+(n+1)).style.display='none';
+  document.getElementById('tour-'+n).classList.add('visible');
+  document.getElementById('tour-'+n).style.display='block';
+  currentTour=n;
+  document.querySelectorAll('.sim-kpi').forEach(k=>k.classList.remove('highlighted','pulsing'));
+}
+function completeTour(){
+  document.getElementById('tour-5').style.display='none';
+  document.querySelectorAll('.sim-kpi').forEach(k=>k.classList.remove('highlighted','pulsing'));
+}
+
+// ── HOURLY BARS ──
+const HOURLY=[0,0,0,60,140,230,310,260,190,150,90,40,10];
+const maxH=Math.max(...HOURLY);
+document.getElementById('sim-hbars').innerHTML = HOURLY.map(v=>{
+  const h = Math.max((v/maxH)*100, 3);
+  return `<div class="sim-hbar" style="height:${h}%"></div>`;
+}).join('');
+
+function simulateRefresh(){
+  const r=document.querySelector('.sim-refresh');
+  r.textContent='↺ Refreshing...';
+  setTimeout(()=>{r.innerHTML='↺ Refresh';},800);
+}
+
+// ── GLOSSARY ──
+const METRICS=[
+  {name:'Dials',short:'Total outbound + inbound calls',detail:'Volume drives everything. More dials = more contacts = more bookings. This is the most upstream number on the board, and the one you control most directly.',tip:'Low bookings? Trace it back to dials first.'},
+  {name:'Manual',short:'Calls dialled one at a time',detail:'Manual dials are the ones you click through yourself — usually reschedules, warm follow-ups, or anything that needs a human decision about who to call next.',tip:'If Manual is unusually high, check whether that queue should be running Predictive instead.'},
+  {name:'Contact Rate',short:'Dials that connect to a person',detail:'The percentage of dials that actually reach someone. A low contact rate can point to bad data, wrong time of day, or a queue that needs cleaning up.',tip:'Best contact times are typically late morning and early evening.'},
+  {name:'Booked',short:'Qualified appointments booked',detail:'The most direct output metric on the board. Everything feeds into this number. 5/day minimum, 6+ is a strong day.',tip:'Booked low despite good dials? Check your qualification and objection handling.'},
+  {name:'Dials / Booking',short:'Dials needed to secure one booking',detail:'Your efficiency ratio. Lower is better — it means you\'re converting opportunities into bookings without wasting activity. A high number (over ~60) usually means something in the conversation needs work, not more dialling.',tip:'Rising Dials/Booking is often the earliest sign something\'s off — catch it before the week ends.'},
+  {name:'Avg Call',short:'Average length of a booking call',detail:'How long your booking conversations run. Too short can mean you\'re rushing qualification. Too long can mean the script isn\'t landing efficiently.',tip:'Compare against teammates who are hitting target — not just against your own last week.'},
+  {name:'Manual vs Predictive',short:'Dials by dialling mode',detail:'Predictive auto-dials through the queue at volume; Manual is you clicking through one at a time. Both matter — this card just shows the split so you know where your activity is coming from.',tip:'A healthy day usually has far more Predictive than Manual dials.'},
+  {name:'Leads Added Today',short:'New leads entering your queue',detail:'Shows how much fresh opportunity landed today. If this is low and your dials are also low, the queue itself may be the constraint — not your effort.',tip:'A quiet lead day is the right day to work older re-engagement leads instead.'},
+  {name:'Hourly Dials',short:'Your activity shape across the day',detail:'A bar for each hour of the shift. Flat patches show where momentum dropped — after lunch is a common one. This is about pacing, not just totals.',tip:'If the early afternoon dips every day, that\'s a habit worth fixing, not a one-off.'},
+  {name:'Pace vs Target',short:'Where you are vs where you need to land',detail:'A simple gauge comparing your current total to the end-of-day target. If it isn\'t filling in by early afternoon, that\'s the signal to pick up the pace before it becomes a missed day.',tip:'Check this at lunch — it\'s the best early-warning point in the day.'},
+];
+const gg=document.getElementById('glossary-grid');
+METRICS.forEach((m,i)=>{
+  const d=document.createElement('div');
+  d.className='glos-card';d.id='glos-'+i;
+  d.innerHTML=`<div class="glos-name">${m.name}<span>▾</span></div><div class="glos-short">${m.short}</div><div class="glos-detail">${m.detail}<div class="glos-tip">💡 ${m.tip}</div></div>`;
+  d.onclick=()=>{
+    const wasOpen=d.classList.contains('open');
+    document.querySelectorAll('.glos-card').forEach(c=>c.classList.remove('open'));
+    if(!wasOpen)d.classList.add('open');
+  };
+  gg.appendChild(d);
+});
+
+// ── HABITS ──
+const HABITS=[
+  {step:'HABIT 1',title:'Open the dashboard before your first call',desc:'Know where the team stands, what today\'s target is, and how yesterday looked. Two minutes of context changes how you dial.'},
+  {step:'HABIT 2',title:'Check your Dials/Booking, not just Booked',desc:'A good Booked number can hide a bad Dials/Booking ratio. Watch both — efficiency matters as much as volume.'},
+  {step:'HABIT 3',title:'Watch the Pace vs Target gauge at lunch',desc:'That\'s the best early-warning point in the day. If the bar isn\'t filling by then, adjust before the afternoon runs out.'},
+  {step:'HABIT 4',title:'Notice the flat patches in Hourly Dials',desc:'A dip after lunch or late afternoon is common — and fixable once you can see it. Don\'t wait for the weekly review to notice a pattern.'},
+  {step:'HABIT 5',title:'Use the leaderboard to learn, not just compare',desc:'If a teammate has a low Dials/Booking number, that\'s worth asking them about. The dashboard is a coaching tool, not just a scoreboard.'},
+];
+const hl=document.getElementById('habits-list');
+HABITS.forEach((h,i)=>{
+  const d=document.createElement('div');
+  d.className='habit';d.id='habit-'+i;
+  d.innerHTML=`<div class="habit-check"></div><div><div class="habit-step">${h.step}</div><div class="habit-title">${h.title}</div><div class="habit-desc">${h.desc}</div></div>`;
+  d.onclick=()=>{
+    d.classList.toggle('done');
+    d.querySelector('.habit-check').textContent=d.classList.contains('done')?'✓':'';
+  };
+  hl.appendChild(d);
+});
+</script>
+</body>
+</html>
