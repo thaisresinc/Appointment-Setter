@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Breaker 1 — Dialer Knowledge Check | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --green:#0B7A4E;--red:#B5251B;--gold:#D4940A;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+}
+html,body{height:100%;margin:0;padding:0;}
+body{font-family:var(--font);background:#0D1B24;color:#fff;overflow-x:hidden;}
+
+/* ── WRAPPER — single screen layout ── */
+.app{
+  max-width:700px;margin:0 auto;padding:20px 24px 24px;
+  display:flex;flex-direction:column;gap:16px;
+}
+
+/* ── TOP BAR ── */
+.top-bar{
+  background:var(--navy2);border-radius:12px;padding:14px 18px;
+  border:1px solid rgba(0,174,239,.1);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.tb-left{}
+.tb-eyebrow{font-size:8px;font-weight:700;letter-spacing:.22em;color:var(--sky);margin-bottom:3px;}
+.tb-title{font-size:15px;font-weight:700;color:#fff;}
+.tb-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.signal-label{font-size:9px;font-weight:700;letter-spacing:.06em;color:rgba(255,255,255,.4);font-style:italic;transition:color .25s;white-space:nowrap;}
+.signal-bars{display:flex;align-items:flex-end;gap:4px;height:24px;}
+.signal-bar{
+  width:7px;border-radius:2px;background:rgba(255,255,255,.1);
+  transition:background .3s,box-shadow .3s;
+}
+.signal-bar:nth-child(1){height:9px;}
+.signal-bar:nth-child(2){height:13px;}
+.signal-bar:nth-child(3){height:17px;}
+.signal-bar:nth-child(4){height:21px;}
+.signal-bar:nth-child(5){height:24px;}
+.signal-bar.active{background:var(--sky);box-shadow:0 0 8px rgba(0,174,239,.7);animation:sig-pulse .6s ease;}
+.signal-bar.done{background:var(--green);box-shadow:0 0 6px rgba(11,122,78,.5);}
+@keyframes sig-pulse{
+  0%{transform:scaleY(.6);}
+  50%{transform:scaleY(1.15);}
+  100%{transform:scaleY(1);}
+}
+.signal-bars.static-flicker .signal-bar{animation:sig-static .4s ease;}
+@keyframes sig-static{
+  0%,100%{background:rgba(255,255,255,.1);}
+  20%{background:var(--red);}
+  40%{background:rgba(255,255,255,.1);}
+  60%{background:var(--red);}
+  80%{background:rgba(255,255,255,.1);}
+}
+
+/* ── PROGRESS BAR ── */
+.prog-bar{height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .4s;}
+
+/* ── CHALLENGE CARD ── */
+.chal{display:none;}
+.chal.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.chal-card{
+  background:#122430;border-radius:14px;padding:20px 22px;
+  border:1.5px solid rgba(255,255,255,.07);
+}
+.chal-num{font-size:8.5px;font-weight:700;letter-spacing:.22em;color:var(--sky);margin-bottom:4px;}
+.chal-format{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:2px 8px;font-size:9px;font-weight:700;color:rgba(255,255,255,.4);margin-bottom:10px;}
+.chal-question{font-family:var(--serif);font-size:19.5px;color:#fff;line-height:1.35;margin-bottom:16px;}
+
+/* ── SCENARIO BOX ── */
+.scenario-box{background:rgba(0,174,239,.07);border-left:3px solid var(--sky);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:14px;}
+.scen-label{font-size:8px;font-weight:700;letter-spacing:.18em;color:var(--sky);margin-bottom:4px;}
+.scen-text{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.55;}
+.scen-text strong{color:#fff;}
+
+/* ── CHOICE GRID ── */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:460px){.choices{grid-template-columns:1fr;}}
+.choice{
+  background:rgba(255,255,255,.04);border-radius:10px;border:1.5px solid rgba(255,255,255,.08);
+  padding:12px 13px;cursor:pointer;transition:all .2s;
+}
+.choice:hover:not(.disabled){border-color:var(--sky);background:rgba(0,174,239,.07);}
+.choice.correct{border-color:var(--green);background:rgba(11,122,78,.1);}
+.choice.wrong{border-color:var(--red);background:rgba(181,37,27,.07);animation:shake .35s ease;}
+.choice.disabled{pointer-events:none;opacity:.4;}
+.choice.disabled.correct{opacity:1;}
+.ch-icon{font-size:19px;margin-bottom:5px;}
+.ch-name{font-size:13px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;}
+.choice.correct .ch-name{color:#4DD9A0;}
+.choice.wrong .ch-name{color:#E07070;}
+.ch-sub{font-size:10.5px;color:rgba(255,255,255,.3);}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+
+/* ── FEEDBACK ── */
+.feedback{display:none;border-radius:8px;padding:11px 14px;margin-top:10px;font-size:12px;line-height:1.6;}
+.feedback.visible{display:flex;gap:10px;align-items:flex-start;}
+.feedback.ok{background:rgba(11,122,78,.12);border-left:3px solid var(--green);}
+.feedback.bad{background:rgba(181,37,27,.08);border-left:3px solid var(--red);}
+.fb-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.fb-text{color:rgba(255,255,255,.75);}
+.fb-text strong{color:#fff;}
+
+/* ── NEXT BTN ── */
+.next-btn{display:none;margin-top:12px;background:var(--sky);color:var(--navy);border:none;border-radius:8px;padding:10px 22px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.next-btn.visible{display:inline-flex;align-items:center;gap:6px;}
+.next-btn:hover{background:var(--sky2);}
+
+/* ── SORT STEPS ── */
+.sort-instruction{font-size:11.5px;color:rgba(255,255,255,.4);margin-bottom:10px;}
+.sort-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.sort-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);border-radius:8px;padding:10px 13px;
+  border:1.5px solid rgba(255,255,255,.08);cursor:grab;user-select:none;transition:all .18s;
+}
+.sort-item:hover:not(.locked-item){border-color:rgba(0,174,239,.2);}
+.sort-item.dragging-item{opacity:.4;cursor:grabbing;}
+.sort-item.correct-item{border-color:var(--green);background:rgba(11,122,78,.08);}
+.sort-item.wrong-item{border-color:var(--red);animation:shake .35s ease;}
+.sort-item.locked-item{pointer-events:none;}
+.sort-handle{font-size:12px;color:rgba(255,255,255,.2);flex-shrink:0;}
+.sort-num{width:20px;height:20px;border-radius:5px;flex-shrink:0;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);}
+.sort-item.correct-item .sort-num{background:var(--green);color:#fff;}
+.sort-text{font-size:12.5px;color:#fff;flex:1;}
+.sort-check-btn{display:block;background:rgba(0,174,239,.1);border:1px solid rgba(0,174,239,.2);color:var(--sky);border-radius:8px;padding:9px 18px;font-family:var(--font);font-size:12.5px;font-weight:700;cursor:pointer;transition:all .18s;width:100%;text-align:center;}
+.sort-check-btn:hover{background:rgba(0,174,239,.18);}
+.sort-check-btn:disabled{opacity:.4;cursor:default;}
+
+/* ── PREP SLIDER ── */
+.prep-scene{background:rgba(255,255,255,.03);border-radius:10px;padding:16px 18px;border:1px solid rgba(255,255,255,.07);}
+.prep-scenario{font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:14px;padding:10px 12px;background:rgba(0,174,239,.06);border-radius:7px;border-left:3px solid var(--sky);}
+.prep-scenario strong{color:#fff;}
+.prep-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.prep-label{font-size:9px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.3);}
+.prep-val{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--sky);transition:color .2s;}
+.prep-val.good{color:#4DD9A0;}.prep-val.bad{color:var(--red);}
+input[type=range].prep-range{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--sky) var(--fill,8%),rgba(255,255,255,.08) var(--fill,8%));margin:6px 0 3px;}
+input[type=range].prep-range.good{background:linear-gradient(90deg,#4DD9A0 var(--fill,8%),rgba(255,255,255,.08) var(--fill,8%));}
+input[type=range].prep-range.bad{background:linear-gradient(90deg,var(--red) var(--fill,8%),rgba(255,255,255,.08) var(--fill,8%));}
+input[type=range].prep-range::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 0 3px rgba(0,174,239,.4);}
+.prep-scale{display:flex;justify-content:space-between;font-size:8.5px;color:rgba(255,255,255,.2);margin-bottom:10px;}
+.prep-insight{border-radius:7px;padding:9px 12px;font-size:11.5px;line-height:1.6;display:none;}
+.prep-insight.visible{display:flex;gap:8px;align-items:flex-start;}
+.prep-insight.good-ins{background:rgba(11,122,78,.1);border-left:3px solid var(--green);}
+.prep-insight.bad-ins{background:rgba(181,37,27,.07);border-left:3px solid var(--red);}
+.prep-submit{display:block;margin-top:10px;background:var(--sky);color:var(--navy);border:none;border-radius:8px;padding:10px 22px;font-family:var(--font);font-size:12.5px;font-weight:700;cursor:pointer;transition:all .2s;}
+.prep-submit:hover{background:var(--sky2);}
+.prep-submit:disabled{opacity:.4;cursor:default;}
+
+/* ── COMPLETION ── */
+#completion{display:none;animation:fadeUp .4s ease;}
+.cpl-card{background:linear-gradient(135deg,#0A5A38,#0B7A4E);border-radius:14px;padding:24px 22px;text-align:center;border:1px solid rgba(11,122,78,.4);}
+.cpl-icon{font-size:40px;margin-bottom:10px;}
+.cpl-title{font-family:var(--serif);font-size:24px;color:#fff;margin-bottom:5px;}
+.cpl-title span{color:#4DD9A0;font-style:italic;}
+.cpl-sub{font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.6;max-width:440px;margin:0 auto 14px;}
+.cpl-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;}
+.cpl-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:10.5px;font-weight:600;color:#fff;}
+.cpl-grade{
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;
+  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);
+  border-radius:24px;padding:8px 18px;font-size:13px;font-weight:700;color:#fff;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="tb-left">
+      <div class="tb-eyebrow">APPOINTMENT SETTER · BREAKER 1</div>
+      <div class="tb-title">Dialer Knowledge Check</div>
+    </div>
+    <div class="tb-right">
+      <div class="signal-label" id="signal-label">Searching for signal…</div>
+      <div class="signal-bars" id="signal-bars">
+        <div class="signal-bar" id="hs-0"></div>
+        <div class="signal-bar" id="hs-1"></div>
+        <div class="signal-bar" id="hs-2"></div>
+        <div class="signal-bar" id="hs-3"></div>
+        <div class="signal-bar" id="hs-4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+
+  <!-- Q1 -->
+  <div class="chal active" id="q0">
+    <div class="chal-card">
+      <div class="chal-num">CHALLENGE 1 OF 5</div>
+      <div class="chal-format">⚡ What just happened?</div>
+      <div class="chal-question">You finished a call and moved to the next lead without selecting a disposition. What happens?</div>
+      <div class="choices">
+        <div class="choice" onclick="pick(0,this,'wrong')"><div class="ch-icon">♻️</div><div class="ch-name">Auto-disposed as No Answer</div><div class="ch-sub">System handles it</div></div>
+        <div class="choice" onclick="pick(0,this,'wrong')"><div class="ch-icon">📤</div><div class="ch-name">Lead archived automatically</div><div class="ch-sub">Treated as completed</div></div>
+        <div class="choice" onclick="pick(0,this,'right')"><div class="ch-icon">🫥</div><div class="ch-name">Lead sits in limbo — no outcome recorded</div><div class="ch-sub">TL can't see what happened</div></div>
+        <div class="choice" onclick="pick(0,this,'wrong')"><div class="ch-icon">🔔</div><div class="ch-name">TL gets notified automatically</div><div class="ch-sub">Built-in error detection</div></div>
+      </div>
+      <div class="feedback" id="fb-0"><div class="fb-icon"></div><div class="fb-text"></div></div>
+      <button class="next-btn" id="next-0" onclick="goNext(1)">Challenge 2 →</button>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="chal" id="q1">
+    <div class="chal-card">
+      <div class="chal-num">CHALLENGE 2 OF 5</div>
+      <div class="chal-format">⚡ Quick fire</div>
+      <div class="chal-question">New lead on screen. How long before the system pushes you to Not Ready?</div>
+      <div class="choices">
+        <div class="choice" onclick="pick(1,this,'wrong')"><div class="ch-icon">🐢</div><div class="ch-name">~10 seconds</div><div class="ch-sub">Barely enough to read</div></div>
+        <div class="choice" onclick="pick(1,this,'right')"><div class="ch-icon">⚡</div><div class="ch-name">25–30 seconds</div><div class="ch-sub">Scan and dial within this window</div></div>
+        <div class="choice" onclick="pick(1,this,'wrong')"><div class="ch-icon">☕</div><div class="ch-name">About 1 minute</div><div class="ch-sub">Enough to read all notes</div></div>
+        <div class="choice" onclick="pick(1,this,'wrong')"><div class="ch-icon">♾️</div><div class="ch-name">No limit</div><div class="ch-sub">System waits for you</div></div>
+      </div>
+      <div class="feedback" id="fb-1"><div class="fb-icon"></div><div class="fb-text"></div></div>
+      <button class="next-btn" id="next-1" onclick="goNext(2)">Challenge 3 →</button>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="chal" id="q2">
+    <div class="chal-card">
+      <div class="chal-num">CHALLENGE 3 OF 5</div>
+      <div class="chal-format">📞 Pick the disposition</div>
+      <div class="chal-question">What disposition do you select?</div>
+      <div class="scenario-box">
+        <div class="scen-label">📍 WHAT JUST HAPPENED</div>
+        <div class="scen-text">Connected. You started your opener — <strong>"Hey, this is—"</strong> and the customer hung up instantly. No conversation. No objection. Just gone.</div>
+      </div>
+      <div class="choices">
+        <div class="choice" onclick="pick(2,this,'wrong')"><div class="ch-icon">🔌</div><div class="ch-name">Disconnected</div><div class="ch-sub">Technical drop mid-call</div></div>
+        <div class="choice" onclick="pick(2,this,'right')"><div class="ch-icon">🤐</div><div class="ch-name">No Pitch</div><div class="ch-sub">Connected, no chance to pitch</div></div>
+        <div class="choice" onclick="pick(2,this,'wrong')"><div class="ch-icon">🚫</div><div class="ch-name">Not Interested – ATM</div><div class="ch-sub">Not interested right now</div></div>
+        <div class="choice" onclick="pick(2,this,'wrong')"><div class="ch-icon">📵</div><div class="ch-name">No Answer</div><div class="ch-sub">Phone rang, nobody answered</div></div>
+      </div>
+      <div class="feedback" id="fb-2"><div class="fb-icon"></div><div class="fb-text"></div></div>
+      <button class="next-btn" id="next-2" onclick="goNext(3)">Challenge 4 →</button>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="chal" id="q3">
+    <div class="chal-card">
+      <div class="chal-num">CHALLENGE 4 OF 5</div>
+      <div class="chal-format">🔀 Put it in order</div>
+      <div class="chal-question">You selected the wrong disposition. Drag the steps into the correct order to fix it.</div>
+      <div class="sort-instruction">Drag to reorder, then click Check Order.</div>
+      <div class="sort-list" id="sort-list"></div>
+      <button class="sort-check-btn" id="sort-check" onclick="checkSort()">Check Order ✓</button>
+      <div class="feedback" id="fb-3"><div class="fb-icon"></div><div class="fb-text"></div></div>
+      <button class="next-btn" id="next-3" onclick="goNext(4)">Final Challenge →</button>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="chal" id="q4">
+    <div class="chal-card">
+      <div class="chal-num">CHALLENGE 5 OF 5</div>
+      <div class="chal-format">🎚️ Set your prep time</div>
+      <div class="chal-question">How long should you spend reading CRM notes before dialling?</div>
+      <div class="prep-scene">
+        <div class="prep-scenario">New lead loaded. Contact rate is <strong>~10%</strong>. How long do you prep before you hit dial?</div>
+        <div class="prep-label-row">
+          <div class="prep-label">YOUR PREP TIME</div>
+          <div class="prep-val" id="prep-val">15 sec</div>
+        </div>
+        <input type="range" class="prep-range" id="prep-range" min="5" max="180" value="15" step="5" oninput="updatePrep(this.value)">
+        <div class="prep-scale"><span>5s</span><span>30s</span><span>1m</span><span>2m</span><span>3m</span></div>
+        <div class="prep-insight" id="prep-insight"><div class="fb-icon"></div><div class="fb-text"></div></div>
+        <button class="prep-submit" id="prep-submit" onclick="submitPrep()">Lock in →</button>
+      </div>
+      <div class="feedback" id="fb-4"><div class="fb-icon"></div><div class="fb-text"></div></div>
+      <button class="next-btn" id="next-4" onclick="showCompletion()">See Results ✓</button>
+    </div>
+  </div>
+
+  <!-- COMPLETION -->
+  <div id="completion">
+    <div class="cpl-card">
+      <div class="cpl-icon">📞</div>
+      <div class="cpl-title">Dialer <span>locked in.</span></div>
+      <div class="cpl-sub">Five challenges down. You know the consequences, the timing, the dispositions, and the mindset. Time for the CRM.</div>
+      <div class="cpl-grade" id="cpl-grade">📶 Full Signal</div>
+      <div class="cpl-chips">
+        <span class="cpl-chip">✓ No Disp = lead in limbo</span>
+        <span class="cpl-chip">✓ 25–30 sec to dial</span>
+        <span class="cpl-chip">✓ Hung up = No Pitch</span>
+        <span class="cpl-chip">✓ Fix via Dial Reporting</span>
+        <span class="cpl-chip">✓ Scan fast — don't over-prep</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+const FB={
+  0:{right:'<strong>Correct.</strong> No Disposition means no outcome recorded. The lead sits in limbo — TL can\'t see what happened, and the lead may be pushed incorrectly. Always disposition immediately.',wrong:'Not quite. The system doesn\'t auto-dispose or notify anyone. The lead just <strong>sits with No Disposition</strong> — no record, no visibility. Always disposition before moving on.'},
+  1:{right:'<strong>Correct — 25–30 seconds.</strong> Scan the key info and click dial within the window. Miss it and you\'re pushed to Not Ready and have to reset manually.',wrong:'Not quite. The window is <strong>25–30 seconds</strong>. Not 10, not unlimited. Miss it and you\'re pushed to Not Ready. Scan fast and dial.'},
+  2:{right:'<strong>Correct — No Pitch.</strong> Not Disconnected (that\'s a technical drop). Not Not Interested ATM (requires a conversation). Customer answered and immediately hung up = No Pitch.',wrong:'Not this one. The customer <strong>did answer</strong> — so No Answer is out. There was no conversation — so Not Interested ATM is out. Instant hang-up = <strong>No Pitch</strong>.'},
+};
+
+const SORT_STEPS=[
+  {id:'ss-a',text:'Go to Dial Reporting',correct:0},
+  {id:'ss-b',text:'Find the call in the list',correct:1},
+  {id:'ss-c',text:'Click the 3 dots (⋯)',correct:2},
+  {id:'ss-d',text:'Select Update Disposition',correct:3},
+  {id:'ss-e',text:'Update Zoho CRM to match',correct:4},
+];
+
+const firstTry={0:null,1:null,2:null,3:null,4:null};
+const SIGNAL_LABELS=['Searching for signal…','Locking on…','Getting stronger…','Almost there…','Nearly full signal…','Full signal.'];
+
+// ── SOUND EFFECTS ──
+let audioCtx=null;
+function getCtx(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return audioCtx; }
+function beep(freq,dur,type,gain){
+  const ctx=getCtx(); if(!ctx) return;
+  const o=ctx.createOscillator(), g=ctx.createGain();
+  o.type=type||'sine'; o.frequency.value=freq;
+  o.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(gain||0.12, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+dur);
+  o.start(); o.stop(ctx.currentTime+dur);
+}
+function soundCorrect(){ beep(700,0.09,'sine',0.11); setTimeout(()=>beep(1050,0.14,'sine',0.11),80); }
+function soundStatic(){
+  const ctx=getCtx(); if(!ctx) return;
+  const bufferSize=ctx.sampleRate*0.18;
+  const buffer=ctx.createBuffer(1,bufferSize,ctx.sampleRate);
+  const data=buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++) data[i]=(Math.random()*2-1)*0.35;
+  const noise=ctx.createBufferSource(); noise.buffer=buffer;
+  const g=ctx.createGain(); g.gain.setValueAtTime(0.15,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.18);
+  noise.connect(g); g.connect(ctx.destination); noise.start();
+}
+function soundFanfare(){
+  [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,0.26,'triangle',0.12),i*110));
+}
+
+function setStep(i,state){
+  const el=document.getElementById('hs-'+i);
+  el.className='signal-bar '+(state==='active'?'active':state==='done'?'done':'');
+  const activeIdx=state==='done'?i+1:i;
+  document.getElementById('signal-label').textContent=SIGNAL_LABELS[Math.min(activeIdx,5)];
+}
+
+function staticFlicker(){
+  const bars=document.getElementById('signal-bars');
+  bars.classList.remove('static-flicker');void bars.offsetWidth;bars.classList.add('static-flicker');
+  setTimeout(()=>bars.classList.remove('static-flicker'),450);
+}
+
+function goNext(n){
+  document.getElementById('next-'+(n-1)).classList.remove('visible');
+  setStep(n-1,'done');
+  setStep(n,'active');
+  document.getElementById('q'+(n-1)).classList.remove('active');
+  document.getElementById('q'+n).classList.add('active');
+  document.getElementById('prog-fill').style.width=((n/5)*80)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function pick(q,card,result){
+  const parent=document.getElementById('q'+q);
+  parent.querySelectorAll('.choice').forEach(b=>b.classList.add('disabled'));
+  card.classList.add(result==='right'?'correct':'wrong');
+  if(firstTry[q]===null) firstTry[q]=(result==='right');
+  const fb=document.getElementById('fb-'+q);
+  if(result==='right'){
+    soundCorrect();
+    fb.className='feedback visible ok';
+    fb.querySelector('.fb-icon').textContent='✅';
+    fb.querySelector('.fb-text').innerHTML=FB[q].right;
+    document.getElementById('next-'+q).classList.add('visible');
+  } else {
+    soundStatic();
+    staticFlicker();
+    fb.className='feedback visible bad';
+    fb.querySelector('.fb-icon').textContent='✗';
+    fb.querySelector('.fb-text').innerHTML=FB[q].wrong;
+    setTimeout(()=>{
+      parent.querySelectorAll('.choice').forEach(b=>b.classList.remove('disabled','wrong'));
+      fb.className='feedback';
+    },1800);
+  }
+}
+
+// SORT
+const shuffled=[...SORT_STEPS].sort(()=>Math.random()-.5);
+let sortOrder=shuffled.map(s=>s.id);
+
+function buildSort(){
+  const list=document.getElementById('sort-list');
+  shuffled.forEach((step,i)=>{
+    const item=document.createElement('div');
+    item.className='sort-item';item.id=step.id;item.draggable=true;
+    item.innerHTML=`<span class="sort-handle">⠿</span><div class="sort-num">${i+1}</div><div class="sort-text">${step.text}</div>`;
+    item.addEventListener('dragstart',()=>{item.classList.add('dragging-item');});
+    item.addEventListener('dragend',()=>{item.classList.remove('dragging-item');});
+    item.addEventListener('dragover',e=>{
+      e.preventDefault();
+      const dragging=document.querySelector('.dragging-item');
+      if(dragging&&dragging!==item){
+        const rect=item.getBoundingClientRect();
+        if(e.clientY<rect.top+rect.height/2) list.insertBefore(dragging,item);
+        else list.insertBefore(dragging,item.nextSibling);
+        updateSortOrder();
+      }
+    });
+    list.appendChild(item);
+  });
+}
+
+function updateSortOrder(){
+  sortOrder=Array.from(document.querySelectorAll('.sort-item')).map(el=>el.id);
+  document.querySelectorAll('.sort-item .sort-num').forEach((n,i)=>n.textContent=i+1);
+}
+
+function checkSort(){
+  updateSortOrder();
+  const correct=SORT_STEPS.map(s=>s.id);
+  const ok=sortOrder.every((id,i)=>id===correct[i]);
+  if(firstTry[3]===null) firstTry[3]=ok;
+  const fb=document.getElementById('fb-3');
+  if(ok){
+    soundCorrect();
+    document.querySelectorAll('.sort-item').forEach(el=>el.classList.add('correct-item','locked-item'));
+    document.getElementById('sort-check').disabled=true;
+    fb.className='feedback visible ok';
+    fb.querySelector('.fb-icon').textContent='✅';
+    fb.querySelector('.fb-text').innerHTML='<strong>Correct order.</strong> Dial Reporting → find the call → 3 dots → Update Disposition → update CRM. Both systems must match.';
+    document.getElementById('next-3').classList.add('visible');
+  } else {
+    soundStatic();
+    staticFlicker();
+    document.querySelectorAll('.sort-item').forEach(el=>el.classList.add('wrong-item'));
+    fb.className='feedback visible bad';
+    fb.querySelector('.fb-icon').textContent='✗';
+    fb.querySelector('.fb-text').innerHTML='Not quite — think about where you go first. Try again.';
+    setTimeout(()=>{document.querySelectorAll('.sort-item').forEach(el=>el.classList.remove('wrong-item'));fb.className='feedback';},1600);
+  }
+}
+
+// Touch sort
+(function(){
+  let touchEl=null,clone=null;
+  document.getElementById('sort-list').addEventListener('touchstart',e=>{
+    const item=e.target.closest('.sort-item');if(!item)return;
+    touchEl=item;const t=e.touches[0];
+    clone=item.cloneNode(true);
+    clone.style.cssText=`position:fixed;left:${t.clientX-10}px;top:${t.clientY-20}px;opacity:.75;pointer-events:none;z-index:999;width:${item.offsetWidth}px;`;
+    document.body.appendChild(clone);
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!clone)return;const t=e.touches[0];
+    clone.style.left=t.clientX-10+'px';clone.style.top=t.clientY-20+'px';e.preventDefault();
+  },{passive:false});
+  document.addEventListener('touchend',e=>{
+    if(clone){clone.remove();clone=null;}if(!touchEl)return;
+    const t=e.changedTouches[0];const el=document.elementFromPoint(t.clientX,t.clientY);
+    const target=el?el.closest('.sort-item'):null;
+    if(target&&target!==touchEl){
+      const list=document.getElementById('sort-list');const rect=target.getBoundingClientRect();
+      if(t.clientY<rect.top+rect.height/2) list.insertBefore(touchEl,target);
+      else list.insertBefore(touchEl,target.nextSibling);
+      updateSortOrder();
+    }
+    touchEl=null;
+  });
+})();
+
+// PREP SLIDER
+let prepSubmitted=false;
+function updatePrep(val){
+  const v=parseInt(val);const display=document.getElementById('prep-val');
+  const range=document.getElementById('prep-range');
+  const pct=((v-5)/(180-5)*100).toFixed(1)+'%';
+  range.style.setProperty('--fill',pct);
+  display.textContent=v<60?v+' sec':Math.floor(v/60)+'m '+(v%60>0?v%60+'s':'');
+  if(v<=35){display.className='prep-val good';range.className='prep-range good';}
+  else{display.className='prep-val bad';range.className='prep-range bad';}
+  if(!prepSubmitted){
+    const ins=document.getElementById('prep-insight');
+    if(v<=35){ins.className='prep-insight visible good-ins';ins.querySelector('.fb-icon').textContent='💡';ins.querySelector('.fb-text').innerHTML='<strong>Good instinct.</strong> Scan and dial.';}
+    else{ins.className='prep-insight visible bad-ins';ins.querySelector('.fb-icon').textContent='⚠️';ins.querySelector('.fb-text').innerHTML=`<strong>Over-investing</strong> in the 9 calls that won't connect.`;}
+  }
+}
+
+function submitPrep(){
+  if(prepSubmitted)return;prepSubmitted=true;
+  const val=parseInt(document.getElementById('prep-range').value);
+  const ok=val<=35;
+  if(firstTry[4]===null) firstTry[4]=ok;
+  document.getElementById('prep-submit').disabled=true;
+  document.getElementById('prep-range').disabled=true;
+  const fb=document.getElementById('fb-4');
+  if(ok){
+    soundCorrect();
+    fb.className='feedback visible ok';fb.querySelector('.fb-icon').textContent='✅';
+    fb.querySelector('.fb-text').innerHTML=`<strong>Correct — ${val} seconds.</strong> Scan the key info and dial. Don't over-prepare on calls that won't connect.`;
+    document.getElementById('next-4').classList.add('visible');
+  } else {
+    soundStatic();
+    staticFlicker();
+    fb.className='feedback visible bad';fb.querySelector('.fb-icon').textContent='✗';
+    fb.querySelector('.fb-text').innerHTML=`<strong>Too long.</strong> 25–30 seconds max. Adjust and try again.`;
+    setTimeout(()=>{
+      prepSubmitted=false;document.getElementById('prep-submit').disabled=false;
+      document.getElementById('prep-range').disabled=false;fb.className='feedback';
+      document.getElementById('prep-insight').className='prep-insight';
+    },2000);
+  }
+}
+
+function showCompletion(){
+  setStep(4,'done');
+  document.getElementById('q4').classList.remove('active');
+  document.getElementById('completion').style.display='block';
+  document.getElementById('prog-fill').style.width='100%';
+  const passCount=Object.values(firstTry).filter(v=>v===true).length;
+  const gradeEl=document.getElementById('cpl-grade');
+  if(passCount===5) gradeEl.textContent='📶 Full Signal — nailed every challenge first try';
+  else if(passCount>=3) gradeEl.textContent='📱 Good Connection — mostly first try';
+  else gradeEl.textContent='🔧 Recalibrated — a few retries along the way';
+  soundFanfare();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildSort();updatePrep(15);setStep(0,'active');
+</script>
+</body>
+</html>
