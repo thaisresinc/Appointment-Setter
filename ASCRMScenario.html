@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CRM Scenario — What Would You Do? | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;
+  --sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --orange:#D4620A;--orange-lt:#FEF3EB;
+  --gold:#D4940A;--gold-lt:#FEF3CD;
+  --purple:#6B4FBB;--purple-lt:#F0EBFF;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --max:760px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--navy2);color:#fff;line-height:1.6;min-height:100vh;}
+
+/* ── INTRO ── */
+#intro-screen{min-height:100vh;background:var(--navy2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow:hidden;}
+.intro-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+.intro-inner{max-width:600px;text-align:center;position:relative;z-index:1;}
+.intro-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.25);border-radius:20px;padding:6px 16px;color:var(--sky);font-size:10px;font-weight:700;letter-spacing:.2em;margin-bottom:24px;}
+.intro-title{font-family:var(--serif);font-size:clamp(34px,6vw,56px);color:#fff;line-height:1.05;margin-bottom:8px;}
+.intro-title em{color:var(--sky);font-style:italic;}
+.intro-sub{color:rgba(255,255,255,.55);font-size:16px;line-height:1.7;max-width:480px;margin:0 auto 28px;}
+.intro-stats{display:flex;gap:16px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.intro-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 20px;text-align:center;}
+.intro-stat-n{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--sky);}
+.intro-stat-l{font-size:9.5px;color:rgba(255,255,255,.4);letter-spacing:.1em;margin-top:2px;}
+.intro-scenario{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 20px;margin-bottom:28px;text-align:left;}
+.intro-scenario-label{font-size:9.5px;font-weight:700;color:var(--sky);letter-spacing:.14em;margin-bottom:10px;}
+.intro-scenario-text{font-size:14.5px;color:rgba(255,255,255,.65);line-height:1.7;}
+.start-btn{background:var(--sky);color:#fff;border:none;border-radius:14px;padding:16px 44px;font-family:var(--font);font-size:15.5px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 8px 32px rgba(0,174,239,.4);letter-spacing:.02em;}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,174,239,.5);}
+
+/* ── GAME SCREEN ── */
+#game-screen{display:none;min-height:100vh;padding:0 0 60px;}
+.hud{position:sticky;top:0;z-index:50;background:rgba(7,31,40,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,174,239,.12);padding:14px 20px;}
+.hud-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;gap:16px;}
+.hud-round{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.16em;white-space:nowrap;}
+.hud-title{font-size:15px;font-weight:700;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hud-dots{display:flex;gap:6px;}
+.hud-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s;}
+.hud-dot.done{background:var(--green);}
+.hud-dot.active{background:var(--sky);transform:scale(1.3);}
+.streak-badge{background:rgba(212,148,10,.15);border:1px solid rgba(212,148,10,.3);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--gold);white-space:nowrap;transition:all .2s;}
+.streak-badge.hot{background:rgba(212,148,10,.3);transform:scale(1.12);}
+
+.scene-wrap{max-width:var(--max);margin:0 auto;padding:28px 20px 0;}
+
+.scene-card{background:#122430;border:1.5px solid rgba(255,255,255,.08);border-radius:16px;padding:22px 22px 20px;margin-bottom:20px;transition:all .25s;}
+.scene-card.hit{animation:flashCard .4s;}
+@keyframes flashCard{0%{box-shadow:0 0 0 0 rgba(0,174,239,.5);}100%{box-shadow:0 0 0 14px rgba(0,174,239,0);}}
+.scene-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--sky);letter-spacing:.12em;margin-bottom:12px;}
+.scene-headline{font-family:var(--serif);font-size:24px;color:#fff;line-height:1.3;margin-bottom:10px;}
+.scene-text{font-size:15.5px;color:rgba(255,255,255,.6);line-height:1.7;}
+.scene-text strong{color:#fff;font-weight:700;}
+
+.decision-label{font-size:11.5px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.14em;margin:22px 0 12px;}
+
+.responses{display:flex;flex-direction:column;gap:10px;}
+.response-card{background:#122430;border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .18s;display:flex;align-items:flex-start;gap:12px;}
+.response-card:hover:not(.disabled):not(.wrong-locked){border-color:rgba(0,174,239,.4);transform:translateX(3px);}
+.response-icon{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px;}
+.response-main{flex:1;}
+.response-title{font-size:15.5px;font-weight:700;color:#fff;margin-bottom:3px;}
+.response-desc{font-size:13.5px;color:rgba(255,255,255,.5);}
+.response-card.correct{border-color:var(--green);background:rgba(11,122,78,.12);}
+.response-card.correct .response-icon{background:var(--green);border-color:var(--green);color:#fff;}
+.response-card.wrong{border-color:var(--red);background:rgba(181,37,27,.12);animation:shake .4s;}
+.response-card.wrong .response-icon{background:var(--red);border-color:var(--red);color:#fff;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.response-card.wrong-locked{opacity:.4;border-color:rgba(181,37,27,.25);}
+.response-card.wrong-locked .response-icon{background:rgba(181,37,27,.25);border-color:rgba(181,37,27,.4);color:#F87171;}
+.response-card.disabled{opacity:.35;pointer-events:none;}
+
+.feedback-popup{margin-top:16px;border-radius:12px;padding:18px 20px;font-size:15px;line-height:1.7;display:none;}
+.feedback-popup.show{display:block;}
+.feedback-popup.ok{background:rgba(11,122,78,.15);border:1px solid rgba(11,122,78,.35);color:#B7F0D4;}
+.feedback-popup.bad{background:rgba(181,37,27,.15);border:1px solid rgba(181,37,27,.35);color:#FFC9C4;}
+.feedback-popup strong{color:#fff;}
+
+.next-btn{margin-top:16px;background:var(--sky);color:#fff;border:none;border-radius:12px;padding:15px 32px;font-family:var(--font);font-size:15.5px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(0,174,239,.35);transition:all .2s;}
+.next-btn:hover{transform:translateY(-2px);}
+
+/* ── END SCREEN ── */
+#end-screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;text-align:center;}
+.end-inner{max-width:520px;}
+.end-icon{font-size:56px;margin-bottom:14px;}
+.end-title{font-family:var(--serif);font-size:clamp(30px,5vw,42px);color:#fff;margin-bottom:8px;}
+.end-title em{color:var(--sky);font-style:italic;}
+.end-sub{color:rgba(255,255,255,.55);font-size:15.5px;margin-bottom:22px;}
+.end-grade{font-family:var(--serif);font-size:44px;font-weight:700;width:100px;height:100px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 22px;border:3px solid;line-height:1;}
+.end-grade-emoji{font-size:38px;line-height:1;}
+.end-grade-label{font-size:9.5px;font-weight:700;letter-spacing:.12em;margin-top:4px;font-family:var(--font);}
+.grade-gold{color:var(--gold);border-color:var(--gold);background:rgba(212,148,10,.1);}
+.grade-silver{color:#C7CDD4;border-color:#C7CDD4;background:rgba(199,205,212,.1);}
+.grade-bronze{color:#CD7F32;border-color:#CD7F32;background:rgba(205,127,50,.1);}
+.end-stats{display:flex;gap:14px;justify-content:center;margin-bottom:22px;flex-wrap:wrap;}
+.end-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 20px;}
+.end-stat-n{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--sky);}
+.end-stat-l{font-size:9.5px;color:rgba(255,255,255,.4);letter-spacing:.1em;margin-top:2px;}
+.end-feedback{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 20px;font-size:15px;color:rgba(255,255,255,.65);line-height:1.7;text-align:left;margin-bottom:22px;}
+.recap-list{display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:26px;}
+.recap-item{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px 16px;font-size:14px;color:rgba(255,255,255,.7);}
+.recap-item strong{color:#fff;}
+
+@media(max-width:560px){
+  .intro-stats{gap:10px;}
+  .end-stats{gap:10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro-screen">
+  <div class="intro-orb" style="width:520px;height:520px;background:radial-gradient(rgba(0,174,239,.14),transparent);top:-180px;right:-180px;"></div>
+  <div class="intro-orb" style="width:360px;height:360px;background:radial-gradient(rgba(212,148,10,.08),transparent);bottom:-100px;left:-100px;"></div>
+
+  <div class="intro-inner">
+    <div class="intro-badge">🖥️ APPOINTMENT SETTER</div>
+    <div class="intro-title">CRM Scenario —<br><em>What Would You Do?</em></div>
+    <div class="intro-sub">A warm lead just asked for a personal callback. Three decisions stand between you and keeping this lead alive in the system. Get them right.</div>
+
+    <div class="intro-stats">
+      <div class="intro-stat"><div class="intro-stat-n">3</div><div class="intro-stat-l">DECISIONS</div></div>
+      <div class="intro-stat"><div class="intro-stat-n">🔥</div><div class="intro-stat-l">STREAK BONUS</div></div>
+      <div class="intro-stat"><div class="intro-stat-n">🥉🥈🥇</div><div class="intro-stat-l">GRADE</div></div>
+    </div>
+
+    <div class="intro-scenario">
+      <div class="intro-scenario-label">📞 YOUR SCENARIO</div>
+      <div class="intro-scenario-text">You just finished a call. The customer was <strong style="color:#fff;">genuinely interested</strong> — asked questions, mentioned a high bill — but asked you to call back <strong style="color:var(--sky);">tomorrow morning before 9am</strong> before they head into a meeting. <strong style="color:var(--orange);">Nothing was booked. Your job: don't let this one slip.</strong></div>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">Let's go ⚡</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game-screen">
+  <div class="hud">
+    <div class="hud-inner">
+      <div style="flex:1;">
+        <div class="hud-round" id="hud-round">DECISION 1 / 3</div>
+        <div class="hud-title" id="hud-title">Loading...</div>
+      </div>
+      <div class="hud-dots" id="hud-dots">
+        <div class="hud-dot" id="dot-0"></div>
+        <div class="hud-dot" id="dot-1"></div>
+        <div class="hud-dot" id="dot-2"></div>
+      </div>
+      <div class="streak-badge" id="streak-badge">🔥 x1</div>
+    </div>
+  </div>
+
+  <div class="scene-wrap">
+    <div id="round-content"></div>
+  </div>
+</div>
+
+<!-- END -->
+<div id="end-screen">
+  <div class="end-inner">
+    <div class="end-icon" id="end-icon">🏆</div>
+    <div class="end-title" id="end-title">Systems <em>Mastered.</em></div>
+    <div class="end-sub" id="end-sub">The lead is exactly where it needs to be — and you're ready for tomorrow.</div>
+
+    <div class="end-grade" id="end-grade"><div class="end-grade-emoji">🥇</div><div class="end-grade-label">GOLD</div></div>
+
+    <div class="end-stats">
+      <div class="end-stat"><div class="end-stat-n" id="es-score">0</div><div class="end-stat-l">SCORE</div></div>
+      <div class="end-stat"><div class="end-stat-n" id="es-correct">0/3</div><div class="end-stat-l">FIRST ATTEMPTS</div></div>
+      <div class="end-stat"><div class="end-stat-n" id="es-streak">x1</div><div class="end-stat-l">BEST STREAK</div></div>
+    </div>
+
+    <div class="end-feedback" id="end-feedback"></div>
+
+    <div class="recap-list" id="recap-list"></div>
+
+    <button class="start-btn" onclick="restartGame()" style="font-size:14px;padding:14px 32px;">Play again ↺</button>
+  </div>
+</div>
+
+<script>
+const ROUNDS=[
+  {
+    tag:'📞 DIALER DISPOSITION',
+    headline:"You just finished the call.",
+    text:'The customer picked up. They were <strong>interested</strong> — asked questions about solar, mentioned their bill is high, seemed genuine. But they asked you to call back <strong>tomorrow morning before 9am</strong> because they\'re about to head into a meeting.<br><br>Nothing was booked. Just a callback request.',
+    responses:[
+      {title:'Booked',desc:'An appointment was made',correct:false,
+        feedback:'Nothing was booked. <strong>Booked</strong> means an appointment is in the calendar — that\'s not what happened here. The customer was interested and asked for a callback. Disposition as <strong>Callback</strong>.'},
+      {title:'Callback',desc:'Customer requested a specific callback',correct:true,
+        feedback:'<strong>Correct.</strong> A specific callback was requested. Callback is exactly right — it flags the lead for follow-up and keeps it visible in your pipeline.'},
+      {title:'Completed',desc:'Call done — no further action needed',correct:false,
+        feedback:'<strong>Completed</strong> means no further action needed — the interaction is done. But you have a follow-up to make tomorrow. This isn\'t done. Disposition as <strong>Callback</strong>.'},
+    ]
+  },
+  {
+    tag:'✅ PERSONAL CALLBACK',
+    headline:'Callback dispositioned. Now the CRM.',
+    text:'The customer asked for a call <strong>tomorrow morning before 9am</strong>. They seemed genuinely interested. This is a personal callback — one <strong>you\'re</strong> committing to, not one that gets loaded for you automatically. You need to make sure it doesn\'t fall through.',
+    responses:[
+      {title:'Leave it — you\'ll remember to call tomorrow',desc:'You know the timing, no need to write it down',correct:false,
+        feedback:'<strong>Never rely on memory.</strong> If it\'s not in the CRM, it doesn\'t exist. A warm lead who was genuinely interested deserves to be tracked properly.'},
+      {title:'Set it as a personal callback in Zoho CRM for tomorrow before 9am',desc:'Managed via the homepage/CB list — not the dialer',correct:true,
+        feedback:'<strong>Correct.</strong> Personal callbacks — ones you commit to, not the ones loaded for you — go in Zoho CRM and get tracked through the homepage/CB list. Set for the right time, and it won\'t get lost.'},
+      {title:'Call today anyway — get ahead of it',desc:'Better to be proactive',correct:false,
+        feedback:'The customer said <strong>tomorrow</strong>. Calling today — even with good intentions — means you weren\'t listening. They\'ll notice. Set it for the day and time they asked for.'},
+    ]
+  },
+  {
+    tag:'📅 TOMORROW MORNING',
+    headline:"8:58am. You call. They don't pick up.",
+    text:'Rings out. No answer. This was a warm lead — they were interested yesterday. What do you do?',
+    responses:[
+      {title:'Mark it complete and move on',desc:'You tried — that\'s enough',correct:false,
+        feedback:'<strong>Never mark a callback complete unless you\'ve had the actual conversation.</strong> A warm lead who was interested yesterday doesn\'t disappear after one missed call.'},
+      {title:'Try again a couple more times today, then move it to tomorrow',desc:'A missed call is nothing — keep working it',correct:true,
+        feedback:'<strong>Correct.</strong> One missed call is nothing. Try again a couple more times throughout the day, and if it\'s still no answer, move it to the next day and keep going.'},
+      {title:'Leave it — one miss is enough',desc:'They had their chance',correct:false,
+        feedback:'One missed call isn\'t a reason to give up on a warm lead. Try again a couple more times today before moving it forward.'},
+    ]
+  },
+];
+
+let currentRound=0, score=0, streak=1, bestStreak=1, firstAttemptCorrect=0, wrongThisRound={};
+
+// ── SOUND EFFECTS ──
+let audioCtx=null;
+function getCtx(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return audioCtx; }
+function beep(freq,dur,type,gain){
+  const ctx=getCtx(); if(!ctx) return;
+  const o=ctx.createOscillator(), g=ctx.createGain();
+  o.type=type||'sine'; o.frequency.value=freq;
+  o.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(gain||0.12, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+dur);
+  o.start(); o.stop(ctx.currentTime+dur);
+}
+function soundCorrect(){ beep(720,0.1,'sine',0.12); setTimeout(()=>beep(960,0.16,'sine',0.12),90); }
+function soundWrong(){ beep(180,0.22,'sawtooth',0.09); }
+function soundFanfare(){
+  [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,0.28,'triangle',0.13),i*110));
+}
+
+// ── CONFETTI ──
+function burstConfetti(x,y,count){
+  const host=document.body;
+  const emojis=['⚡','✨','🎉','💥'];
+  for(let i=0;i<(count||14);i++){
+    const s=document.createElement('div');
+    s.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.position='fixed';
+    s.style.left=x+'px'; s.style.top=y+'px';
+    s.style.fontSize=(12+Math.random()*14)+'px';
+    s.style.pointerEvents='none';
+    s.style.zIndex=9999;
+    s.style.transition='transform 0.8s cubic-bezier(.2,.8,.3,1), opacity 0.8s ease';
+    host.appendChild(s);
+    const angle=Math.random()*Math.PI*2, dist=60+Math.random()*120;
+    requestAnimationFrame(()=>{
+      s.style.transform=`translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist-40}px) rotate(${Math.random()*360}deg)`;
+      s.style.opacity='0';
+    });
+    setTimeout(()=>s.remove(),850);
+  }
+}
+
+function startGame(){
+  document.getElementById('intro-screen').style.display='none';
+  document.getElementById('game-screen').style.display='block';
+  currentRound=0;score=0;streak=1;bestStreak=1;firstAttemptCorrect=0;wrongThisRound={};
+  renderRound();
+}
+
+function restartGame(){
+  document.getElementById('end-screen').style.display='none';
+  startGame();
+}
+
+function updateHUD(){
+  document.getElementById('hud-round').textContent=`DECISION ${currentRound+1} / ${ROUNDS.length}`;
+  document.getElementById('hud-title').textContent=ROUNDS[currentRound].tag;
+  for(let i=0;i<ROUNDS.length;i++){
+    const dot=document.getElementById('dot-'+i);
+    dot.className='hud-dot'+(i<currentRound?' done':i===currentRound?' active':'');
+  }
+  const badge=document.getElementById('streak-badge');
+  badge.textContent=`🔥 x${streak}`;
+  badge.classList.toggle('hot',streak>1);
+}
+
+function renderRound(){
+  if(currentRound>=ROUNDS.length){ endGame(); return; }
+  const round=ROUNDS[currentRound];
+  wrongThisRound={};
+  updateHUD();
+
+  let html=`
+    <div class="decision-label">DECISION ${currentRound+1} OF ${ROUNDS.length}</div>
+    <div class="scene-card" id="scene-card">
+      <div class="scene-tag">${round.tag}</div>
+      <div class="scene-headline">${round.headline}</div>
+      <div class="scene-text">${round.text}</div>
+    </div>
+    <div class="responses" id="responses-wrap">`;
+
+  round.responses.forEach((r,i)=>{
+    html+=`<div class="response-card" onclick="pick(${i})" id="resp-${i}">
+      <div class="response-icon" id="icon-${i}"></div>
+      <div class="response-main">
+        <div class="response-title">${r.title}</div>
+        <div class="response-desc">${r.desc}</div>
+      </div>
+    </div>`;
+  });
+
+  html+=`</div>
+    <div class="feedback-popup" id="round-feedback"></div>
+    <div id="next-btn-wrap"></div>`;
+
+  document.getElementById('round-content').innerHTML=html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function pick(i){
+  const round=ROUNDS[currentRound];
+  const response=round.responses[i];
+  const fb=document.getElementById('round-feedback');
+  const isFirstAttempt=!wrongThisRound[i] && Object.keys(wrongThisRound).length===0;
+
+  if(response.correct){
+    round.responses.forEach((_,j)=>{
+      const el=document.getElementById('resp-'+j);
+      const icon=document.getElementById('icon-'+j);
+      if(j===i){ el.classList.add('correct'); icon.textContent='✓'; }
+      else if(wrongThisRound[j]){ el.classList.add('wrong-locked'); icon.textContent='✗'; }
+      else { el.classList.add('disabled'); }
+    });
+
+    if(isFirstAttempt){
+      firstAttemptCorrect++;
+      streak=Math.min(streak+1,5);
+    } else {
+      streak=1;
+    }
+    bestStreak=Math.max(bestStreak,streak);
+    const pts=100*streak*(isFirstAttempt?1:0.5);
+    score+=Math.round(pts);
+    updateHUD();
+
+    const card=document.getElementById('scene-card');
+    card.classList.add('hit');
+    setTimeout(()=>card.classList.remove('hit'),400);
+
+    soundCorrect();
+    const clickedEl=document.getElementById('resp-'+i);
+    const rect=clickedEl.getBoundingClientRect();
+    burstConfetti(rect.left+rect.width/2, rect.top+rect.height/2, streak>1?22:12);
+
+    fb.className='feedback-popup show ok';
+    fb.innerHTML=`✅ ${response.feedback}${streak>1?`<br><br><strong>🔥 ${streak}x streak!</strong> +${Math.round(pts)} points`:''}`;
+
+    setTimeout(()=>{
+      const wrap=document.getElementById('next-btn-wrap');
+      const isLast=currentRound>=ROUNDS.length-1;
+      wrap.innerHTML=`<button class="next-btn" onclick="nextRound()">${isLast?'See results 🏆':'Next decision →'}</button>`;
+      wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+    },500);
+
+  } else {
+    wrongThisRound[i]=true;
+    const el=document.getElementById('resp-'+i);
+    const icon=document.getElementById('icon-'+i);
+    el.classList.add('wrong');
+    icon.textContent='✗';
+    streak=1;
+    soundWrong();
+    updateHUD();
+
+    fb.className='feedback-popup show bad';
+    fb.innerHTML=`❌ ${response.feedback} <strong>Try again.</strong>`;
+
+    setTimeout(()=>{
+      el.classList.remove('wrong');
+      el.classList.add('wrong-locked');
+      el.style.pointerEvents='none';
+    },1200);
+  }
+}
+
+function nextRound(){
+  currentRound++;
+  document.getElementById('round-content').innerHTML='';
+  renderRound();
+}
+
+function endGame(){
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('end-screen').style.display='flex';
+
+  const pct=Math.round(firstAttemptCorrect/ROUNDS.length*100);
+  let grade,gradeClass,emoji;
+  if(pct===100){grade='GOLD';gradeClass='grade-gold';emoji='🥇';}
+  else if(pct>=66){grade='SILVER';gradeClass='grade-silver';emoji='🥈';}
+  else{grade='BRONZE';gradeClass='grade-bronze';emoji='🥉';}
+
+  document.getElementById('end-grade').innerHTML=`<div class="end-grade-emoji">${emoji}</div><div class="end-grade-label">${grade}</div>`;
+  document.getElementById('end-grade').className='end-grade '+gradeClass;
+
+  document.getElementById('es-score').textContent=score.toLocaleString();
+  document.getElementById('es-correct').textContent=firstAttemptCorrect+'/'+ROUNDS.length;
+  document.getElementById('es-streak').textContent='x'+bestStreak;
+
+  const feedbacks={
+    'GOLD':'<strong>Flawless.</strong> Right disposition, right CRM action, right follow-through — first try, every time. This lead is in great hands.',
+    'SILVER':'<strong>Solid, with a couple of retries.</strong> You got there — review the ones you missed so they\'re automatic next time.',
+    'BRONZE':'<strong>Needs a re-run.</strong> A few of these took multiple tries. Re-read the feedback on each decision and play again — this needs to be second nature.',
+  };
+  document.getElementById('end-feedback').innerHTML=feedbacks[grade]||feedbacks['BRONZE'];
+
+  document.getElementById('recap-list').innerHTML=`
+    <div class="recap-item">✅ <div>Dispositioned correctly as <strong>Callback</strong> — not Booked, not Completed</div></div>
+    <div class="recap-item">✅ <div>Personal callbacks go in <strong>Zoho CRM</strong>, tracked via the <strong>homepage/CB list</strong> — not the dialer</div></div>
+    <div class="recap-item">✅ <div>No answer? Try a <strong>couple more times that day</strong>, then move it to tomorrow — don't give up after one miss</div></div>
+  `;
+
+  soundFanfare();
+  if(grade==='GOLD'){
+    const cx=window.innerWidth/2, cy=window.innerHeight*0.35;
+    burstConfetti(cx, cy, 40);
+    setTimeout(()=>burstConfetti(cx-100, cy, 24),150);
+    setTimeout(()=>burstConfetti(cx+100, cy, 24),300);
+  } else {
+    const grid=document.getElementById('end-grade');
+    const r=grid.getBoundingClientRect();
+    burstConfetti(r.left+r.width/2, r.top+r.height/2, 16);
+  }
+}
+</script>
+</body>
+</html>
