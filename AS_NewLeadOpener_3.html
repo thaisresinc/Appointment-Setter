@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Lead Opener | Appointment Setter</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--sky:#00AEEF;--sky2:#0090C4;--sky-lt:#EAF6FD;
+  --font:'Century Gothic','Futura','Trebuchet MS',Arial,sans-serif;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;--border:#C8DDE8;
+}
+body{font-family:var(--font);background:var(--light);color:var(--body);line-height:1.5;}
+
+.hero{background:linear-gradient(135deg,#0A3542 0%,#0d4a5e 55%,#0090C4 140%);color:#fff;padding:46px 32px 38px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;top:-80px;right:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.06);}
+.hero::before{content:'';position:absolute;bottom:-100px;left:20%;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.04);}
+.inner{max-width:1000px;margin:0 auto;position:relative;z-index:1;}
+.hero-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:#7FE0FF;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.hero-eyebrow span{width:6px;height:6px;border-radius:50%;background:#7FE0FF;}
+.hero-title{font-size:36px;font-weight:700;margin-bottom:10px;line-height:1.15;}
+.hero-sub{font-size:14.5px;color:rgba(255,255,255,.7);max-width:640px;margin-bottom:20px;}
+.hero-pills{display:flex;gap:10px;flex-wrap:wrap;}
+.hero-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:7px 15px;font-size:12.5px;font-weight:600;}
+
+.section{padding:36px 32px;background:#fff;}
+.inner-narrow{max-width:1000px;margin:0 auto;}
+
+.flow-label{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--sky2);margin-bottom:6px;}
+.flow-title{font-size:21px;font-weight:700;color:var(--navy);margin-bottom:16px;}
+.flow-row{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:6px 4px 18px;}
+.flow-step{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;width:112px;}
+.flow-circle{width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:9.5px;font-weight:700;color:#fff;padding:6px;line-height:1.2;box-shadow:0 4px 10px rgba(0,0,0,.12);transition:transform .15s;border:3px solid #fff;}
+.flow-step:hover .flow-circle{transform:scale(1.06);}
+.flow-step.active .flow-circle{transform:scale(1.12);box-shadow:0 6px 16px rgba(0,0,0,.22);}
+.flow-connector{flex:1;height:3px;margin-top:31px;min-width:16px;background:repeating-linear-gradient(90deg,#D8E4EA 0,#D8E4EA 6px,transparent 6px,transparent 12px);}
+
+.phone-section{background:#0A3542;padding:40px 32px 46px;position:relative;overflow:hidden;}
+.phone-section::before{content:'';position:absolute;top:-100px;right:-100px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.03);}
+.source-label{font-size:11px;font-weight:700;letter-spacing:.12em;color:#7FE0FF;margin-bottom:6px;}
+.source-title{font-size:21px;font-weight:700;color:#fff;margin-bottom:4px;}
+.source-sub{font-size:13.5px;color:rgba(255,255,255,.55);margin-bottom:20px;}
+
+.source-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
+@media(max-width:760px){.source-grid{grid-template-columns:repeat(2,1fr);}}
+.source-btn{border-radius:12px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .15s;border:2px solid transparent;background:rgba(255,255,255,.06);}
+.source-btn .src-icon{font-size:24px;margin-bottom:6px;display:block;}
+.source-btn .src-name{font-size:12px;font-weight:700;color:rgba(255,255,255,.65);line-height:1.3;}
+.source-btn:hover{background:rgba(255,255,255,.1);}
+.source-btn.active{background:#fff;}
+.source-btn.active .src-name{color:var(--navy);}
+
+.phone-frame{max-width:400px;margin:0 auto;background:#fff;border-radius:34px;padding:14px;box-shadow:0 20px 50px rgba(0,0,0,.35);position:relative;}
+.phone-notch{width:90px;height:22px;background:#0A3542;border-radius:0 0 14px 14px;margin:0 auto 10px;}
+.phone-screen{background:#EAF3F7;border-radius:22px;padding:18px 14px 14px;min-height:260px;}
+.phone-callbar{display:flex;align-items:center;gap:10px;padding:0 4px 14px;border-bottom:1px solid #D5E3EA;margin-bottom:14px;}
+.phone-avatar{width:38px;height:38px;border-radius:50%;background:var(--sky);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.phone-callinfo .pc-name{font-size:13.5px;font-weight:700;color:var(--navy);}
+.phone-callinfo .pc-status{font-size:11px;color:#0B7A4E;display:flex;align-items:center;gap:5px;}
+.phone-callinfo .pc-status span{width:6px;height:6px;border-radius:50%;background:#0B7A4E;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.chat-bubble{background:#fff;border-radius:16px 16px 16px 4px;padding:13px 15px;font-size:13.5px;line-height:1.55;color:var(--body);box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:10px;max-width:92%;position:relative;}
+.chat-bubble .cb-tag{display:block;font-size:9.5px;font-weight:700;letter-spacing:.08em;color:var(--sky2);margin-bottom:5px;}
+.chat-bubble .fill{color:var(--sky2);font-weight:700;}
+.copy-row{display:flex;justify-content:center;margin-top:14px;}
+.copy-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:9px 20px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+.copy-btn:hover{background:rgba(255,255,255,.2);}
+
+.stage-section{padding:0;}
+.stage-card{max-width:1000px;margin:0 auto;padding:20px 32px;cursor:pointer;user-select:none;}
+.stage-head{display:flex;align-items:center;gap:14px;}
+.stage-badge{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.15);}
+.stage-num{font-size:10.5px;font-weight:700;letter-spacing:.1em;margin-bottom:2px;}
+.stage-title{font-size:18px;font-weight:700;color:var(--navy);}
+.stage-teaser{font-size:13px;color:var(--muted);margin-top:2px;}
+.stage-chevron{margin-left:auto;font-size:14px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+.stage-card.open .stage-chevron{transform:rotate(180deg);}
+.stage-body{max-width:1000px;margin:0 auto;padding:0 32px 28px;display:none;}
+.stage-card.open + .stage-body{display:block;}
+
+.bubble-row{margin-bottom:22px;}
+.tag-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.1em;margin:0 0 8px;}
+.tag-label span{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block;}
+.script-line{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(10,53,66,.07);}
+.script-line:last-child{border-bottom:none;}
+.script-line .qmark{font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:.6;flex-shrink:0;margin-top:6px;}
+.script-line .qtext{font-size:15.5px;line-height:1.75;color:var(--navy);padding-top:2px;}
+.script-line .fill{font-weight:700;}
+.line-note{font-size:12.5px;font-style:italic;color:var(--muted);margin-top:8px;padding-left:40px;}
+
+.tip-box{display:flex;gap:12px;background:#FEF8E6;border:1.5px solid #F0DDA6;border-radius:12px;padding:15px 17px;margin-top:8px;}
+.tip-box .ti{font-size:22px;flex-shrink:0;}
+.tip-box .tt{font-size:13px;color:#7a5c00;line-height:1.55;}
+
+.narration{background:linear-gradient(135deg,#EAF6FD,#F4F8FB);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;margin:24px 32px;max-width:936px;}
+.narration-q{font-size:34px;color:var(--sky);font-family:Georgia,serif;line-height:1;flex-shrink:0;}
+.narration-text{font-size:14.5px;color:var(--navy);line-height:1.65;}
+.footer-note{text-align:center;padding:22px;font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · SCRIPTS & CALL FLOW</div>
+    <div class="hero-title">New Lead Opener</div>
+    <div class="hero-sub">Same 8-stage flow every time — but how you open depends entirely on where the lead came from. Get the first 20 seconds right and everything after it gets easier.</div>
+    <div class="hero-pills">
+      <div class="hero-pill">🔄 8-stage flow</div>
+      <div class="hero-pill">📥 6 lead sources</div>
+      <div class="hero-pill">💬 Tap the flow to jump around</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="inner-narrow">
+    <div class="flow-label">THE CONVERSATION FLOW</div>
+    <div class="flow-title">Every call follows the same shape</div>
+    <div class="flow-row" id="flowRow"></div>
+  </div>
+</div>
+
+<div class="phone-section">
+  <div class="inner">
+    <div class="source-label">STAGE 1 — INTRO</div>
+    <div class="source-title">Pick the lead source</div>
+    <div class="source-sub">The opener has to match where this lead actually came from.</div>
+    <div class="source-grid" id="sourceGrid"></div>
+
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-callbar">
+          <div class="phone-avatar" id="phoneAvatar">🚪</div>
+          <div class="phone-callinfo">
+            <div class="pc-name">Incoming lead</div>
+            <div class="pc-status"><span></span>Live call</div>
+          </div>
+        </div>
+        <div id="phoneBubbles"></div>
+      </div>
+    </div>
+    <div class="copy-row"><button class="copy-btn" onclick="copyOpener()">📋 Copy this opener</button></div>
+  </div>
+</div>
+
+<div id="stagesHost"></div>
+
+<div class="footer-note">RESINC Solar &amp; Batteries · Appointment Setter · Scripts &amp; Call Flow</div>
+
+<script>
+const FLOW = [
+  {t:"Intro",c:"#00AEEF",i:"👋"},
+  {t:"Bill Pain",c:"#E0664A",i:"💸"},
+  {t:"Confirm\nAddress",c:"#0E8074",i:"📍"},
+  {t:"Roof\nCheck",c:"#0B7A4E",i:"🏠"},
+  {t:"Who is\nRESINC?",c:"#D4940A",i:"🏆"},
+  {t:"Pre-empt\nObjections",c:"#6B4FBB",i:"🛡️"},
+  {t:"Build\nValue",c:"#4F5FBB",i:"📈"},
+  {t:"Close &\nLock In",c:"#C23B7A",i:"🎯"},
+];
+
+const flowRow = document.getElementById('flowRow');
+flowRow.innerHTML = FLOW.map((f,i) => `
+  <div class="flow-step${i===0?' active':''}" data-i="${i}" onclick="jumpTo(${i})">
+    <div class="flow-circle" style="background:${f.c};">${f.i}<br>${f.t.split('\\n')[0]}</div>
+  </div>
+  ${i < FLOW.length-1 ? '<div class="flow-connector"></div>' : ''}
+`).join('');
+
+function jumpTo(i){
+  flowRow.querySelectorAll('.flow-step').forEach(s => s.classList.remove('active'));
+  flowRow.querySelectorAll('.flow-step')[i].classList.add('active');
+  if(i===0){ document.querySelector('.phone-section').scrollIntoView({behavior:'smooth',block:'start'}); }
+  else{
+    const el = document.getElementById('stage-'+i);
+    if(el){
+      const card = el.querySelector('.stage-card');
+      if(card && !card.classList.contains('open')) card.classList.add('open');
+      el.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  }
+}
+
+const SOURCES = [
+  { id:'d2d', icon:'🚪', name:'Door Knocker Reschedule',
+    bubbles:[
+      {tag:null,text:"It's <span class='fill'>___</span> here from RESINC — how's your day been?"},
+      {tag:null,text:"...one of our team members was out doorknocking in your area a little while back and had a chat with you about solar — looks like the appointment we set up together didn't quite end up happening. No stress at all, these things come up — I just wanted to reconnect and see if now's a better time to look at it properly?"},
+    ]},
+  { id:'ambassador', icon:'🤝', name:'Ambassador Referral',
+    bubbles:[
+      {tag:null,text:"It's <span class='fill'>___</span> here from RESINC — how's your day been?"},
+      {tag:null,text:"...<span class='fill'>(Ambassador's name)</span> mentioned you might be interested in taking a look at solar and passed your details across — hope that's alright I'm reaching out. Is now a fairly accurate time to chat, or is it not the best moment?"},
+    ]},
+  { id:'google', icon:'🔍', name:'Google Search (Website)',
+    bubbles:[
+      {tag:null,text:"It's <span class='fill'>___</span> here from RESINC SOLAR — you popped your details through on our website just <span class='fill'>(relevant time period)</span>, how's it going?"},
+      {tag:'IF NOT STATED',text:"It seems more and more people are hearing about us lately — do you mind if I ask how you actually found us?"},
+      {tag:'IF ADDRESS/BILL MISSING',text:"Just to double check you're in one of our service areas, do you mind if I ask what address you're thinking about installing solar at? And what do the power bills look like per quarter there?"},
+    ]},
+  { id:'ads', icon:'📢', name:'Online Ads',
+    bubbles:[
+      {tag:null,text:"It's <span class='fill'>___</span> here from RESINC — how's your day been / how's it going?"},
+      {tag:null,text:"...we had your details come through <span class='fill'>(relevant time period)</span> from one of our online ads, where you indicated you were spending <span class='fill'>$XXX</span> per quarter on electricity at <span class='fill'>(shortened address, e.g. 36 Newton Av)</span>, and you might've been looking at how to potentially bring that down using the government rebates... was that $XXX a fairly accurate figure, or is it usually a bit lower than that?"},
+    ]},
+  { id:'social', icon:'📱', name:'Social Media (Form)',
+    bubbles:[
+      {tag:null,text:"It's <span class='fill'>___</span> here from RESINC SOLAR — you submitted an enquiry through <span class='fill'>(Facebook / Instagram)</span> just <span class='fill'>(relevant time period)</span>, how's it going?"},
+      {tag:null,text:"I'm glad you found us there — do you mind me asking what's prompted you to look into solar?"},
+    ]},
+  { id:'referral', icon:'👋', name:'Customer Referral (Form)',
+    bubbles:[
+      {tag:null,text:"It's <span class='fill'>___</span> here from RESINC — how's your day been?"},
+      {tag:null,text:"...<span class='fill'>(Existing customer's name)</span>, one of our customers, put your details through saying you might be interested in taking a look at solar — hope that's alright I'm giving you a call. Is now an alright time to have a quick chat?"},
+    ]},
+];
+
+const sourceGrid = document.getElementById('sourceGrid');
+sourceGrid.innerHTML = SOURCES.map((s,i) => `
+  <div class="source-btn${i===0?' active':''}" data-id="${s.id}">
+    <span class="src-icon">${s.icon}</span>
+    <div class="src-name">${s.name}</div>
+  </div>
+`).join('');
+
+function showSource(id){
+  const s = SOURCES.find(x => x.id === id);
+  document.getElementById('phoneAvatar').textContent = s.icon;
+  document.getElementById('phoneBubbles').innerHTML = s.bubbles.map(b => `
+    <div class="chat-bubble">${b.tag ? `<span class="cb-tag">${b.tag}</span>` : ''}${b.text}</div>
+  `).join('');
+  sourceGrid.querySelectorAll('.source-btn').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+}
+sourceGrid.querySelectorAll('.source-btn').forEach(el => {
+  el.addEventListener('click', () => showSource(el.dataset.id));
+});
+showSource('d2d');
+
+function copyOpener(){
+  const text = document.getElementById('phoneBubbles').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied';
+    setTimeout(() => btn.textContent = orig, 1500);
+  }).catch(()=>{});
+}
+
+const STAGES = [
+  { n:1, color:"#E0664A", teaser:"Establish the pain, then dig into why the bills keep climbing.", icon:"💸", title:"Bill Pain & Power Drivers", groups:[
+    { tag:"BILL PAIN", lines:[
+      "So in the details you entered, you said you were paying about <span class='fill'>$XXX</span> per quarter for electricity — is that still the case, or has it somehow gone down on its own since then?",
+      "Got it... so that's about <span class='fill'>$X,XXX</span> per year — I bet you can think of a few things you'd rather spend that on than just handing it over to your power company, right!?",
+      "On that exact point... how do the bills compare now to last year or the year before — have they been fairly consistent, or are they creeping up? What d'you reckon they'll be like next year?",
+    ]},
+    { tag:"POWER DRIVERS", lines:[
+      "Alright... so in your opinion, what do you think is the main driver of those increases — is there anything in particular pushing them up, or is it just the increase in rates?",
+      "Hey, just so I can get an idea of whether we'd be able to help — can I ask you a few questions about your property and how you're using power there? What does home look like for you — is it just yourself?",
+    ], note:"This is where you gather partner details and consumption patterns." },
+  ]},
+  { n:2, color:"#0E8074", teaser:"Confirm the property address and get the household picture.", icon:"📍", title:"Confirm Address & Partner Details", groups:[
+    { tag:null, lines:["Perfect — now I just wanted to confirm we have your enquiry listed for the property located at <span class='fill'>(ADDRESS)</span>?"]},
+  ]},
+  { n:3, color:"#0B7A4E", teaser:"Check the roof via satellite, rule out any install blockers.", icon:"🏠", title:"Roof Check & Property", groups:[
+    { tag:null, lines:[
+      "I'm just having a look at your property now via satellite images to check your roof for anything that might get in the way of installation. Just to confirm I'm looking at the correct property — is it the <span class='fill'>(describe property, e.g. roof colour, corner block, pool)</span>?",
+      "So you're not planning on making any drastic changes — like doing an entire knock-down and rebuild — in the next couple of months, right?",
+    ]},
+  ]},
+  { n:4, color:"#D4940A", teaser:"Build credibility — awards, reputation, long-term care.", icon:"🏆", title:"Who is RESINC", groups:[
+    { tag:null, lines:[
+      "I'm not sure if you've seen any of the coverage on us online, but we've just won some awards for best-rated and most popular solar business in Australia, out of around 4,000 competing companies — so we're really proud of that. But that means we work really hard in the background, not only educating customers upfront, but also following through, installing to the highest standard, and being there for our customers for years and years post-installation.",
+    ]},
+  ]},
+  { n:5, color:"#6B4FBB", teaser:"Get ahead of \"why haven't you gone solar yet\" and affordability.", icon:"🛡️", title:"Pre-empt & Address Objections", groups:[
+    { tag:"PRE-EMPTING OBJECTIONS", lines:[
+      "So is there any reason why you and <span class='fill'>(partner's name)</span> haven't previously installed solar in the past? Was it more the cost associated, or certainty around how it would work out for you?",
+    ]},
+    { tag:"AFFORDABILITY", lines:[
+      "Our company makes it possible for anyone who can afford to pay their current electricity bills to afford solar. We offer a range of funding options where installation can be done with no money upfront — so rather than continuing to pay those <span class='fill'>($BILL AMOUNT)</span> bills every quarter, by investing in solar, the system pays for itself with the savings it creates. Similar to why people choose to own their home rather than rent.",
+      "Have you heard about how you can install solar for nothing upfront, and have the savings help pay off the system?",
+    ]},
+  ]},
+  { n:6, color:"#4F5FBB", teaser:"Test close, request the bill, and explain what the assessment covers.", icon:"📈", title:"Build Value in Assessment", groups:[
+    { tag:"TEST CLOSE", lines:[
+      "So if we could custom design a system that's affordable for you and <span class='fill'>(partner's name)</span>, which will help you start saving money, and we could install it for no upfront costs... would you be opposed to seeing what the numbers look like for you?",
+    ]},
+    { tag:"BILL REQUEST", lines:[
+      "Yea cool — all that we ask is for you and <span class='fill'>(partner's name)</span> to have a copy of your electricity bill available, so our solar specialist can use it to provide you with a proper assessment and other ways to reduce your bills. Do you get your bills by email or by post?",
+      "That's great — after our chat I'll have an email sent out to you so you can pop it across to us to assess in advance.",
+    ]},
+    { tag:"PURPOSE OF ASSESSMENT", lines:[
+      "They're also going to check your roof and meter box for safety, compliance, and peace of mind — then sit down with you and <span class='fill'>(partner's name)</span> to custom design a system tailored to your needs. That's why it's so important for any adults using electricity in the home to be available.",
+      "We want to make sure the system we recommend gives you the best possible financial return — I imagine that's pretty important to you? That's why they'll ask about what appliances you're using and how often — dishwasher, washing machine, dryer, that kind of thing — plus answer any technical, financial, warranty, or insurance questions you have.",
+      "At the assessment we also check your eligibility for the current government rebates — so it's really important to have any homeowners attached to the property title available, since this is worth several thousand dollars. To do all this properly, we allocate about 60–90 minutes of our specialist's time, depending on how many questions you both have.",
+    ]},
+  ]},
+  { n:7, color:"#C23B7A", teaser:"Lock in a day and time — push for within 72 hours.", icon:"🎯", title:"Close & Lock In", groups:[
+    { tag:null, lines:["So with that in mind, what's yours and <span class='fill'>(partner's name)</span>'s schedule like? Are there any days or times that work best to catch you both at home together?"]},
+  ], tip:"Push for within 72 hours, ideally next day. The closer the appointment is to the booking call, the higher the sit rate. The further out, the more likely it falls through — always steer toward sooner." },
+];
+
+const stagesHost = document.getElementById('stagesHost');
+stagesHost.innerHTML = STAGES.map(s => `
+  <div class="stage-section" id="stage-${s.n}">
+    <div class="stage-card" onclick="toggleStage(this)" style="border-bottom:3px solid ${s.color}22;">
+      <div class="stage-head">
+        <div class="stage-badge" style="background:${s.color};">${s.icon}</div>
+        <div>
+          <div class="stage-num" style="color:${s.color};">STAGE ${s.n+1} OF 8</div>
+          <div class="stage-title">${s.title}</div>
+          <div class="stage-teaser">${s.teaser}</div>
+        </div>
+        <div class="stage-chevron">▾</div>
+      </div>
+    </div>
+    <div class="stage-body">
+      ${s.groups.map(g => `
+        <div class="bubble-row">
+          ${g.tag ? `<div class="tag-label" style="color:${s.color};"><span style="background:${s.color};"></span>${g.tag}</div>` : ''}
+          ${g.lines.map(l => `<div class="script-line"><div class="qmark" style="color:${s.color};">"</div><div class="qtext">${l}</div></div>`).join('')}
+          ${g.note ? `<div class="line-note">${g.note}</div>` : ''}
+        </div>
+      `).join('')}
+      ${s.tip ? `<div class="tip-box"><div class="ti">💡</div><div class="tt">${s.tip}</div></div>` : ''}
+    </div>
+  </div>
+`).join('');
+
+function toggleStage(el){
+  el.classList.toggle('open');
+}
+// Open the first stage by default so people see the pattern
+document.querySelector('.stage-card').classList.add('open');
+</script>
+</body>
+</html>
