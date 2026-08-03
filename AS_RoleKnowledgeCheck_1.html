@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Role Knowledge Check | Appointment Setter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0A3542;--navy2:#071F28;--sky:#00AEEF;--sky2:#0090C4;
+  --sky-lt:#EAF6FD;--sky-bg:#F2FAFF;
+  --green:#0B7A4E;--green-lt:#E3F5EC;
+  --red:#B5251B;--red-lt:#FDECEB;
+  --gold:#D4940A;--gold-lt:#FEF8E6;
+  --body:#1A2A32;--muted:#5A6E78;--light:#F4F8FB;
+  --border:#C8DDE8;--line:#E2EEF4;
+  --font:'DM Sans',system-ui,sans-serif;
+  --serif:'DM Serif Display',Georgia,serif;
+  --shadow:0 1px 4px rgba(10,53,66,.07),0 4px 14px rgba(10,53,66,.09);
+  --shadow-lg:0 6px 24px rgba(10,53,66,.13),0 16px 48px rgba(10,53,66,.10);
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--light);color:var(--body);overflow-x:hidden;}
+
+#prog{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,174,239,.15);z-index:200;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),#00D4FF);width:0%;transition:width .5s;}
+
+/* ── HERO ── */
+#hero{background:var(--navy);padding:0;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,174,239,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,.05) 1px,transparent 1px);background-size:48px 48px;}
+.hero-glow{position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(0,174,239,.18) 0%,transparent 70%);pointer-events:none;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky);}
+.hero-inner{max-width:860px;margin:0 auto;padding:52px 28px 36px;position:relative;z-index:1;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,174,239,.12);border:1px solid rgba(0,174,239,.28);border-radius:20px;padding:5px 14px;font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.22em;margin-bottom:14px;}
+.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--sky);display:inline-block;}
+.hero-title{font-family:var(--serif);color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.08;margin-bottom:8px;}
+.hero-title em{color:var(--sky);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.5);font-size:13.5px;line-height:1.65;max-width:500px;margin-bottom:20px;}
+.hero-steps{display:flex;gap:8px;flex-wrap:wrap;}
+.hero-step{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);}
+.hero-step.active-step{border-color:rgba(0,174,239,.4);color:var(--sky);background:rgba(0,174,239,.1);}
+.step-dot{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;}
+.hero-step.active-step .step-dot{background:var(--sky);color:var(--navy);}
+.hero-step.done-step .step-dot{background:var(--green);color:#fff;}
+.hero-step.done-step{border-color:rgba(11,122,78,.3);color:rgba(255,255,255,.4);}
+
+/* ── SECTIONS ── */
+.section{padding:36px 28px;}
+.inner{max-width:860px;margin:0 auto;}
+.sep{height:1px;background:var(--line);max-width:860px;margin:0 auto;}
+
+/* ── QUESTION WRAPPER ── */
+.q-wrap{max-width:860px;margin:0 auto;}
+.q-locked{display:none;}
+.q-locked.unlocked{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── QUESTION HEADER ── */
+.q-header{margin-bottom:20px;}
+.q-num{font-size:9px;font-weight:700;letter-spacing:.24em;color:var(--sky);margin-bottom:6px;}
+.q-format-badge{display:inline-flex;align-items:center;gap:5px;background:var(--sky-bg);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:9.5px;font-weight:700;color:var(--sky2);margin-bottom:10px;}
+.q-text{font-family:var(--serif);font-size:22px;color:var(--navy);line-height:1.25;}
+
+/* ── Q1: CHOICE CARDS ── */
+.choice-grid{display:flex;flex-direction:column;gap:10px;}
+.choice-card{
+  background:#fff;border-radius:12px;border:2px solid var(--line);
+  padding:16px 18px;cursor:pointer;
+  display:flex;align-items:flex-start;gap:14px;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--shadow);
+}
+.choice-card:hover:not(.disabled){border-color:var(--sky);transform:translateX(3px);background:var(--sky-bg);}
+.choice-card.selected-wrong{border-color:var(--red);background:var(--red-lt);animation:shake .35s ease;}
+.choice-card.selected-right{border-color:var(--green);background:var(--green-lt);}
+.choice-card.disabled{cursor:default;pointer-events:none;opacity:.5;}
+.choice-card.disabled.selected-right{opacity:1;}
+.choice-indicator{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  border:2px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--muted);
+  transition:all .2s;margin-top:1px;
+}
+.choice-card:hover:not(.disabled) .choice-indicator{border-color:var(--sky);color:var(--sky);}
+.choice-card.selected-right .choice-indicator{background:var(--green);border-color:var(--green);color:#fff;}
+.choice-card.selected-wrong .choice-indicator{background:var(--red);border-color:var(--red);color:#fff;}
+.choice-text{font-size:13.5px;color:var(--body);line-height:1.55;font-weight:500;}
+.choice-card.selected-right .choice-text{color:#0A4425;font-weight:600;}
+.choice-card.selected-wrong .choice-text{color:#7A1010;}
+
+/* ── Q2: SCENARIO ── */
+.scenario-box{
+  background:var(--navy);border-radius:14px;padding:22px 24px;
+  margin-bottom:18px;border-left:4px solid var(--sky);
+}
+.scenario-label{font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--sky);margin-bottom:8px;}
+.scenario-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.4;}
+.scenario-detail{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.65;}
+.scenario-detail strong{color:rgba(255,255,255,.9);}
+
+.decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){.decision-grid{grid-template-columns:1fr;}}
+.decision-card{
+  background:#fff;border-radius:12px;border:2px solid var(--line);
+  padding:18px 16px;cursor:pointer;
+  text-align:center;transition:all .22s;box-shadow:var(--shadow);
+}
+.decision-card:hover:not(.disabled){border-color:var(--sky);background:var(--sky-bg);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.decision-card.wrong{border-color:var(--red);background:var(--red-lt);animation:shake .35s ease;}
+.decision-card.right{border-color:var(--green);background:var(--green-lt);}
+.decision-card.disabled{pointer-events:none;opacity:.45;}
+.decision-card.disabled.right{opacity:1;}
+.dc-emoji{font-size:26px;margin-bottom:8px;}
+.dc-text{font-size:13px;font-weight:600;color:var(--body);line-height:1.4;}
+.decision-card.right .dc-text{color:#0A4425;}
+.decision-card.wrong .dc-text{color:#7A1010;}
+
+/* ── Q3: DRAG TO ANSWER ── */
+.drag-scene{display:flex;flex-direction:column;gap:16px;}
+.drag-chips-label{font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--muted);margin-bottom:8px;}
+.drag-chips{display:flex;flex-wrap:wrap;gap:10px;min-height:48px;padding:14px;background:#fff;border-radius:12px;border:1.5px solid var(--line);box-shadow:var(--shadow);}
+.drag-chip{
+  padding:9px 16px;border-radius:8px;border:2px solid var(--border);
+  background:var(--sky-bg);font-size:12.5px;font-weight:600;color:var(--navy);
+  cursor:grab;user-select:none;transition:all .18s;
+  display:flex;align-items:center;gap:7px;
+}
+.drag-chip:hover{border-color:var(--sky);background:var(--sky-lt);transform:translateY(-1px);}
+.drag-chip.dragging{opacity:.45;cursor:grabbing;}
+.drag-chip.placed{background:var(--green-lt);border-color:var(--green);color:#0A4425;cursor:default;}
+
+.drop-target{
+  background:#fff;border-radius:12px;border:2px dashed var(--border);
+  padding:16px 18px;min-height:64px;
+  transition:all .2s;box-shadow:var(--shadow);
+}
+.drop-target.over{border-color:var(--sky);background:var(--sky-bg);}
+.drop-target.correct{border-color:var(--green);border-style:solid;background:var(--green-lt);}
+.drop-target.wrong-flash{border-color:var(--red);background:var(--red-lt);}
+.drop-label{font-size:9px;font-weight:700;letter-spacing:.18em;color:var(--muted);margin-bottom:8px;}
+.drop-zone{min-height:36px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.drop-hint{font-size:12px;color:var(--border);font-style:italic;}
+
+/* ── FEEDBACK BANNER ── */
+.feedback{
+  display:none;border-radius:10px;padding:14px 18px;
+  margin-top:14px;font-size:13px;line-height:1.6;
+  animation:fadeUp .3s ease;
+}
+.feedback.show{display:flex;gap:12px;align-items:flex-start;}
+.feedback.ok{background:var(--green-lt);border-left:4px solid var(--green);color:#0A4425;}
+.feedback.bad{background:var(--red-lt);border-left:4px solid var(--red);color:#7A1010;}
+.feedback-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.feedback-text{font-weight:500;}
+.feedback-text strong{font-weight:700;}
+
+/* ── NEXT BUTTON ── */
+.next-btn{
+  display:none;margin-top:18px;
+  background:var(--sky);color:#fff;border:none;
+  border-radius:10px;padding:13px 28px;
+  font-family:var(--font);font-size:14px;font-weight:700;
+  cursor:pointer;letter-spacing:.02em;
+  transition:all .2s;
+  box-shadow:0 4px 14px rgba(0,174,239,.35);
+}
+.next-btn.show{display:inline-flex;align-items:center;gap:8px;}
+.next-btn:hover{background:var(--sky2);transform:translateY(-1px);}
+
+/* ── COMPLETION ── */
+#completion{display:none;background:var(--navy2);padding:56px 28px;text-align:center;}
+.cpl-inner{max-width:520px;margin:0 auto;}
+.cpl-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(11,122,78,.2);border:1px solid rgba(11,122,78,.4);border-radius:20px;padding:6px 16px;font-size:9px;font-weight:700;color:#4DD9A0;letter-spacing:.14em;margin-bottom:16px;}
+.cpl-icon{font-size:52px;margin-bottom:12px;}
+.cpl-title{font-family:var(--serif);color:#fff;font-size:32px;margin-bottom:8px;}
+.cpl-title span{color:var(--sky);font-style:italic;}
+.cpl-sub{color:rgba(255,255,255,.55);font-size:13.5px;line-height:1.7;margin-bottom:24px;}
+.cpl-scores{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.cpl-score{background:rgba(0,174,239,.12);border:1.5px solid rgba(0,174,239,.25);border-radius:10px;padding:12px 20px;text-align:center;}
+.cpl-score-n{font-size:28px;font-weight:700;color:var(--sky);font-family:var(--serif);}
+.cpl-score-l{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.12em;margin-top:2px;}
+
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+</style>
+</head>
+<body>
+<div id="prog"><div id="prog-fill"></div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span>APPOINTMENT SETTER · ROLE CHECK</div>
+    <h1 class="hero-title">Role Knowledge<br><em>Check</em></h1>
+    <p class="hero-sub">Three challenges. Pass all three to unlock your KPIs. No guessing — you either know it or you revisit it.</p>
+    <div class="hero-steps">
+      <div class="hero-step active-step" id="step-0"><div class="step-dot">1</div> Your Objective</div>
+      <div class="hero-step" id="step-1"><div class="step-dot">2</div> Your Day</div>
+      <div class="hero-step" id="step-2"><div class="step-dot">3</div> Who to Contact</div>
+    </div>
+  </div>
+</section>
+
+<!-- CHALLENGE 1 -->
+<div class="section">
+  <div class="inner">
+    <div class="q-wrap">
+      <div class="q-header">
+        <div class="q-num">CHALLENGE 1 OF 3</div>
+        <div class="q-format-badge">🃏 Pick the right answer</div>
+        <div class="q-text">A RESINC door knocker booked a customer in last Tuesday. The customer cancelled this morning. Where does that lead go next?</div>
+      </div>
+      <div class="choice-grid" id="q1-choices">
+        <div class="choice-card" onclick="q1Pick(this,'wrong')">
+          <div class="choice-indicator">A</div>
+          <div class="choice-text">Back to the door knocker to revisit in person</div>
+        </div>
+        <div class="choice-card" onclick="q1Pick(this,'wrong')">
+          <div class="choice-indicator">B</div>
+          <div class="choice-text">Straight into your own dialler queue for you to re-engage</div>
+        </div>
+        <div class="choice-card" onclick="q1Pick(this,'right')">
+          <div class="choice-indicator">C</div>
+          <div class="choice-text">To the confirmation team first — they try to reach the customer before it comes to you</div>
+        </div>
+        <div class="choice-card" onclick="q1Pick(this,'wrong')">
+          <div class="choice-indicator">D</div>
+          <div class="choice-text">Archived — a cancelled lead is no longer worth pursuing</div>
+        </div>
+      </div>
+      <div class="feedback" id="q1-feedback">
+        <div class="feedback-icon"></div>
+        <div class="feedback-text"></div>
+      </div>
+      <button class="next-btn" id="q1-next" onclick="unlockQ2()">Next Challenge →</button>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- CHALLENGE 2 -->
+<div class="q-locked" id="lock-q2">
+<div class="section" style="background:#fff;">
+  <div class="inner">
+    <div class="q-wrap">
+      <div class="q-header">
+        <div class="q-num">CHALLENGE 2 OF 3</div>
+        <div class="q-format-badge">⚡ What do you do?</div>
+        <div class="q-text">You book an appointment. The customer seemed keen. What do you do before moving to the next call?</div>
+      </div>
+
+      <div class="scenario-box">
+        <div class="scenario-label">📍 YOU JUST BOOKED</div>
+        <div class="scenario-title">The customer agreed. Appointment is in the calendar. Time is 10:42am.</div>
+        <div class="scenario-detail">Your dial count this morning is solid. There are <strong>new leads still in the queue</strong>. The confirmation team will be calling this customer tomorrow. Your TL can see your CRM activity in real time.</div>
+      </div>
+
+      <div class="decision-grid" id="q2-choices">
+        <div class="decision-card" onclick="q2Pick(this,'wrong')">
+          <div class="dc-emoji">⚡</div>
+          <div class="dc-text">Dial the next lead immediately — momentum matters</div>
+        </div>
+        <div class="decision-card" onclick="q2Pick(this,'right')">
+          <div class="dc-emoji">📝</div>
+          <div class="dc-text">Log clear CRM notes first, then move to the next lead</div>
+        </div>
+        <div class="decision-card" onclick="q2Pick(this,'wrong')">
+          <div class="dc-emoji">📲</div>
+          <div class="dc-text">Send the customer a text to confirm — just to be safe</div>
+        </div>
+        <div class="decision-card" onclick="q2Pick(this,'wrong')">
+          <div class="dc-emoji">📣</div>
+          <div class="dc-text">Post the win in the team Google Chat then move on</div>
+        </div>
+      </div>
+      <div class="feedback" id="q2-feedback">
+        <div class="feedback-icon"></div>
+        <div class="feedback-text"></div>
+      </div>
+      <button class="next-btn" id="q2-next" onclick="unlockQ3()">Final Challenge →</button>
+    </div>
+  </div>
+</div>
+<div class="sep"></div>
+</div>
+
+<!-- CHALLENGE 3 -->
+<div class="q-locked" id="lock-q3">
+<div class="section">
+  <div class="inner">
+    <div class="q-wrap">
+      <div class="q-header">
+        <div class="q-num">CHALLENGE 3 OF 3</div>
+        <div class="q-format-badge">🎯 Drag the right answer</div>
+        <div class="q-text">A customer says they're interested but wants to book for three weeks away. What's the right move?</div>
+      </div>
+
+      <div class="drag-scene">
+        <div>
+          <div class="drag-chips-label">DRAG YOUR ANSWER INTO THE BOX BELOW</div>
+          <div class="drag-chips" id="q3-pool">
+            <div class="drag-chip" id="chip-tl" draggable="true"
+              ondragstart="dragStart('chip-tl')" ondragend="dragEnd()">
+              📅 Push for within 72 hours — ideally next day
+            </div>
+            <div class="drag-chip" id="chip-specialist" draggable="true"
+              ondragstart="dragStart('chip-specialist')" ondragend="dragEnd()">
+              ✅ Accept it — a booking is a booking
+            </div>
+            <div class="drag-chip" id="chip-guess" draggable="true"
+              ondragstart="dragStart('chip-guess')" ondragend="dragEnd()">
+              🗓️ Let them pick whatever date works — comfort first
+            </div>
+            <div class="drag-chip" id="chip-google" draggable="true"
+              ondragstart="dragStart('chip-google')" ondragend="dragEnd()">
+              📞 Book it and call them again the day before
+            </div>
+          </div>
+        </div>
+
+        <div class="drop-target" id="q3-drop"
+          ondragover="dragOver(event)" ondragleave="dragLeave()" ondrop="dragDrop()">
+          <div class="drop-label">DROP YOUR ANSWER HERE</div>
+          <div class="drop-zone" id="q3-zone">
+            <span class="drop-hint">drag the correct response here →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feedback" id="q3-feedback">
+        <div class="feedback-icon"></div>
+        <div class="feedback-text"></div>
+      </div>
+      <button class="next-btn" id="q3-next" onclick="showCompletion()">See Your Results ✓</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="cpl-inner">
+    <div class="cpl-badge">✓ ROLE CHECK PASSED</div>
+    <div class="cpl-icon">⚡</div>
+    <div class="cpl-title">Role foundations <span>locked in.</span></div>
+    <div class="cpl-sub">You know your objective, your daily rhythm, and who to call on when you need help. Now let's talk numbers.</div>
+    <div class="cpl-scores">
+      <div class="cpl-score"><div class="cpl-score-n">3/3</div><div class="cpl-score-l">CHALLENGES PASSED</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog-fill').style.width=Math.min(p,100)+'%';
+});
+
+function setStep(i,state){
+  const el=document.getElementById('step-'+i);
+  el.className='hero-step '+(state==='active'?'active-step':state==='done'?'done-step':'');
+  if(state==='done') el.querySelector('.step-dot').textContent='✓';
+}
+
+// ── Q1: CHOICE CARDS ──
+function q1Pick(card,result){
+  document.querySelectorAll('#q1-choices .choice-card').forEach(c=>{c.classList.add('disabled');});
+  const fb=document.getElementById('q1-feedback');
+  if(result==='right'){
+    card.classList.add('selected-right');
+    fb.className='feedback show ok';
+    fb.querySelector('.feedback-icon').textContent='✅';
+    fb.querySelector('.feedback-text').innerHTML='<strong>Correct.</strong> The confirmation team tries to reach the customer first, to salvage the original appointment. Only if they can\'t get contact does it load into your dialler the next business day for you to re-engage and rebook.';
+    document.getElementById('q1-next').classList.add('show');
+    setStep(0,'done');
+  } else {
+    card.classList.add('selected-wrong');
+    fb.className='feedback show bad';
+    fb.querySelector('.feedback-icon').textContent='✗';
+    fb.querySelector('.feedback-text').innerHTML='Not quite. Think about the pipeline — <strong>the confirmation team gets the first shot</strong> at saving a cancelled appointment. It only reaches your dialler if they can\'t get through. Try again.';
+    // Re-enable after delay
+    setTimeout(()=>{
+      document.querySelectorAll('#q1-choices .choice-card').forEach(c=>{
+        c.classList.remove('disabled','selected-wrong');
+      });
+      fb.className='feedback';
+    },1800);
+  }
+}
+
+function unlockQ2(){
+  document.getElementById('q1-next').classList.remove('show');
+  const el=document.getElementById('lock-q2');
+  el.classList.add('unlocked');
+  setStep(1,'active');
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200);
+}
+
+// ── Q2: DECISION ──
+function q2Pick(card,result){
+  document.querySelectorAll('#q2-choices .decision-card').forEach(c=>c.classList.add('disabled'));
+  const fb=document.getElementById('q2-feedback');
+  if(result==='right'){
+    card.classList.add('right');
+    fb.className='feedback show ok';
+    fb.querySelector('.feedback-icon').textContent='✅';
+    fb.querySelector('.feedback-text').innerHTML='<strong>Correct.</strong> Your CRM notes are what the confirmation team and the specialist use to prepare. A booking without notes is an incomplete job. Log it clearly, then dial.';
+    document.getElementById('q2-next').classList.add('show');
+    setStep(1,'done');
+  } else {
+    card.classList.add('wrong');
+    fb.className='feedback show bad';
+    fb.querySelector('.feedback-icon').textContent='✗';
+    fb.querySelector('.feedback-text').innerHTML='Not this one. Speed matters — but so does setting the next person up. The confirmation team calls tomorrow without your notes. <strong>Log it first, then move.</strong> Try again.';
+    setTimeout(()=>{
+      document.querySelectorAll('#q2-choices .decision-card').forEach(c=>c.classList.remove('disabled','wrong'));
+      fb.className='feedback';
+    },1800);
+  }
+}
+
+function unlockQ3(){
+  document.getElementById('q2-next').classList.remove('show');
+  const el=document.getElementById('lock-q3');
+  el.classList.add('unlocked');
+  setStep(2,'active');
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200);
+}
+
+// ── Q3: DRAG & DROP ──
+let dragId=null;
+function dragStart(id){dragId=id;document.getElementById(id).classList.add('dragging');}
+function dragEnd(){if(dragId)document.getElementById(dragId).classList.remove('dragging');}
+function dragOver(e){e.preventDefault();document.getElementById('q3-drop').classList.add('over');}
+function dragLeave(){document.getElementById('q3-drop').classList.remove('over');}
+
+function dragDrop(){
+  const drop=document.getElementById('q3-drop');
+  drop.classList.remove('over');
+  if(!dragId)return;
+
+  const chip=document.getElementById(dragId);
+  const zone=document.getElementById('q3-zone');
+  const fb=document.getElementById('q3-feedback');
+
+  if(dragId==='chip-tl'){
+    // Correct
+    chip.remove();
+    chip.classList.add('placed');
+    chip.draggable=false;
+    zone.innerHTML='';
+    zone.appendChild(chip);
+    drop.classList.add('correct');
+    fb.className='feedback show ok';
+    fb.querySelector('.feedback-icon').textContent='✅';
+    fb.querySelector('.feedback-text').innerHTML='<strong>Correct.</strong> Within 72 hours — ideally next day. The closer the appointment to the booking call, the higher the sit rate. Three weeks out is a no-show waiting to happen. Always push for sooner.';
+    document.getElementById('q3-next').classList.add('show');
+    // Disable remaining chips
+    document.querySelectorAll('.drag-chip:not(.placed)').forEach(c=>{c.draggable=false;c.style.opacity='.35';c.style.cursor='default';});
+    setStep(2,'done');
+  } else {
+    // Wrong
+    drop.classList.add('wrong-flash');
+    fb.className='feedback show bad';
+    fb.querySelector('.feedback-icon').textContent='✗';
+    fb.querySelector('.feedback-text').innerHTML='That\'s not it. Time kills deals — the longer the gap between the booking call and the appointment, the more likely they cancel. <strong>Push for within 72 hours.</strong> Try dragging a different answer.';
+    setTimeout(()=>{drop.classList.remove('wrong-flash');fb.className='feedback';},1600);
+  }
+  dragId=null;
+}
+
+// Touch support for mobile drag
+(function(){
+  let touchChip=null,touchClone=null;
+  document.querySelectorAll('.drag-chip').forEach(chip=>{
+    chip.addEventListener('touchstart',e=>{
+      touchChip=chip;
+      const t=e.touches[0];
+      touchClone=chip.cloneNode(true);
+      touchClone.style.cssText=`position:fixed;left:${t.clientX-50}px;top:${t.clientY-20}px;opacity:.8;pointer-events:none;z-index:999;`;
+      document.body.appendChild(touchClone);
+    },{passive:true});
+    chip.addEventListener('touchmove',e=>{
+      if(!touchClone)return;
+      const t=e.touches[0];
+      touchClone.style.left=t.clientX-50+'px';
+      touchClone.style.top=t.clientY-20+'px';
+      e.preventDefault();
+    },{passive:false});
+    chip.addEventListener('touchend',e=>{
+      if(touchClone){touchClone.remove();touchClone=null;}
+      if(!touchChip)return;
+      const t=e.changedTouches[0];
+      const el=document.elementFromPoint(t.clientX,t.clientY);
+      const drop=document.getElementById('q3-drop');
+      if(drop && (el===drop||drop.contains(el))){
+        dragId=touchChip.id;
+        dragDrop();
+      }
+      touchChip=null;
+    });
+  });
+})();
+
+function showCompletion(){
+  document.getElementById('q3-next').classList.remove('show');
+  document.getElementById('completion').style.display='block';
+  document.getElementById('prog-fill').style.width='100%';
+  setTimeout(()=>document.getElementById('completion').scrollIntoView({behavior:'smooth',block:'start'}),200);
+}
+</script>
+</body>
+</html>
